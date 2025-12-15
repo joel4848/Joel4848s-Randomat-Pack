@@ -1,7 +1,7 @@
 local EVENT = {}
 
--- CreateConVar("randomat_budgetjetpacks_newJumpAmount", 99999, FCVAR_ARCHIVE, "'Jetpack' extra jump amount (for testing)", 0, 99999)
-CreateConVar("randomat_budgetjetpacks_newJumpPower", 2, FCVAR_ARCHIVE, "'Jetpack' jump power multiplier", 1, 10)
+-- CreateConVar("randomat_budgetjetpacks_newJumpAmount", 99999, FCVAR_NONE, "'Jetpack' extra jump amount (for testing)", 0, 99999)
+CreateConVar("randomat_budgetjetpacks_newJumpPower", 2, FCVAR_NONE, "'Jetpack' jump power multiplier", 1, 10)
 
 EVENT.Title = "Budget Jetpacks For All!"
 EVENT.Description = "Infinite stronger multijumps!"
