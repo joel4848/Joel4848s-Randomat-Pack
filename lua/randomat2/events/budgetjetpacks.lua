@@ -1,6 +1,6 @@
 local EVENT = {}
 
-CreateConVar("randomat_budgetjetpacks_newJumpAmount", 99999, FCVAR_ARCHIVE, "'Jetpack' extra jump amount (for testing)", 0, 99999)
+-- CreateConVar("randomat_budgetjetpacks_newJumpAmount", 99999, FCVAR_ARCHIVE, "'Jetpack' extra jump amount (for testing)", 0, 99999)
 CreateConVar("randomat_budgetjetpacks_newJumpPower", 2, FCVAR_ARCHIVE, "'Jetpack' jump power multiplier", 1, 10)
 
 EVENT.Title = "Budget Jetpacks For All!"
@@ -8,13 +8,17 @@ EVENT.Description = "Infinite stronger multijumps!"
 EVENT.id = "budgetjetpacks"
 EVENT.Categories = {"moderateimpact"}
 
+local orginalJumps = 1
+local orginalPower = 1
+
 function EVENT:Begin()
 
 -- Record previous multijump amount and set new
     if ConVarExists("multijump_default_jumps") then
-        newJumpAmount = GetConVar("randomat_budgetjetpacks_newJumpAmount"):GetInt()
+        -- newJumpAmount = GetConVar("randomat_budgetjetpacks_newJumpAmount"):GetInt()
         orginalJumps = GetConVar("multijump_default_jumps"):GetInt()
-        GetConVar("multijump_default_jumps"):SetInt(newJumpAmount)
+        -- GetConVar("multijump_default_jumps"):SetInt(newJumpAmount)
+        GetConVar("multijump_default_jumps"):SetInt(99999)
     end
 
 -- Record previous multijump power and set new
