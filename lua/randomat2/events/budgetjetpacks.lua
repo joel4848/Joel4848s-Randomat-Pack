@@ -6,6 +6,7 @@ CreateConVar("randomat_budgetjetpacks_newJumpPower", 2, FCVAR_NONE, "'Jetpack' j
 EVENT.Title = "Budget Jetpacks For All!"
 EVENT.Description = "Infinite stronger multijumps!"
 EVENT.id = "budgetjetpacks"
+EVENT.Type = EVENT_TYPE_JUMPING
 EVENT.Categories = {"moderateimpact"}
 
 local orginalJumps = 1
