@@ -1,12 +1,12 @@
 local EVENT = {}
 
-CreateConVar("randomat_rtexvision_attackRevealTime", 1, FCVAR_NONE, "Vision time after attacking", 0.1, 30)
-CreateConVar("randomat_rtexvision_moveRevealTime", 1, FCVAR_NONE, "Vision time after stopping moving", 0.1, 30)
-
 EVENT.Title = "R-Tex Vision"
 EVENT.Description = "Your vision is now based on YOUR movement"
 EVENT.id = "rtexvision"
 EVENT.Categories = {"biased", "moderateimpact"}
+
+CreateConVar("randomat_rtexvision_attackRevealTime", 1, FCVAR_NONE, "Vision time after attacking", 0.1, 30)
+CreateConVar("randomat_rtexvision_moveRevealTime", 1, FCVAR_NONE, "Vision time after stopping moving", 0.1, 30)
 
 local MathAbs = math.abs
 local MathRound = math.Round
