@@ -16,19 +16,43 @@ function EVENT:Begin()
 
     for _, v in player.Iterator() do
         v.rdmtSpamCooldown = 0
-        v.rdmtSurvived = 0
+        v.rdmtSurvived = false
+        v.rdmtSurvivedRole = nil
     end
 
     local spam = GetConVar("randomat_mustjump_spam"):GetBool()
     local spamTimer = GetConVar("randomat_mustjump_spamTimer"):GetInt()
     local killBlastImmune = GetConVar("randomat_mustjump_killBlastImmune"):GetBool()
+    local event = self
 
     self:AddHook("PlayerDeath", function(victim)
         if not IsValid(victim) then return end
 
-        victim.rdmtSurvived = 0
+        victim.rdmtSurvived = false
+        victim.rdmtMustJumpActive = nil
+        victim.rdmtWasOnGround = nil
+        victim.rdmtSurvivedRole = nil
     end)
 
+    -- For players who survived not double jumping (Jesters or blast immune) set rdmtSurvived to false if their role changes without
+    -- dying (e.g. Guesser successfully guesses role, or another randomat changes their role) so they can now die to the randomat
+
+    -- Note: this still doesn't do anything for other, temporary sources of not dying (e.g. immortality potion, shark idol) but
+    -- it's 4:57am and I've been working on this all day and my brain is too frazzled to work that out right now.
+    hook.Add("Think", "MustJumpCheckRoleChange", function()
+        for _, ply in ipairs(player.GetAll()) do
+            if ply.rdmtSurvived then
+
+                if not IsPlayer(ply) then continue end
+                if not ply:Alive() or ply:IsSpec() then continue end
+
+                if ply.rdmtSurvivedRole ~= nil and ply:GetRole() ~= ply.rdmtSurvivedRole then
+                    ply.rdmtSurvived = false
+                    ply.rdmtSurvivedRole = nil
+                end
+            end
+        end
+    end)
 
     -- Delay start so players don't get killed if the randomat triggers mid-jump
     timer.Create("RdmtMustJumpStartDelay", 1, 1, function()
@@ -44,20 +68,19 @@ function EVENT:Begin()
                 if ply:WaterLevel() > 1 then return end
                     -- Don't start checks if jump WAS player using their double jump
                     if ply:GetJumpLevel() > 0 then return end
-            ply.rdmtMustJumpActive = true
-            PrintMessage(HUD_PRINTTALK, "~~~~~~~~~~~~~~~~~~~~~~~~~")
-            PrintMessage(HUD_PRINTTALK, "- " .. ply:Nick() .. "'s rdmtSurvived is " .. tostring(ply.rdmtSurvived))
+                ply.rdmtMustJumpActive = true
             end
         end)
 
-        self:AddHook("Think", function()
+        hook.Add("Think", "MustJumpDoubleJumpCheck", function()
             for _, ply in ipairs(player.GetAll()) do
                 if ply.rdmtMustJumpActive then
                     if ply.rdmtWasOnGround == nil then
                         ply.rdmtWasOnGround = ply:OnGround()
                     end
                     if ply.rdmtWasOnGround == false and ply:OnGround() then
-                        if ply:GetJumpLevel() < 1 then
+
+                        if ply:GetJumpLevel() < 1 and ply.rdmtSurvived ~= true then
                         
                             util.BlastDamage(ply, ply, ply:GetPos(), 100, 500)
                             if not Randomat:ShouldActLikeJester(ply) and killBlastImmune then
@@ -76,15 +99,17 @@ function EVENT:Begin()
                             else
                                 if not IsPlayer(ply) then return end
                                 if not ply:Alive() or ply:IsSpec() then return end
-                                ply.rdmtSurvived = 1
-                                PrintMessage(HUD_PRINTTALK, "- " .. ply:Nick() .. "'s rdmtSurvived is " .. tostring(ply.rdmtSurvived))
-                                PrintMessage(HUD_PRINTTALK, "~~~~~~~~~~~~~~~~~~~~~~~~~")
+                                ply.rdmtSurvived = true
+                                ply.rdmtSurvivedRole = ply:GetRole()
                             end
                         
-                            if spam then
                                 self:SmallNotify(ply:Nick() .. " forgot to double jump.")
-                            end
+                        
+                        elseif ply:GetJumpLevel() < 1 and spam then
+                            self:SmallNotify(ply:Nick() .. " forgot to double jump.")
+
                         end
+
                         ply.rdmtMustJumpActive = nil
                         ply.rdmtWasOnGround = nil
                     end
@@ -105,10 +130,14 @@ function EVENT:End()
     for _, ply in ipairs(player.GetAll()) do
         ply.rdmtMustJumpActive = nil
         ply.rdmtWasOnGround = nil
+        ply.rdmtSurvived = nil
+        ply.rdmtSurvivedRole = nil
     end
 
-    self:RemoveHook("KeyPress")
-    self:RemoveHook("Think")
+    -- Used normal hooks so I can name them and have two Think hooks
+    -- If this is dumb please tell me - I'm learning as I go along here!
+    hook.Remove("Think", "MustJumpCheckRoleChange")
+    hook.Remove("Think", "MustJumpDoubleJumpCheck")
 end
 
 function EVENT:Condition()
