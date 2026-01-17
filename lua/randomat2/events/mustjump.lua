@@ -7,7 +7,7 @@ EVENT.Type = EVENT_TYPE_JUMPING
 EVENT.Categories = {"largeimpact"}
 
 CreateConVar("randomat_mustjump_spam", 0, FCVAR_NONE, "Whether to show the message again for a player who doesn't die")
-CreateConVar("randomat_mustjump_spamTimer", 5, FCVAR_NONE, "Whether to show the message again for a player who doesn't die", 0, 60)
+CreateConVar("randomat_mustjump_spamTimer", 5, FCVAR_NONE, "Delay before repeating the message", 0, 60)
 CreateConVar("randomat_mustjump_killBlastImmune", 1, FCVAR_NONE, "Whether to kill players who are immune to blast damage")
 
 local timerIds = {}
@@ -15,7 +15,7 @@ local timerIds = {}
 function EVENT:Begin()
 
     for _, v in player.Iterator() do
-        v.rdmtSpamCooldown = 0
+        v.rdmtSpamCooldown = false
         v.rdmtSurvived = false
         v.rdmtSurvivedRole = nil
     end
@@ -106,8 +106,16 @@ function EVENT:Begin()
                                 self:SmallNotify(ply:Nick() .. " forgot to double jump.")
                         
                         elseif ply:GetJumpLevel() < 1 and spam then
-                            self:SmallNotify(ply:Nick() .. " forgot to double jump.")
-
+    
+                            if ply.rdmtSpamCooldown == false then
+                                self:SmallNotify(ply:Nick() .. " forgot to double jump.")
+                                ply.rdmtSpamCooldown = true
+                                local spamTimerID = "RdmtMustJumpSpamCooldown_" .. ply:SteamID64()
+                                timer.Create(spamTimerID, spamTimer, 1, function()
+                                    if not IsValid(ply) then return end
+                                    ply.rdmtSpamCooldown = false
+                                end)
+                            end
                         end
 
                         ply.rdmtMustJumpActive = nil
@@ -132,6 +140,7 @@ function EVENT:End()
         ply.rdmtWasOnGround = nil
         ply.rdmtSurvived = nil
         ply.rdmtSurvivedRole = nil
+        ply.rdmtSpamCooldown = nil
     end
 
     -- Used normal hooks so I can name them and have two Think hooks
@@ -145,6 +154,21 @@ function EVENT:Condition()
 end
 
 function EVENT:GetConVars()
+    local sliders = {}
+    for _, v in ipairs({"spamTimer"}) do
+        local name = "randomat_" .. self.id .. "_" .. v
+        if ConVarExists(name) then
+            local convar = GetConVar(name)
+            table.insert(sliders, {
+                cmd = v,
+                dsc = convar:GetHelpText(),
+                min = convar:GetMin(),
+                max = convar:GetMax(),
+                dcm = 0
+            })
+        end
+    end
+
     local checks = {}
     for _, v in ipairs({"spam", "killBlastImmune"}) do
         local name = "randomat_" .. self.id .. "_" .. v
@@ -156,7 +180,7 @@ function EVENT:GetConVars()
             })
         end
     end
-    return {}, checks
+    return sliders, checks
 end
 
 Randomat:register(EVENT)
