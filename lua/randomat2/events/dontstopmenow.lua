@@ -1,13 +1,13 @@
 local EVENT = {}
 
-EVENT.Title = "Don't Stop Me Noooooowwwwwww"
+EVENT.Title = "Don't. Stop. Me. Noooooowwwwwww"
 EVENT.Description = "Everyone randomly freezes - no immunity!"
 EVENT.id = "dontstopmenow"
 EVENT.Type = EVENT_TYPE_JUMPING
 EVENT.Categories = {"moderateimpact"}
 
-CreateConVar("randomat_dontstopmenow_delayUpper", 45, FCVAR_NONE, "The upper limit for the random timer", 2, 120)
-CreateConVar("randomat_dontstopmenow_delayLower", 20, FCVAR_NONE, "The lower limit for the random timer", 1, 120)
+CreateConVar("randomat_dontstopmenow_delayUpper", 45, FCVAR_NONE, "The upper limit for the freeze interval", 2, 120)
+CreateConVar("randomat_dontstopmenow_delayLower", 20, FCVAR_NONE, "The lower limit for the freeze interval", 1, 120)
 CreateConVar("randomat_dontstopmenow_freezeUpper", 5, FCVAR_NONE, "The upper limit for the freeze duration", 2, 60)
 CreateConVar("randomat_dontstopmenow_freezeLower", 5, FCVAR_NONE, "The lower limit for the freeze duration", 1, 60)
 CreateConVar("randomat_dontstopmenow_affectAll", 0, FCVAR_NONE, "Does the event affect everyone at the same time")
@@ -41,7 +41,7 @@ function EVENT:Begin()
             mv:SetForwardSpeed(0)
             mv:SetSideSpeed(0)
             mv:SetUpSpeed(0)
-            
+
             -- Prevent jumping and crouching
             mv:SetButtons(bit.band(mv:GetButtons(), bit.bnot(IN_JUMP)))
             mv:SetButtons(bit.band(mv:GetButtons(), bit.bnot(IN_DUCK)))

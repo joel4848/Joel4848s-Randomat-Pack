@@ -20,6 +20,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 1. Maljumption - Causes players to randomly jump
 1. R-Tex Vision - Your vision is now based on YOUR movement
 1. You MUST jump twice. - Explodes players who DON'T use their double jumps!
+1. Don't. Stop. Me. Noooooowwwwwww - Everyone randomly freezes - no immunity!
 
 # Randomats
 
@@ -31,8 +32,24 @@ Everyone has infinite multijumps. The jump power multiplier is configurable betw
 \
 _ttt_randomat_budgetjetpacks_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_budgetjetpacks_min_players_ - Default: 0 - The minimum number of players required for this event to start\
-_ttt_randomat_budgetjetpacks_weight_ - Default: -1 - The weight this event should use during the randomized event selection process\
+_ttt_randomat_budgetjetpacks_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
 _randomat_budgetjetpacks_newJumpPower_ - Default: 2 - 'Jetpack' jump power multiplier
+
+## Don't. Stop. Me. Noooooowwwwwww
+
+Random freezes affecting all roles, and frozen players are not immune. Configurable whether frozen players can still look around and attack or not. The intended configuration is `affectAll = 0` and `allowMouseInput = 1` so that not all players are frozen, but those that are can defend themselves. \
+\
+_ttt_randomat_dontstopmenow_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_dontstopmenow_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_dontstopmenow_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
+_randomat_dontstopmenow_delayUpper_ - Default: 45 - The upper limit for the freeze interval\
+_randomat_dontstopmenow_delayLower_ - Default: 20 - The lower limit for the freeze interval\
+_randomat_dontstopmenow_freezeUpper_ - Default: 5 - The upper limit for the freeze duration\
+_randomat_dontstopmenow_freezeLower_ - Default: 5 - The lower limit for the freeze duration\
+_randomat_dontstopmenow_affectAll_ - Default: 0 - Does the event affect everyone at the same time\
+_randomat_dontstopmenow_allowMouseInput_ - Default: 1 - Can players look and shoot while frozen\
+\
+It's a horrible (yet hopefully still fun) bastardisation of Malvil's [FREEZE! aka Winter has come at last. aka The Ice Man cometh. aka In this universe, there is only one absolute: everything freezes! aka Tonight, Hell freezes over. aka I'm afraid my condition has left me cold to your pleas of mercy. aka Cool party. aka You are not sending me to the cooler. aka Stay cool, bird boy. aka Alright, everyone! Chill! aka It's a cold town. aka Tonight's forecast: a freeze is coming! aka What killed the dinosaurs?! The ice age! aka Let's kick some ice! aka Can you feel it coming? The icy cold of space! aka Freeze in hell, Batman!](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/freeze.lua).
 
 ## Maljumption
 
@@ -40,7 +57,7 @@ Players will randomly jump. Seems kinda lame, but maybe it'll trigger while some
 \
 _ttt_randomat_maljumption_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_maljumption_min_players_ - Default: 0 - The minimum number of players required for this event to start\
-_ttt_randomat_maljumption_weight_ - Default: -1 - The weight this event should use during the randomized event selection process\
+_ttt_randomat_maljumption_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
 _randomat_maljumption_upper_ - Default: 15 - The upper limit for the random timer"\
 _randomat_maljumption_lower_ - Default: 1 - The lower limit for the random timer"\
 _randomat_maljumption_affectall_ - Default: 1 - Set to 1 for the event to affect everyone at the same time\
@@ -53,7 +70,7 @@ Other players are invisible to you unless you're moving or attacking.\
 \
 _ttt_randomat_rtexvision_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_rtexvision_min_players_ - Default: 0 - The minimum number of players required for this event to start\
-_ttt_randomat_rtexvision_weight_ - Default: -1 - The weight this event should use during the randomized event selection process\
+_ttt_randomat_rtexvision_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
 _randomat_rtexvision_attackRevealTime_ - Default: 1 - Vision time after attacking\
 _randomat_rtexvision_moveRevealTime_ - Default: 1 - Vision time after stopping moving\
 \
@@ -70,14 +87,13 @@ Kills any player who jumps and then lands without using their double jump.
 - Configurable spam failure announcement message cooldown timer
 - Ignores players in water levels > 1 (submerged at least to the waist)
 
-
-_ttt_randomat_basics_ - Default: 1 - Whether this randomat is enabled\
-_randomat_basics_sprinting_ - Default: 0 - Whether sprinting is enabled\
-_randomat_basics_multi_jump_ - Default: 0 - Whether multi-jumping is enabled\
+_ttt_randomat_mustjump_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_mustjump_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_mustjump_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
 _randomat_mustjump_spam_ - Default 0 - Whether to show the message again for a player who doesn't die\
 _randomat_mustjump_spamTimer_ - Default 5 - Delay before repeating the message\
 _randomat_mustjump_killBlastImmune_ - Default 1 - Whether to kill players who are immune to blast damage\
-
+\
 It's Malvil's [You can only jump once.](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/jump.lua) but made horrendously more complicated as a learning exercise.
 
 ## Steam Workshop Link
