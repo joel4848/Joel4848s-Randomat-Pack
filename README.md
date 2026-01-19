@@ -21,6 +21,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 1. R-Tex Vision - Your vision is now based on YOUR movement
 1. You MUST jump twice. - Explodes players who DON'T use their double jumps!
 1. Don't. Stop. Me. Noooooowwwwwww - Everyone randomly freezes - no immunity!
+1. cOmMuNiSm - Whenever anyone buys something from a shop, all other players get a random buyable item
 
 # Randomats
 
@@ -33,7 +34,24 @@ Everyone has infinite multijumps. The jump power multiplier is configurable betw
 _ttt_randomat_budgetjetpacks_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_budgetjetpacks_min_players_ - Default: 0 - The minimum number of players required for this event to start\
 _ttt_randomat_budgetjetpacks_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
-_randomat_budgetjetpacks_newJumpPower_ - Default: 2 - 'Jetpack' jump power multiplier
+_randomat_budgetjetpacks_newJumpPower_ - Default: 2 - 'Jetpack' jump power multiplier\
+\
+## cOmMuNiSm
+
+Whenever someone buys something from a shop, everyone else gets a random buyable item. Configurable as to whether everyone gets the same item, whether to announce the role of the purchasing player, and whether the given items can include equipment (e.g. Radar, Body Armour etc.).\
+\
+Additionally, by default it will use the same blocklist as 'What did I find in my pocket' if its own blocklist is empty - if you want it to use its own blocklist then simply add IDs to the config (e.g. "ttt_m9k_harpoon,weapon_ttt_slam"); if you want it to not block anything then set `randomat_dumbcommunism_useOtherBlocklists` to `0`.\
+\
+_ttt_randomat_dumbcommunism_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_dumbcommunism_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_dumbcommunism_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
+_randomat_dumbcommunism_showRoles_ - Default: 1 - Whether to show the role of the purchasing player\
+_randomat_dumbcommunism_sameItem_ - Default: 0 - Whether everyone else gets the same random item\
+_randomat_dumbcommunism_allowEquipment_ - Default: 0 - Whether the given item can be equipment (e.g. Radar, Body Armour etc.)\
+_randomat_dumbcommunism_blocklist_ - Default: - "The comma-separated list of weapon IDs to not give out\
+_randomat_dumbcommunism_useOtherBlocklists_ - Default: 1 - Whether to use 'What Did I Find In My Pocket?' blocklist if this randomat's blocklist is empty\
+\
+It combines Malvil's [Communism](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/communist.lua) with their [What did I find in my pocket?](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/pocket.lua)/The Stig's [What did WE find in our pockets?](https://github.com/TheStig294/100-more-randomats-pack-1/blob/master/lua/randomat2/events/pockets.lua).
 
 ## Don't. Stop. Me. Noooooowwwwwww
 
