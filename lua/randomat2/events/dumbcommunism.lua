@@ -89,7 +89,7 @@ function EVENT:Begin()
 end
 
 function EVENT:Condition()
-    return not Randomat:IsEventActive("privacy")
+    return not Randomat:IsEventActive("pocket", "pockets")
 end
 
 function EVENT:GetConVars()
