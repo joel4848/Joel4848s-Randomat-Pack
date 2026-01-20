@@ -22,6 +22,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 1. You MUST jump twice. - Explodes players who DON'T use their double jumps!
 1. Don't. Stop. Me. Noooooowwwwwww - Everyone randomly freezes - no immunity!
 1. cOmMuNiSm - Whenever anyone buys something from a shop, all other players get a random buyable item
+1. Compulsory Blood Donation - Gain temporary health equal to the damage you deal
 
 # Randomats
 
@@ -52,6 +53,17 @@ _randomat_dumbcommunism_blocklist_ - Default: - "The comma-separated list of wea
 _randomat_dumbcommunism_useOtherBlocklists_ - Default: 1 - Whether to use 'What Did I Find In My Pocket?' blocklist if this randomat's blocklist is empty\
 \
 It combines Malvil's [Communism](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/communist.lua) with their [What did I find in my pocket?](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/pocket.lua)/The Stig's [What did WE find in our pockets?](https://github.com/TheStig294/100-more-randomats-pack-1/blob/master/lua/randomat2/events/pockets.lua).
+
+## Compulsory Blood Donation
+
+Players receive extra health equal (but not extra maximum health) equal to the amount of damage they deal to other players. "Damage dealt" is capped at the amount of HP they had, e.g. if you double-barrel someone with 4 health in the head, you're only going to get 4 extra health.\
+\
+A cap can be set between 1-1000 for the maximum amount of health a player can have before this randomat will stop giving them extra health. Set to 0 (default) to allow unlimited health gains.\
+\
+_ttt_randomat_budgetjetpacks_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_budgetjetpacks_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_budgetjetpacks_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
+_randomat_blooddonation_maxattackerhealth_ Default - 0 - The max health a player can reach (0 to disable)
 
 ## Don't. Stop. Me. Noooooowwwwwww
 
