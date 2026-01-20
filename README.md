@@ -106,6 +106,14 @@ _randomat_rtexvision_moveRevealTime_ - Default: 1 - Vision time after stopping m
 \
 A reverse of [Malivil's T-Rex Vision randomat](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/trexvision.lua), updated to trigger on any kind of attack (i.e. including crowbars and non-bullet weapons) rather than using `EntityFireBullets`.
 
+## YOU made this personal
+
+If a player kills a teammate, that teammate respawns as a Vindicator seeking revenge on their killer.\
+\
+_ttt_randomat_personal_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_personal_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_personal_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process
+
 ## You MUST jump twice.
 
 Kills any player who jumps and then lands without using their double jump.
