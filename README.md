@@ -36,13 +36,19 @@ Everyone has infinite multijumps. The jump power multiplier is configurable betw
 _ttt_randomat_budgetjetpacks_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_budgetjetpacks_min_players_ - Default: 0 - The minimum number of players required for this event to start\
 _ttt_randomat_budgetjetpacks_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
-_randomat_budgetjetpacks_newJumpPower_ - Default: 2 - 'Jetpack' jump power multiplier\
-\
+_randomat_budgetjetpacks_newJumpPower_ - Default: 2 - 'Jetpack' jump power multiplier
+
 
 ## Chilly Swingers
 
 aka Glacial Knockers\
 \
+Everyone gets an infinite-ammo freeze gun and an infinite-ammo homerun bat. Players are stripped of all other weapons, cannot pick up weapons/grenades from the ground, and can only buy passive items from role shops. Independent roles are turned into traitors and jester roles are turned into innocents.\
+\
+**Dependencies:**
+- Calvinbo_GER and Immortal Slayer 38's [Freeze Gun](https://steamcommunity.com/sharedfiles/filedetails/?id=888948962)\
+- Hagen's [Homerun Bat](https://steamcommunity.com/sharedfiles/filedetails/?id=648957314)
+
 _ttt_randomat_chillyswingers_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_chillyswingers_min_players_ - Default: 0 - The minimum number of players required for this event to start\
 _ttt_randomat_chillyswingers_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
