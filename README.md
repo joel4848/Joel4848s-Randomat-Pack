@@ -14,17 +14,17 @@ For general commands and convars, and information on saving default convars for 
 \
 Otherwise, randomat-specific convars will be detailed in each randomat's entry below.\
 
-# Newly added randomats
-
-1. Budget Jetpacks For All! - Infinite stronger multijumps!
-1. Maljumption - Causes players to randomly jump
-1. R-Tex Vision - Your vision is now based on YOUR movement
-1. You MUST jump twice. - Explodes players who DON'T use their double jumps!
-1. Don't. Stop. Me. Noooooowwwwwww - Everyone randomly freezes - no immunity!
-1. cOmMuNiSm - Whenever anyone buys something from a shop, all other players get a random buyable item
-1. Compulsory Blood Donation - Gain temporary health equal to the damage you deal
-
 # Randomats
+
+- [Budget Jetpacks For All!](#Budget-Jetpacks-For-All!) - Infinite stronger multijumps!
+- [cOmMuNiSm](#cOmMuNiSm) - Whenever anyone buys something from a shop, all other players get a random buyable item
+- [Compulsory Blood Donation](#Compulsory-Blood-Donation) - Gain temporary health equal to the damage you deal
+- [Don't. Stop. Me. Noooooowwwwwww](#Don't.-Stop.-Me.-Noooooowwwwwww) - Everyone randomly freezes - no immunity!
+- [Maljumption](#Maljumption) - Causes players to randomly jump
+- [No strafing](#No-strafing) - 'A' and 'D' keys are disabled
+- [R-Tex Vision](#R-Tex-Vision) - Your vision is now based on YOUR movement
+- [YOU made this personal](#YOU-made-this-personal) - RDMd teammates return as active Vindicators. Friendly fire = hostile consequences!
+- [You MUST jump twice.](#You-MUST-jump-twice.) - Explodes players who DON'T use their double jumps!
 
 ## Budget Jetpacks For All!
 
@@ -93,6 +93,25 @@ _randomat_maljumption_lower_ - Default: 1 - The lower limit for the random timer
 _randomat_maljumption_affectall_ - Default: 1 - Set to 1 for the event to affect everyone at the same time\
 \
 It's Malvil's [Malfunction](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/malfunction.lua) but with jumping.
+
+## No Strafing
+
+aka Let's straighten things out
+aka Stay in your lane!
+aka The Path of Righteousness
+aka Sidestepping Schmidestepping
+aka No flank you
+aka One-track mind
+aka One foot in front of the other
+aka Toe the line
+aka Walk This Way
+aka Strafing is for sweaty tryhards!
+\
+_ttt_randomat_nostrafing_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_nostrafing_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_nostrafing_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
+\
+Credit: [/u/Draken09 for the original idea](https://www.reddit.com/r/Yogscast/comments/8pf3oc/im_coding_a_randomat_20_for_ttt_and_would_like/e0cz3as/)
 
 ## R-Tex Vision
 

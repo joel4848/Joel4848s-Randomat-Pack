@@ -53,7 +53,6 @@ function EVENT:Begin()
             victim.rdmtNoMoveButMouse = false
             victim:Freeze(false)
 
-            -- Clean up individual timers if they exist
             if self.DSMNIndividualFreeze and self.DSMNIndividualFreeze[victim] then
                 local freezeTimerName = self.DSMNIndividualFreeze[victim]
                 local unfreezeTimerName = self.DSMNIndividualUnfreeze[victim]
@@ -66,13 +65,11 @@ function EVENT:Begin()
     end)
 
     if affectall then
-        -- Function to start the next delay timer
         local function StartDelayTimer()
 
             timer.Create("RdmtDSMNAllFreeze", math.random(delaylower, delayupper), 1, function()
                 local alive = self:GetAlivePlayers(true)
 
-                -- Freeze all players
                 for _, ply in ipairs(alive) do
                     if allowmouse then
                         ply.rdmtNoMoveButMouse = true
@@ -83,9 +80,7 @@ function EVENT:Begin()
                     end
                 end
 
-                -- Start unfreeze timer
                 timer.Create("RdmtDSMNAllUnfreeze", math.random(freezelower, freezeupper), 1, function()
-                    -- Unfreeze all players
                     for _, ply in ipairs(alive) do
                         if IsValid(ply) then
                             if allowmouse then
@@ -98,17 +93,14 @@ function EVENT:Begin()
                         end
                     end
                     
-                    -- Start the next delay timer after unfreezing
                     StartDelayTimer()
                 end)
             end)
         end
         
-        -- Start the first delay timer
         StartDelayTimer()
         
     else
-        -- Individual timers for each player
         timer.Create("RdmtDSMNIndividualTimers", 1, 0, function()
             for _, ply in ipairs(self:GetAlivePlayers(true)) do
                 if not self.DSMNIndividualFreeze[ply] then
@@ -117,7 +109,6 @@ function EVENT:Begin()
                     self.DSMNIndividualFreeze[ply] = freezeTimerName
                     self.DSMNIndividualUnfreeze[ply] = unfreezeTimerName
 
-                    -- Function to start the delay timer for this player
                     local function StartPlayerDelayTimer()
                         timer.Create(freezeTimerName, math.random(delaylower, delayupper), 1, function()
                             if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then
@@ -126,10 +117,8 @@ function EVENT:Begin()
                                 return
                             end
 
-                            -- Freeze the player
                             if allowmouse then
                                 ply.rdmtNoMoveButMouse = true
-                                -- Randomat:SmallNotify(msg, length, target, silent, allow_secret, font_color)
 
                                 Randomat:SmallNotify("Stop!", 3, ply, false, false, Color(240, 75, 30))
 
@@ -138,7 +127,6 @@ function EVENT:Begin()
                                 Randomat:SmallNotify("Stop!", 3, ply, false, false, Color(240, 75, 30))
                             end
 
-                            -- Start unfreeze timer
                             timer.Create(unfreezeTimerName, math.random(freezelower, freezeupper), 1, function()
                                 if IsValid(ply) then
                                     if allowmouse then
@@ -150,13 +138,11 @@ function EVENT:Begin()
                                     end
                                 end
                                 
-                                -- Start the next delay timer after unfreezing
                                 StartPlayerDelayTimer()
                             end)
                         end)
                     end
                     
-                    -- Start the first delay timer for this player
                     StartPlayerDelayTimer()
                 end
             end
@@ -165,12 +151,10 @@ function EVENT:Begin()
 end
 
 function EVENT:End()
-    -- Remove global/affectAll timers
     timer.Remove("RdmtDSMNAllFreeze")
     timer.Remove("RdmtDSMNAllUnfreeze")
     timer.Remove("RdmtDSMNIndividualTimers")
 
-    -- Remove all individual timers
     for _, ply in ipairs(player.GetAll()) do
         if IsValid(ply) then
             local freezeTimerName = "RdmtDSMNIndividualFreeze_" .. ply:SteamID64()
@@ -184,11 +168,9 @@ function EVENT:End()
         end
     end
 
-    -- Clear tables
     self.DSMNIndividualFreeze = nil
     self.DSMNIndividualUnfreeze = nil
 
-    -- Remove the SetupMove hook to stop microstutters
     self:RemoveHook("SetupMove", "RdmtNoMoveButMouse")
 end
 
