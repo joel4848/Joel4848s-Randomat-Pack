@@ -17,7 +17,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 # Randomats
 
 - [Budget Jetpacks For All!](#Budget-Jetpacks-For-All!) - Infinite stronger multijumps!
-- [Chilly Swingers](#Chilly-Swingers) - Everyone gets infinite-ammo freeze guns, homerun bats, and nothing else!
+- [Chilly Swingers](#Chilly-Swingers) - Forces everyone to use freeze guns, homerun bats and grenades
 - [cOmMuNiSm](#cOmMuNiSm) - Whenever anyone buys something from a shop, all other players get a random buyable item
 - [Compulsory Blood Donation](#Compulsory-Blood-Donation) - Gain temporary health equal to the damage you deal
 - [Don't. Stop. Me. Noooooowwwwwww](#Don't.-Stop.-Me.-Noooooowwwwwww) - Everyone randomly freezes - no immunity!
@@ -43,7 +43,7 @@ _randomat_budgetjetpacks_newJumpPower_ - Default: 2 - 'Jetpack' jump power multi
 
 aka Glacial Knockers\
 \
-Everyone gets an infinite-ammo freeze gun and an infinite-ammo homerun bat. Players are stripped of all other weapons, cannot pick up weapons/grenades from the ground, and can only buy passive items from role shops. Independent roles are turned into traitors and jester roles are turned into innocents.\
+Everyone gets an infinite-ammo freeze gun and an infinite-ammo homerun bat. Players are stripped of, and cannot pick up, other weapons except grenades, and can only buy passive items from role shops. Independent roles are turned into traitors and jester roles are turned into innocents.\
 \
 **Dependencies:**
 - Calvinbo_GER and Immortal Slayer 38's [Freeze Gun](https://steamcommunity.com/sharedfiles/filedetails/?id=888948962)\

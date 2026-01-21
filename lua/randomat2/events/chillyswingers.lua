@@ -6,7 +6,7 @@ table.insert(eventnames, "Chilly Swingers")
 table.insert(eventnames, "Glacial Knockers")
 
 EVENT.Title = "Chilly Swingers"
-EVENT.Description = "Everyone gets infinite-ammo freeze guns, homerun bats, and nothing else!"
+EVENT.Description = "Forces everyone to use freeze guns, homerun bats and grenades"
 EVENT.id = "chillyswingers"
 EVENT.Categories = {"item", "rolechange", "largeimpact"}
 EVENT.type = EVENT_TYPE_WEAPON_OVERRIDE
@@ -57,13 +57,34 @@ function EVENT:Begin()
         if not IsValid(wep) then return false end
 
         local class = WEPS.GetClass(wep)
-        return class == "weapon_ttt_freezegun" or class == "weapon_ttt_homebat"
+        
+        -- Allow freeze guns and homerun bats
+        if class == "weapon_ttt_freezegun" or class == "weapon_ttt_homebat" then
+            return true
+        end
+
+        -- Allow grenade-type weapons only if player doesn't already have one
+        if wep.Kind == WEAPON_NADE then
+            for _, ply_wep in ipairs(ply:GetWeapons()) do
+                if IsValid(ply_wep) and ply_wep.Kind == WEAPON_NADE then
+                    return false -- Player already has a grenade
+                end
+            end
+            return true
+        end
+
+        return false
     end)
 
     for i, ply in pairs(self:GetAlivePlayers()) do
         
-        -- Strip all living players' weapons
-        ply:StripWeapons()
+        -- Strip all living players' weapons except grenades
+        for _, wep in ipairs(ply:GetWeapons()) do
+            if IsValid(wep) and wep.Kind ~= WEAPON_NADE then
+                ply:StripWeapon(wep:GetClass())
+            end
+        end
+
         ply:SetFOV(0, 0.2)
 
         -- Give everyone a freeze gun and a homerun bat
@@ -73,7 +94,13 @@ function EVENT:Begin()
 
     self:AddHook("PlayerSpawn", function(ply)
         timer.Simple(1, function()
-            ply:StripWeapons()
+            -- Strip all living players' weapons except grenades
+            for _, wep in ipairs(ply:GetWeapons()) do
+                if IsValid(wep) and wep.Kind ~= WEAPON_NADE then
+                    ply:StripWeapon(wep:GetClass())
+                end
+            end
+
             ply:SetFOV(0, 0.2)
             ply:Give("weapon_ttt_freezegun")
             ply:Give("weapon_ttt_homebat")
