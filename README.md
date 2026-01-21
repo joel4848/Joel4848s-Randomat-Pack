@@ -17,6 +17,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 # Randomats
 
 - [Budget Jetpacks For All!](#Budget-Jetpacks-For-All!) - Infinite stronger multijumps!
+- [Chilly Swingers](#Chilly-Swingers) - Everyone gets infinite-ammo freeze guns, homerun bats, and nothing else!
 - [cOmMuNiSm](#cOmMuNiSm) - Whenever anyone buys something from a shop, all other players get a random buyable item
 - [Compulsory Blood Donation](#Compulsory-Blood-Donation) - Gain temporary health equal to the damage you deal
 - [Don't. Stop. Me. Noooooowwwwwww](#Don't.-Stop.-Me.-Noooooowwwwwww) - Everyone randomly freezes - no immunity!
@@ -37,6 +38,17 @@ _ttt_randomat_budgetjetpacks_min_players_ - Default: 0 - The minimum number of p
 _ttt_randomat_budgetjetpacks_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
 _randomat_budgetjetpacks_newJumpPower_ - Default: 2 - 'Jetpack' jump power multiplier\
 \
+
+## Chilly Swingers
+
+aka Glacial Knockers\
+\
+_ttt_randomat_chillyswingers_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_chillyswingers_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_chillyswingers_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
+\
+Credit: [/u/madman12308 for the original idea](https://www.reddit.com/r/Yogscast/comments/8pf3oc/im_coding_a_randomat_20_for_ttt_and_would_like/e0bhmvd/)
+
 ## cOmMuNiSm
 
 Whenever someone buys something from a shop, everyone else gets a random buyable item. Configurable as to whether everyone gets the same item, whether to announce the role of the purchasing player, and whether the given items can include equipment (e.g. Radar, Body Armour etc.).\
