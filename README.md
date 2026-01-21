@@ -96,16 +96,17 @@ It's Malvil's [Malfunction](https://github.com/Malivil/TTT-Randomat-20/blob/main
 
 ## No Strafing
 
-aka Let's straighten things out
-aka Stay in your lane!
-aka The Path of Righteousness
-aka Sidestepping Schmidestepping
-aka No flank you
-aka One-track mind
-aka One foot in front of the other
-aka Toe the line
-aka Walk This Way
-aka Strafing is for sweaty tryhards!
+aka Truck-style!\
+aka Let's straighten things out\
+aka Stay in your lane!\
+aka The Path of Righteousness\
+aka Sidestepping Schmidestepping\
+aka No flank you\
+aka One-track mind\
+aka One foot in front of the other\
+aka Toe the line\
+aka Walk This Way\
+aka Strafing is for sweaty tryhards!\
 \
 _ttt_randomat_nostrafing_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_nostrafing_min_players_ - Default: 0 - The minimum number of players required for this event to start\

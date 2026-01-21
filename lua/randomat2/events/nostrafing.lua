@@ -1,6 +1,8 @@
 local EVENT = {}
 
 local eventnames = {}
+
+table.insert(eventnames, "Truck-style")
 table.insert(eventnames, "Let's straighten things out")
 table.insert(eventnames, "Stay in your lane!")
 table.insert(eventnames, "The Path of Righteousness")
