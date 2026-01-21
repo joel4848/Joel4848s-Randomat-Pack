@@ -140,4 +140,18 @@ function EVENT:Begin()
 
 end
 
+function EVENT:End()
+    for i, ply in ipairs(self:GetAlivePlayers()) do
+        ply:Give("weapon_zm_improvised")
+        ply:Give("weapon_zm_carry")
+        ply:Give("weapon_ttt_unarmed")
+    end
+end
+
+function EVENT:Condition()
+    local freezegunexists = WEPS.GetStored("weapon_ttt_freezegun") ~= nil
+    local homerunbatexists = WEPS.GetStored("weapon_ttt_homebat") ~= nil
+    return freezegunexists and homerunbatexists
+end
+
 Randomat:register(EVENT)
