@@ -6,7 +6,7 @@ Randomats are a TTT mechanic added by Malivil's [TTT Randomat 2.0](https://steam
 \
 This mod adds new randomats. **It requires [TTT Randomat 2.0](https://steamcommunity.com/sharedfiles/filedetails/?id=2055805086) in order to do anything!** Where I've ~~shamelessly ripped off~~ drawn inspiration from existing randomats/elsewhere, credit will be given in the relevant randomat's entry. If I've missed any, please raise an issue and I'll add it ASAP.\
 \
-Some of the randomats will require other mods to be present in order to work. Any such dependencies will be specified in the relevant randomat description below. If you don't add them then nothing will break; the randomat simply won't be triggered either by start-of-round event or the Randomat-4000.
+Some of the randomats will require other mods to be present in order to work. Any such dependencies will be specified in the relevant randomat description below. If you don't add them then nothing will break; the randomat simply won't be triggered either by the start-of-round event or the Randomat-4000.
 
 # Settings/Options
 
