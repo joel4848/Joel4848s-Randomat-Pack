@@ -108,7 +108,7 @@ It combines Malvil's [Communism](https://github.com/Malivil/TTT-Randomat-20/blob
 
 ## Compulsory Blood Donation
 
-Players receive extra health equal (but not extra maximum health) equal to the amount of damage they deal to other players. "Damage dealt" is capped at the amount of HP they had, e.g. if you double-barrel someone with 4 health in the head, you're only going to get 4 extra health.\
+Players receive extra health (but not extra maximum health) equal to the amount of damage they deal to other players. "Damage dealt" is capped at the amount of HP they had, e.g. if you double-barrel someone with 4 health in the head, you're only going to get 4 extra health.\
 \
 A cap can be set between 1-1000 for the maximum amount of health a player can have before this randomat will stop giving them extra health. Set to 0 (default) to allow unlimited health gains.\
 \
@@ -135,7 +135,7 @@ It's a horrible (yet hopefully still fun) bastardisation of Malvil's [FREEZE! ak
 
 ## Maljumption
 
-Players will randomly jump. Seems kinda lame, but maybe it'll trigger while someone's falling and their double jump early, or while they're on a ladder.\
+Players will randomly jump. Seems kinda lame perhaps, but maybe it'll trigger while someone's falling and their double jump early, or while they're on a ladder.\
 \
 _ttt_randomat_maljumption_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_maljumption_min_players_ - Default: 0 - The minimum number of players required for this event to start\
@@ -191,9 +191,9 @@ _ttt_randomat_personal_weight_ - Default: - 1 - The weight this event should use
 Kills any player who jumps and then lands without using their double jump.
 
 - Message spam protection now separated from repeat randomat kills; i.e if repeat death announcements are disabled:
-    - Players who die to the randomat can die to it again if they're revived
-    - Players who fail to die to the randomat because of immunity (e.g. Jesters, players immune to blast damage) can die to it if their role is subsequently changed
-    - Another "X failed to use their double jump." annoucement is correctly made on the first failure following the above
+- Players who die to the randomat can die to it again if they're revived
+- Players who fail to die to the randomat because of immunity (e.g. Jesters, players immune to blast damage) can die to it iftheir role is subsequently changed
+- Another "X failed to use their double jump." annoucement is correctly made on the first failure following the above
 - Configurable spam failure announcement message cooldown timer
 - Ignores players in water levels > 1 (submerged at least to the waist)
 
@@ -208,4 +208,4 @@ It's Malvil's [You can only jump once.](https://github.com/Malivil/TTT-Randomat-
 
 ## Steam Workshop Link
 
-*Coming when I upload this to the Steam Workshop.*
+https://steamcommunity.com/sharedfiles/filedetails/?id=3651886053
