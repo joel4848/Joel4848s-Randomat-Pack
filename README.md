@@ -16,6 +16,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 
 # Randomats
 
+- [Bait Shark](#Bait-Shark) - Lone Sharky vs Traitors with limited harpoons. Sharky wins if all harpoons miss!
 - [Budget Jetpacks For All!](#Budget-Jetpacks-For-All!) - Infinite stronger multijumps!
 - [Chilly Swingers](#Chilly-Swingers) - Forces everyone to use freeze guns, homerun bats and grenades
 - [cOmMuNiSm](#cOmMuNiSm) - Whenever anyone buys something from a shop, all other players get a random buyable item
@@ -27,6 +28,40 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 - [YOU made this personal](#YOU-made-this-personal) - RDMd teammates return as active Vindicators. Friendly fire = hostile consequences!
 - [You MUST jump twice.](#You-MUST-jump-twice.) - Explodes players who DON'T use their double jumps!
 
+## Bait Shark
+
+aka Just when you thought it was safe to get back in the shark costume...\
+aka swaJ\
+aka Cosplay With Consequences\
+\
+One player is randomly selected, made an Innocent, and changed to a shark playermodel. Everyone else is turned into Traitors with a limited number of harpoons each. The Traitors are blinded and frozen to allow Sharky to escape, and then the hunt is on! But Traitors beware - if every poon misses, you lose!
+
+**Options:**
+
+- How many harpoons each traitor gets (defaults to 1, not sure how fair more would be)
+- Whether traitors die after missing with their last poon (or live to support the hunt)
+- How much faster Sharky is than the Traitors
+- Whether to change the Sharky to a shark model (in case you didn't want to for some reason?)
+- Whether the Traitors can see Sharky through walls (probably quite unfair now I think about it)
+- How long Sharky has to escape before the hunt begins
+
+**Dependencies:**
+- [Jenssons Hwapoon](https://steamcommunity.com/workshop/filedetails/?id=1625876886), with The Stig's [Silent Hwapoon/Harpoon](https://steamcommunity.com/sharedfiles/filedetails/?id=2806629402) if you don't like the hwapoon noises
+- One of the following: Busta B's [Yogscast Sharky Player Model](https://steamcommunity.com/sharedfiles/filedetails/?id=2755239782), The One Free-Man's [Left Shark playermodel](https://steamcommunity.com/sharedfiles/filedetails/?id=391383735), or Wilboforce's [Bedgar Shark](https://steamcommunity.com/sharedfiles/filedetails/?id=2420627490)\
+
+\
+_ttt_randomat_baitshark_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_baitshark_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_baitshark_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
+_randomat_baitshark_harpoonAmount_ - Default: 1 - Number of harpoons each traitor gets\
+_randomat_baitshark_killTraitorsOnEmpty_ - Default: 0 - Whether traitors die after missing with all their harpoons\
+_randomat_baitshark_innocentSpeedMulti_ - Default: 1 - The innocent player's speed multiplier\
+_randomat_baitshark_makeInnocentShark_ - Default: 1 - Whether to change the innocent's model to a shark\
+_randomat_baitshark_highlightInnocent_ - Default: 0 - Whether the traitors can see the innocent through walls\
+_randomat_baitshark_traitorBlindDuration_ - Default: 15 - How long to blind & freeze traitors for\
+\
+Credit: [/u/madman12308 for the original idea](https://www.reddit.com/r/Yogscast/comments/8pf3oc/im_coding_a_randomat_20_for_ttt_and_would_like/e0bhmvd/)
+
 ## Budget Jetpacks For All!
 
 Everyone has infinite multijumps. The jump power multiplier is configurable between 1-10 (defaults to 2 - **warning:** values > 2 will cause players to take fall damage after their second jump. I should probably just make this a "Double extra jumps' power?" toggle, but maybe someone out there WANTS 10x power).\
@@ -37,7 +72,6 @@ _ttt_randomat_budgetjetpacks_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_budgetjetpacks_min_players_ - Default: 0 - The minimum number of players required for this event to start\
 _ttt_randomat_budgetjetpacks_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
 _randomat_budgetjetpacks_newJumpPower_ - Default: 2 - 'Jetpack' jump power multiplier
-
 
 ## Chilly Swingers
 

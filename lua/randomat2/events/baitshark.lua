@@ -1,15 +1,30 @@
 local EVENT = {}
 
+local eventnames = {}
+
+table.insert(eventnames, "Bait Shark")
+table.insert(eventnames, "Just when you thought it was safe to get back in the shark costume...")
+table.insert(eventnames, "swaJ")
+table.insert(eventnames, "Cosplay With Consequences")
+
+
 EVENT.Title = "Bait Shark"
-EVENT.Description = "One innocent versus all traitors with harpoons. Innocent wins if all harpoons miss."
+EVENT.Description = "Lone Sharky vs Traitors with limited harpoons. Sharky wins if all harpoons miss!"
 EVENT.id = "baitshark"
 EVENT.Categories = {"rolechange", "weapon", "largeimpact"}
+
+
+function EVENT:BeforeEventTrigger(ply, options, ...)
+    self.Title = table.Random(eventnames)
+end
 
 
 util.AddNetworkString("rdmtStartHalo")
 util.AddNetworkString("rdmtStopHalo")
 util.AddNetworkString("rdmtStartBlind")
 util.AddNetworkString("rdmtStopBlind")
+util.AddNetworkString("rdmtSharkWinScreen")
+util.AddNetworkString("rdmtSharkWinScreenUnhook")
 
 
 CreateConVar("randomat_baitshark_harpoonAmount", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "Number of harpoons each traitor gets", 1, 10)
@@ -372,6 +387,24 @@ function EVENT:Begin()
                     timer.Simple(1, function()
                         game.SetTimeScale(self.OriginalTimeScale)
                     end)
+
+                    -- If the innocent survives the harpoon hit, kill them
+                    if IsValid(self.innocent) and self.innocent:Alive() then
+                        local dmg = DamageInfo()
+
+                        dmg:SetDamage(9999)
+                        dmg:SetDamageType(DMG_SLASH)
+                    
+                        if IsValid(owner) then
+                            dmg:SetAttacker(owner)
+                        end
+                    
+                        dmg:SetInflictor(IsValid(ent) and ent or owner)
+                        dmg:SetDamageForce(ent:GetVelocity())
+                        dmg:SetDamagePosition(self.innocent:WorldSpaceCenter())
+                    
+                        self.innocent:TakeDamageInfo(dmg)
+                    end
                 end
 
                 if missed and IsValid(owner) then
@@ -417,6 +450,8 @@ function EVENT:Begin()
 
             for _, ply in ipairs(self:GetAlivePlayers(true)) do
                 if ply:IsInnocent() then
+                    net.Start("rdmtSharkWinScreen")
+                    net.Broadcast()
                     -- Delay for dramatic effect before ending the round
                     timer.Simple(1, function()
                         if IsValid(ply) and ply:IsInnocent() then
@@ -488,6 +523,8 @@ function EVENT:Begin()
                 for _, ply in ipairs(self:GetAlivePlayers(true)) do
                     if ply:IsInnocent() then
                         if IsValid(ply) and ply:IsInnocent() then
+                            net.Start("rdmtSharkWinScreen")
+                            net.Broadcast()
                             EndRound(WIN_INNOCENT)
                         end
                         break
@@ -549,6 +586,10 @@ function EVENT:End()
 
     -- Unblind and unfreeze everyone
     net.Start("rdmtStopBlind")
+    net.Broadcast()
+
+    -- Unhook from win screen
+    net.Start("rdmtSharkWinScreenUnhook")
     net.Broadcast()
 
     for _, ply in ipairs(player.GetAll()) do
