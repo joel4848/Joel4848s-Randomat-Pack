@@ -47,8 +47,9 @@ One player is randomly selected, made an Innocent, and changed to a shark player
 
 **Dependencies:**
 - [Jenssons Hwapoon](https://steamcommunity.com/workshop/filedetails/?id=1625876886), with The Stig's [Silent Hwapoon/Harpoon](https://steamcommunity.com/sharedfiles/filedetails/?id=2806629402) if you don't like the hwapoon noises
-- One of the following: Busta B's [Yogscast Sharky Player Model](https://steamcommunity.com/sharedfiles/filedetails/?id=2755239782), The One Free-Man's [Left Shark playermodel](https://steamcommunity.com/sharedfiles/filedetails/?id=391383735), or Wilboforce's [Bedgar Shark](https://steamcommunity.com/sharedfiles/filedetails/?id=2420627490)\
-\
+- One of the following: Busta B's [Yogscast Sharky Player Model](https://steamcommunity.com/sharedfiles/filedetails/?id=2755239782), The One Free-Man's [Left Shark playermodel](https://steamcommunity.com/sharedfiles/filedetails/?id=391383735), or Wilboforce's [Bedgar Shark](https://steamcommunity.com/sharedfiles/filedetails/?id=2420627490)
+
+
 _ttt_randomat_baitshark_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_baitshark_min_players_ - Default: 0 - The minimum number of players required for this event to start\
 _ttt_randomat_baitshark_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
