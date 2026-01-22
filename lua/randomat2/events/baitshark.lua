@@ -75,13 +75,16 @@ function EVENT:Begin()
     timer.Remove("rdmtBaitSharkHarpoonTimer")
 
     local lastPoonNotified = false
+    local innocentHit = false
+    local safetynetTimerCreated =  false
     local alivePlayers = self:GetAlivePlayers()
     if #alivePlayers < 2 then return end
 
     for _, ply in ipairs(player.GetAll()) do
         if IsValid(ply) then
             ply.rdmtHarpoonsRemaining = GetConVar("randomat_baitshark_harpoonAmount"):GetInt()
-            ply.missedAll = false
+            ply.rdmtCurrentHarpoon = 0
+            ply.rdmtMissedAll = false
         end
     end
 
@@ -228,19 +231,59 @@ function EVENT:Begin()
     -- Give new poon if traitor has any left
     local maxHarpoons = GetConVar("randomat_baitshark_harpoonAmount"):GetInt()
 
-    timer.Create("rdmtBaitSharkHarpoonTimer", 3, 0, function()
-        for _, ply in ipairs(traitors) do
-            if not IsValid(ply) or not ply:Alive() then continue end
+    if blindDuration >= 3 then
+        self.initialHarpoonGiveDelay = blindDuration - 3
+    else
+        self.initialHarpoonGiveDelay = blindDuration
+    end
 
-            -- Only give a new harpoon if they don't currently have one
-            if not ply:HasWeapon("weapon_ttt_hwapoon") then
-                if ply.rdmtHarpoonsRemaining and ply.rdmtHarpoonsRemaining > 0 then
-                    ply:Give("weapon_ttt_hwapoon")
-                    ply:SelectWeapon("weapon_ttt_hwapoon")
-                    ply.rdmtHarpoonsRemaining = ply.rdmtHarpoonsRemaining - 1
+    timer.Simple(self.initialHarpoonGiveDelay, function()
+        timer.Create("rdmtBaitSharkHarpoonTimer", 3, 0, function()
+            for _, ply in ipairs(traitors) do
+                if not IsValid(ply) or not ply:Alive() then continue end
+
+                -- Only give a new harpoon if they don't currently have one
+                if not ply:HasWeapon("weapon_ttt_hwapoon") then
+                    if ply.rdmtHarpoonsRemaining and ply.rdmtHarpoonsRemaining > 0 then
+
+                        ply:Give("weapon_ttt_hwapoon")
+                        ply:SelectWeapon("weapon_ttt_hwapoon")
+
+                        ply.rdmtCurrentHarpoon = maxHarpoons - ply.rdmtHarpoonsRemaining + 1
+
+                        ply.rdmtHarpoonsRemaining = ply.rdmtHarpoonsRemaining - 1
+
+                        local finalHarpoon = true 
+
+                        for _, ply in ipairs(self:GetAlivePlayers(true)) do
+                            if ply:IsTraitor() then
+                                if (ply.rdmtHarpoonsRemaining or 0) > 0 then
+                                    finalHarpoon = false
+                                end
+                            end
+                        end
+
+                        if not finalHarpoon then
+                            if ply.rdmtCurrentHarpoon == maxHarpoons then
+                                if GetConVar("randomat_baitshark_killTraitorsOnEmpty"):GetBool() then
+                                    Randomat:SmallNotify("THIS IS YOUR LAST POON! IF YOU MISS, YOU DIE!", 5, ply, false, false, Color(240, 75, 30))
+                                else
+                                    Randomat:SmallNotify("THIS IS YOUR LAST POON!", 3, ply, false, false, Color(240, 75, 30))
+                                end
+                            elseif ply.rdmtCurrentHarpoon == 1 then
+                                Randomat:SmallNotify("This is your " .. ply.rdmtCurrentHarpoon .. "st poon of " .. maxHarpoons, 3, ply, false, false, Color(240, 75, 30))
+                            elseif ply.rdmtCurrentHarpoon == 2 then
+                                Randomat:SmallNotify("This is your " .. ply.rdmtCurrentHarpoon .. "nd poon of " .. maxHarpoons, 3, ply, false, false, Color(240, 75, 30))
+                            elseif ply.rdmtCurrentHarpoon == 3 then
+                                Randomat:SmallNotify("This is your " .. ply.rdmtCurrentHarpoon .. "rd poon of " .. maxHarpoons, 3, ply, false, false, Color(240, 75, 30))
+                            elseif ply.rdmtCurrentHarpoon >= 4 then
+                                Randomat:SmallNotify("This is your " .. ply.rdmtCurrentHarpoon .. "th poon of " .. maxHarpoons, 3, ply, false, false, Color(240, 75, 30))
+                            end
+                        end
+                    end
                 end
             end
-        end
+        end)
     end)
 
 
@@ -299,7 +342,7 @@ function EVENT:Begin()
                 continue
             end
 
-            -- Entity removed → miss
+            -- Count poon disappearing as a miss
             if not IsValid(ent) then
                 if IsValid(owner) then
                     self.MissedCounts[owner] = self.MissedCounts[owner] + 1
@@ -308,7 +351,7 @@ function EVENT:Begin()
                 continue
             end
 
-            -- Poon has hit something
+            -- Poon hits something
             if ent.Hit == true then
                 ent.rdmtCounted = true
 
@@ -317,7 +360,18 @@ function EVENT:Begin()
                 -- Count as miss unless it hit the innocent
                 local missed = true
                 if IsValid(hitEnt) and hitEnt:IsPlayer() and hitEnt == self.innocent then
+                    
                     missed = false
+                    innocentHit = true
+
+                    if GetConVar("randomat_baitshark_highlightInnocent"):GetBool() then
+                        net.Start("rdmtStopHalo")
+                        net.Broadcast()
+                    end
+
+                    timer.Simple(1, function()
+                        game.SetTimeScale(self.OriginalTimeScale)
+                    end)
                 end
 
                 if missed and IsValid(owner) then
@@ -332,10 +386,10 @@ function EVENT:Begin()
         for _, ply in ipairs(self:GetAlivePlayers()) do
             if not Randomat:IsTraitorTeam(ply) then continue end
 
-            ply.missedAll = ply.missedAll or false
+            ply.rdmtMissedAll = ply.rdmtMissedAll or false
 
             if (self.MissedCounts[ply] or 0) >= maxHarpoons then
-                ply.missedAll = true
+                ply.rdmtMissedAll = true
                 -- Kill them if enabled
                 if self.killmissers then
                     ply:Kill()
@@ -352,20 +406,22 @@ function EVENT:Begin()
         local allMissed = true
             
         for _, ply in ipairs(self:GetAlivePlayers(true)) do
-            if ply:IsTraitor() and not ply.missedAll then
+            if ply:IsTraitor() and not ply.rdmtMissedAll then
                 allMissed = false
                 break
             end
         end
-        
+
         if allMissed and not self.RoundEnded then
             self.RoundEnded = true
+
             for _, ply in ipairs(self:GetAlivePlayers(true)) do
                 if ply:IsInnocent() then
                     -- Delay for dramatic effect before ending the round
                     timer.Simple(1, function()
                         if IsValid(ply) and ply:IsInnocent() then
                             EndRound(WIN_INNOCENT)
+                            timer.Remove("rdmtSafetynetTimer")
                         end
                     end)
                     break
@@ -388,14 +444,18 @@ function EVENT:Begin()
         end
 
         if allHarpoonsEmpty and traitorsWithPoon == 1 and not lastPoonNotified then
-            self:SmallNotify("Only one poon remains!")
+            self:SmallNotify("Only one poon remains in the round! If it misses, the Shark wins!")
             lastPoonNotified = true
         end
 
         -- Slow-motion for final poon
         if lastPoonNotified and traitorsWithPoon == 0 and game.GetTimeScale() ~= 0.2 then
-            game.SetTimeScale(0.2)
-
+            timer.Simple(0.1, function()
+                if not innocentHit then
+                    game.SetTimeScale(0.2)
+                end
+            end)
+            
             -- Find the last thrown poon
             local lastArrow = nil
             if self.TrackedHarpoons then
@@ -417,6 +477,23 @@ function EVENT:Begin()
                     end
                 end
             end
+        end
+
+        -- Safetynet in case final poon hits but doesn't kill innocent: End round with innocent win if all poons thrown and no other resolution for 10 seconds.
+
+        if allHarpoonsEmpty and traitorsWithPoon == 0 and not safetynetTimerCreated then
+            safetynetTimerCreated = true
+
+            timer.Create("rdmtSafetynetTimer", 6, 1, function()
+                for _, ply in ipairs(self:GetAlivePlayers(true)) do
+                    if ply:IsInnocent() then
+                        if IsValid(ply) and ply:IsInnocent() then
+                            EndRound(WIN_INNOCENT)
+                        end
+                        break
+                    end
+                end
+            end)
         end
 
     end)
@@ -482,11 +559,12 @@ function EVENT:End()
 
     timer.Remove("rdmtBlindDurationTimer")
     timer.Remove("rdmtBaitSharkHarpoonTimer")
+    timer.Remove("rdmtSafetynetTimer")
 
     for _, ply in ipairs(player.GetAll()) do
         if IsValid(ply) then
             ply.rdmtHarpoonsRemaining = nil
-            ply.missedAll = nil
+            ply.rdmtMissedAll = nil
         end
     end
 
