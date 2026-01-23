@@ -385,7 +385,9 @@ function EVENT:Begin()
                     end
 
                     timer.Simple(1, function()
-                        game.SetTimeScale(self.OriginalTimeScale)
+                        if self.OriginalTimeScale then
+                            game.SetTimeScale(self.OriginalTimeScale)
+                        end
                     end)
 
                     -- If the innocent survives the harpoon hit, kill them
