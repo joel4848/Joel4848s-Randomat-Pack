@@ -3,6 +3,7 @@ local EVENT = {}
 EVENT.Title = "cOmMuNiSm"
 EVENT.Description = "Whenever anyone buys something from a shop, all other players get a random buyable item"
 EVENT.id = "dumbcommunism"
+EVENT.Type = EVENT_TYPE_TRANSLATED_WEAPONS
 EVENT.Categories = {"item", "moderateimpact"}
 
 CreateConVar("randomat_dumbcommunism_showRoles", 1, FCVAR_NONE, "Whether to show the role of the purchasing player")
