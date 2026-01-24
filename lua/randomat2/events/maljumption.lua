@@ -6,7 +6,7 @@ EVENT.id = "maljumption"
 EVENT.Type = EVENT_TYPE_JUMPING
 EVENT.Categories = {"lowimpact"}
 
-CreateConVar("randomat_maljumption_upper", 15, FCVAR_NONE, "The upper limit for the random timer", 2, 60)
+CreateConVar("randomat_maljumption_upper", 10, FCVAR_NONE, "The upper limit for the random timer", 2, 60)
 CreateConVar("randomat_maljumption_lower", 1, FCVAR_NONE, "The lower limit for the random timer", 1, 60)
 -- affectall defaults to '1' so players randomly jump more often. Need to investigate having separate timers for each player
 CreateConVar("randomat_maljumption_affectall", 1, FCVAR_NONE, "Set to 1 for the event to affect everyone at the same time")
