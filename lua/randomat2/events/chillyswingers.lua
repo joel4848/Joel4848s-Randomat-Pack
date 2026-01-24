@@ -59,7 +59,7 @@ function EVENT:Begin()
         local class = WEPS.GetClass(wep)
         
         -- Allow freeze guns and homerun bats
-        if class == "weapon_ttt_freezegun" or class == "weapon_ttt_homebat" then
+        if class == "weapon_ttt_freezegun" or class == "weapon_ttt_homebat" or class == "weapon_ttt_unarmed" then
             return true
         end
 
@@ -90,6 +90,7 @@ function EVENT:Begin()
         -- Give everyone a freeze gun and a homerun bat
         ply:Give("weapon_ttt_freezegun")
         ply:Give("weapon_ttt_homebat")
+        ply:Give("weapon_ttt_unarmed")
     end
 
     self:AddHook("PlayerSpawn", function(ply)
