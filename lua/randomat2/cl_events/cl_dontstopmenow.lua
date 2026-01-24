@@ -5,7 +5,8 @@ function EVENT:Begin()
 
     self:AddHook("SetupMove", function(ply, mv, cmd)
         if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
-        if ply.rdmtNoMoveButMouse then
+        local rdmtNoMoveButMouse = ply:GetNWBool("RdmtNoMoveButMouse", false)
+        if rdmtNoMoveButMouse then
             -- Stop all movement
             mv:SetForwardSpeed(0)
             mv:SetSideSpeed(0)

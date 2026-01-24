@@ -22,6 +22,7 @@ function EVENT:Begin()
     local affectall = GetConVar("randomat_dontstopmenow_affectAll"):GetBool()
     local allowmouse = GetConVar("randomat_dontstopmenow_allowMouseInput"):GetBool()
 
+
     -- For sanity (Thanks Mal)
     if delaylower > delayupper then
         delayupper = delaylower + 1
@@ -36,7 +37,8 @@ function EVENT:Begin()
 
     self:AddHook("SetupMove", function(ply, mv, cmd)
         if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
-        if ply.rdmtNoMoveButMouse then
+        local rdmtNoMoveButMouse = ply:GetNWBool("RdmtNoMoveButMouse", false)
+        if rdmtNoMoveButMouse then
             -- Stop all movement
             mv:SetForwardSpeed(0)
             mv:SetSideSpeed(0)
@@ -72,7 +74,7 @@ function EVENT:Begin()
 
                 for _, ply in ipairs(alive) do
                     if allowmouse then
-                        ply.rdmtNoMoveButMouse = true
+                        ply:SetNWBool("RdmtNoMoveButMouse", true)
                         Randomat:SmallNotify("Stop!", 3, ply, false, false, Color(240, 75, 30))
                     else
                         ply:Freeze(true)
@@ -84,7 +86,7 @@ function EVENT:Begin()
                     for _, ply in ipairs(alive) do
                         if IsValid(ply) then
                             if allowmouse then
-                                ply.rdmtNoMoveButMouse = false
+                                ply:SetNWBool("RdmtNoMoveButMouse", false)
                                 Randomat:SmallNotify("Unstop!", 3, ply, false, false, Color(50, 255, 50))
                             else
                                 ply:Freeze(false)
@@ -118,7 +120,7 @@ function EVENT:Begin()
                             end
 
                             if allowmouse then
-                                ply.rdmtNoMoveButMouse = true
+                                ply:SetNWBool("RdmtNoMoveButMouse", true)
 
                                 Randomat:SmallNotify("Stop!", 3, ply, false, false, Color(240, 75, 30))
 
@@ -130,7 +132,7 @@ function EVENT:Begin()
                             timer.Create(unfreezeTimerName, math.random(freezelower, freezeupper), 1, function()
                                 if IsValid(ply) then
                                     if allowmouse then
-                                        ply.rdmtNoMoveButMouse = false
+                                        ply:SetNWBool("RdmtNoMoveButMouse", false)
                                         Randomat:SmallNotify("Unstop!", 3, ply, false, false, Color(50, 255, 50))
                                     else
                                         ply:Freeze(false)
@@ -164,7 +166,7 @@ function EVENT:End()
             timer.Remove(unfreezeTimerName)
         
             ply:Freeze(false)
-            ply.rdmtNoMoveButMouse = false
+            ply:SetNWBool("RdmtNoMoveButMouse", false)
         end
     end
 
