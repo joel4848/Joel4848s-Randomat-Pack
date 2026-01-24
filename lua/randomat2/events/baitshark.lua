@@ -29,7 +29,7 @@ util.AddNetworkString("rdmtSharkWinScreenUnhook")
 
 CreateConVar("randomat_baitshark_harpoonAmount", 1, {FCVAR_NONE}, "Number of harpoons each traitor gets", 1, 10)
 CreateConVar("randomat_baitshark_killTraitorsOnEmpty", 0, {FCVAR_NONE}, "Whether traitors die after missing with all their harpoons", 0, 1)
-CreateConVar("randomat_baitshark_innocentSpeedMulti", 1, {FCVAR_NONE}, "The innocent player's speed multiplier", 1, 2)
+CreateConVar("randomat_baitshark_innocentSpeedMulti", 1.3, {FCVAR_NONE}, "The innocent player's speed multiplier", 1, 2)
 CreateConVar("randomat_baitshark_makeInnocentShark", 1, {FCVAR_NONE}, "Whether to change the innocent's model to a shark", 0, 1)
 CreateConVar("randomat_baitshark_highlightInnocent", 0, {FCVAR_NONE}, "Whether the traitors can see the innocent through walls", 0, 1)
 CreateConVar("randomat_baitshark_traitorBlindDuration", 15, {FCVAR_NONE}, "How long to blind & freeze traitors for", 0, 30)

@@ -10,7 +10,7 @@ EVENT.Categories = {"item", "moderateimpact"}
 
 CreateConVar("randomat_dumbcommunism_showRoles", 1, FCVAR_NONE, "Whether to show the role of the purchasing player")
 CreateConVar("randomat_dumbcommunism_sameItem", 0, FCVAR_NONE, "Whether everyone else gets the same random item")
-CreateConVar("randomat_dumbcommunism_allowEquipment", 0, FCVAR_NONE, "Whether the given item can be equipment (e.g. Radar, Body Armour etc.)")
+CreateConVar("randomat_dumbcommunism_allowEquipment", 1, FCVAR_NONE, "Whether the given item can be equipment (e.g. Radar, Body Armour etc.)")
 CreateConVar("randomat_dumbcommunism_blocklist", "", FCVAR_NONE, "The comma-separated list of weapon IDs to not give out")
 CreateConVar("randomat_dumbcommunism_useOtherBlocklists", 1, FCVAR_NONE, "Use 'What Did I Find In My Pocket?' blocklist if this one is empty?")
 
