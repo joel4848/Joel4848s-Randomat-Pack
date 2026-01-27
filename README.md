@@ -25,6 +25,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 - [Maljumption](#Maljumption) - Causes players to randomly jump
 - [No strafing](#No-strafing) - 'A' and 'D' keys are disabled
 - [R-Tex Vision](#R-Tex-Vision) - Your vision is now based on YOUR movement
+- [The Heir Apparent(ly)](#The-Heir-Apparent(ly)) - Vote to deputise someone, but beware: non-innocents become something else...
 - [YOU made this personal](#YOU-made-this-personal) - RDMd teammates return as active Vindicators. Friendly fire = hostile consequences!
 - [You MUST jump twice.](#You-MUST-jump-twice.) - Explodes players who DON'T use their double jumps!
 
@@ -177,6 +178,20 @@ _randomat_rtexvision_attackRevealTime_ - Default: 1 - Vision time after attackin
 _randomat_rtexvision_moveRevealTime_ - Default: 1 - Vision time after stopping moving\
 \
 A reverse of [Malivil's T-Rex Vision randomat](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/trexvision.lua), updated to trigger on any kind of attack (i.e. including crowbars and non-bullet weapons) rather than using `EntityFireBullets`.
+
+## The Heir Apparent(ly)
+
+Players vote once to deputise someone. A chosen Innocent Team member becomes a Deputy, but a chosen Evil Team member becomes an Impersonator. Jester, Indepdent and Monster Team members become a Detectoclown if `randomat_heirapparently_allow_detectoclown` is enabled and the [Jingle Jam 2022 Custom Roles Pack](https://steamcommunity.com/sharedfiles/filedetails/?id=2942056355) is installed, or otherwise become an Impersonator.\
+\
+_ttt_randomat_heirapparently_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_heirapparently_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_heirapparently_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
+_randomat_heirapparently_timer_ - Default: 30 - The number of seconds voting lasts\
+_randomat_heirapparently_tie_deputises_ - Default: 1 - Whether a tie results in a coin toss; otherwise, nobody is chosen\
+_randomat_heirapparently_show_votes_ - Default: 1 - Whether to show when a target is voted for in chat\
+_randomat_heirapparently_show_votes_anon_ - Default: 0 - Whether to hide who voted in chat\
+_randomat_heirapparently_allow_self_votes_ - Default: 0 - Whether players can vote for themselves\
+_randomat_heirapparently_allow_detectoclown_ - Default: 1 - Whether jesters/independents/monsters become Detectoclows (if Jingle Jam Roles 2022 is present)\
 
 ## YOU made this personal
 
