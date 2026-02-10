@@ -52,7 +52,7 @@ function EVENT:Begin()
 
     self:AddHook("PlayerDeath", function(victim)
         if IsValid(victim) then
-            victim.rdmtNoMoveButMouse = false
+            victim:SetNWBool("RdmtNoMoveButMouse", false)
             victim:Freeze(false)
 
             if self.DSMNIndividualFreeze and self.DSMNIndividualFreeze[victim] then
