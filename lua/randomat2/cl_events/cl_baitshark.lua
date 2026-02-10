@@ -40,9 +40,10 @@ net.Receive("rdmtSharkWinScreen", function()
         hook.Add("TTTScoringWinTitle", "BaitSharkRandomatWinTitle", function(wintype, wintitles, title)
             local winner
 
-            for i, ply in ipairs(player.GetAll(innocentPlayer)) do
-                if ply:Alive() and not ply:IsSpec() then
+            for i, ply in ipairs(player.GetAll()) do
+                if Randomat:IsInnocentTeam(ply) and ply:Alive() and not ply:IsSpec() then
                     winner = ply
+                    break
                 end
             end
 
