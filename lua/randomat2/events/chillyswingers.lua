@@ -105,6 +105,7 @@ function EVENT:Begin()
             ply:SetFOV(0, 0.2)
             ply:Give("weapon_ttt_freezegun")
             ply:Give("weapon_ttt_homebat")
+            ply:Give("weapon_ttt_unarmed")
         end)
     end)
 
