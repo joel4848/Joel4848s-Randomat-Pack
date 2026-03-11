@@ -1,7 +1,7 @@
 local EVENT = {}
 
 EVENT.Title = "You MUST jump twice."
-EVENT.Description = "Explodes players who DON'T use their double jumps!"
+EVENT.Description = "Every time you jump you must double jump, or you explode!"
 EVENT.id = "mustjump"
 EVENT.Type = EVENT_TYPE_JUMPING
 EVENT.Categories = {"largeimpact"}
