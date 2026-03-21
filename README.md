@@ -136,7 +136,7 @@ It's a horrible (yet hopefully still fun) bastardisation of Malvil's [FREEZE! ak
 
 ## Maljumption
 
-Players will randomly jump. Seems kinda lame perhaps, but maybe it'll trigger while someone's falling and their double jump early, or while they're on a ladder.\
+Players will randomly jump. Seems kinda lame perhaps, but maybe it'll trigger while someone's falling so they double jump too soon, or while they're on a ladder...\
 \
 _ttt_randomat_maljumption_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_maljumption_min_players_ - Default: 0 - The minimum number of players required for this event to start\
