@@ -178,8 +178,8 @@ function EVENT:End()
 end
 
 function EVENT:Condition()
-    local freezegunexists = WEPS.GetStored("weapon_ttt_freezegun") ~= nil
-    local homerunbatexists = WEPS.GetStored("weapon_ttt_homebat") ~= nil
+    local freezegunexists = weapons.Get("weapon_ttt_freezegun") ~= nil
+    local homerunbatexists = weapons.Get("weapon_ttt_homebat") ~= nil
     return freezegunexists and homerunbatexists
 end
 
