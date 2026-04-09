@@ -1,0 +1,1 @@
+CreateConVar("randomat_startreactor_rest_time", 10, FCVAR_REPLICATED, "Time delay (s) between patterns", 5, 60)

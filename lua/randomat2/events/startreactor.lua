@@ -11,13 +11,18 @@ util.AddNetworkString("RdmtStartReactorEjectionAnnouncement")
 
 local initialTime = CreateConVar("randomat_startreactor_initial_time", 10, FCVAR_NONE, "Time (s) for players to enter the first pattern", 5, 60):GetInt()
 local timeIncrease = CreateConVar("randomat_startreactor_additional_time", 1, FCVAR_NONE, "Additional time (s) players get for each additional light in the pattern", 5, 60):GetInt()
-local restTime = CreateConVar("randomat_startreactor_rest_time", 10, FCVAR_NONE, "Time (s) for players to enter the first pattern", 5, 60):GetInt()
 local eject = CreateConVar("randomat_startreactor_actually_eject", 1, FCVAR_NONE, "Whether to eject unsuccessful players from the map", 0, 1):GetBool()
+
+-- local restTime = GetConVar("randomat_startreactor_rest_time"):GetInt()
 
 local pattern = {}
 local ejectedPlayers = {}
 local initialDelay = 5
 local roundCount = 0
+
+local function GetRestTime()
+    return GetConVar("randomat_startreactor_rest_time"):GetInt()
+end
 
 local function CreatePattern(timeLimit)
     local nextNumber
@@ -67,7 +72,7 @@ local function StartReactorRound()
 
     CreatePattern(timeToSucceed)
     
-    timer.Simple(timeToSucceed, function()
+    timer.Create("RdmtStartReactorSuccessTimer", timeToSucceed, 1, function()
         ejectedPlayers = {}
         for _, ply in ipairs(player.GetAll()) do
             if not ply.successful and ply:Alive() and not ply:IsSpec() then
@@ -76,7 +81,7 @@ local function StartReactorRound()
                 table.insert(ejectedPlayers, ply:Nick())
 
                 if eject then
-                    timer.Simple(0.1, function()
+                    timer.Create("RdmtStartReactorTickTimer", 0.1, 1, function()
                         if not IsValid(ply) then return end
 
                         local ragdoll = ply.server_ragdoll or ply:GetRagdollEntity()
@@ -93,7 +98,7 @@ local function StartReactorRound()
                                 end
                             end
                     
-                            timer.Simple(1, function()
+                            timer.Create("RdmtStartReactorRagdollTimer", 1, 1, function()
                                 ragdoll:SetCollisionGroup(originalCollisionGroup)
                             end)
                         end
@@ -104,7 +109,7 @@ local function StartReactorRound()
         end
         EjectionAnnouncement(ejectedPlayers)
 
-        timer.Simple(restTime, function()
+        timer.Create("RdmtStartReactorRestTimer", GetRestTime(), 1, function()
             StartReactorRound() 
         end)
     end)
@@ -114,7 +119,7 @@ function EVENT:Begin()
     roundCount = 0
     pattern = {}
 
-    timer.Simple(initialDelay, function()
+    timer.Create("RdmtStartReactorInitialTimer", initialDelay, 1, function()
         StartReactorRound()
     end)
 end
@@ -125,7 +130,11 @@ net.Receive("RdmtStartReactorSuccess", function(ln, ply)
 end)
 
 function EVENT:End()
-    timer.Remove("RdmtStartReactorNewPatternTimer")
+    timer.Remove("RdmtStartReactorSuccessTimer")
+    timer.Remove("RdmtStartReactorTickTimer")
+    timer.Remove("RdmtStartReactorRagdollTimer")
+    timer.Remove("RdmtStartReactorRestTimer")
+    timer.Remove("RdmtStartReactorInitialTimer")
 end
 
 Randomat:register(EVENT)

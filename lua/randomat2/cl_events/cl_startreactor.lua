@@ -3,6 +3,7 @@ EVENT.id = "startreactor"
 
 local StartReactorFrame
 local panels
+local panels_red
 local lights = {}
 local buttons = {}
 local disabledButtons = {}
@@ -62,7 +63,7 @@ local function CountdownBeeps()
         end
 
         if startBeeps > 0 then
-            timer.Simple(startBeeps, function()
+            timer.Create("RdmtStartReactorBeeps1Timer", startBeeps, 1, function()
                 if client:Alive() and not client:IsSpec() then
                     client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
                     leftDisplayDormant = false
@@ -70,17 +71,17 @@ local function CountdownBeeps()
                     wasSuccessful = false
                     beepText = "3.."
                 end
-                timer.Simple(1, function()
+                timer.Create("RdmtStartReactorBeeps2Timer", 1, 1, function()
                     if client:Alive() and not client:IsSpec() then
                         client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
                         beepText = "2.."
                     end
-                    timer.Simple(1, function()
+                    timer.Create("RdmtStartReactorBeeps3Timer", 1, 1, function()
                         if client:Alive() and not client:IsSpec() then
                             client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
                             beepText = "1.."
                         end
-                        timer.Simple(1, function()
+                        timer.Create("RdmtStartReactorBeeps4Timer", 1, 1, function()
                             if client:Alive() and not client:IsSpec() then
                                 client:EmitSound("startreactor/countdown_beep_long.wav", 100, 200, 1)
                                 beepText = "Go!"
@@ -95,15 +96,37 @@ end
 
 function StartClientCountdown(timeToEnter)
     countdownEnd = CurTime() + timeToEnter
+    local warning1 = timeToEnter - 3
+    local warning2 = timeToEnter - 2
+    local warning3 = timeToEnter - 1
+
     leftDisplayDormant = false
     isCountingDown = true
     beepText = nil
-    timer.Simple(timeToEnter, function()
+    timer.Create("RdmtStartReactorEnterTimer", timeToEnter, 1, function()
         leftDisplayDormant = true
         if not wasSuccessful then
             HideHUDForClient()
         end
         CountdownBeeps()
+    end)
+
+    timer.Create("RdmtStartReactorWarning1Timer", warning1, 1, function()
+        if not wasSuccessful then
+            client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
+        end
+    end)
+
+    timer.Create("RdmtStartReactorWarning2Timer", warning2, 1, function()
+        if not wasSuccessful then
+            client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
+        end
+    end)
+
+    timer.Create("RdmtStartReactorWarning3Timer", warning3, 1, function()
+        if not wasSuccessful then
+            client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
+        end
     end)
 end
 
@@ -118,6 +141,7 @@ local function EnableButtons()
             btnd:SetVisible(false)
         end
     end
+    rightDisplayDormant = false
 end
 
 local function DisableButtons()
@@ -146,6 +170,7 @@ local function PlayPattern()
     local currentLight = pattern[patternPosition]
     
     DisableButtons()
+    rightDisplayDormant = true
 
     timer.Create("RdmtStartReactorPlayPattern", 0.4, length, function ()
         currentLight = pattern[patternPosition]
@@ -156,13 +181,14 @@ local function PlayPattern()
             lights[currentLight].lit = true
             client:EmitSound("startreactor/panel_reactorstart_loud.wav", 100, pitch, 1)
         end
-        timer.Simple(0.25, function()
+        timer.Create("RdmtStartReactorLightsTimer", 0.25, 1, function()
             if lights[currentLight] then
                 lights[currentLight].lit = false
             end
             if patternPosition == length + 1 then
-                timer.Simple(0.7, function()
+                timer.Create("RdmtStartReactorStartInputTimer", 0.7, 1, function()
                     StartInput()
+                    rightDisplayDormant = false
                 end)
             end
         end)
@@ -172,10 +198,20 @@ local function PlayPattern()
 end
 
 local function InputSuccessful()
+    local client = LocalPlayer()
+
     isCountingDown = false
     wasSuccessful = true
+    DisableButtons()
     net.Start("RdmtStartReactorSuccess")
     net.SendToServer()
+    timer.Create("RdmtStartReactorSuccessSoundTimer", 0.2, 1, function()
+        client:EmitSound("startreactor/task_complete_loud.wav", 100, pitch, 1)
+
+        if panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
+            panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
+        end
+    end)
 end
 
 local function InputReceived(btn)
@@ -189,14 +225,14 @@ local function InputReceived(btn)
                 btnd:SetImage("vgui/ttt/startreactor/ssbutton" .. id .. "_red.png")
             end
         end
-        timer.Simple(1, function()
+        timer.Create("RdmtStartReactorDarkButtonsTimer", 1, 1, function()
             for id, btnd in pairs(disabledButtons) do
                 if IsValid(btnd) then
                     btnd:SetImage("vgui/ttt/startreactor/ssbutton" .. id .. "_dark.png")
                 end
             end
         end)
-        timer.Simple(1.6, function()
+        timer.Create("RdmtStartReactorPlayPatternTimer", 1.6, 1, function()
             PlayPattern()
         end)
     end
@@ -232,7 +268,7 @@ local function CreateStartReactorUI()
         draw.RoundedBox(0,4,4,w-8,h-8,Color(0, 0, 0))
     end
 
-    -- Start Reactor UI background image
+    -- Start Reactor UI background image (green)
     panels = vgui.Create("DImage", StartReactorFrame)
     panels:SetSize(width, height)
     panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
@@ -332,12 +368,29 @@ local function CreateStartReactorUI()
 
         if leftDisplayDormant then
             self:SetText("WAIT")
+
+            if panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
+                panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
+            end
+
         elseif isCountingDown then
             self:SetText(leftTimerText or "No Timer Text")
+
+            if panels:GetImage() == "vgui/ttt/startreactor/ssbackground.png" then
+                panels:SetImage("vgui/ttt/startreactor/ssbackground_red.png")
+            end
         elseif wasSuccessful then
-            self:SetText("CORRECT")
+            self:SetText(leftTimerText or "CORRECT")
+
+            if panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
+                panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
+            end
         elseif beepText then
             self:SetText(beepText)
+
+            if panels:GetImage() == "vgui/ttt/startreactor/ssbackgroundd.png" then
+                panels:SetImage("vgui/ttt/startreactor/ssbackground_red.png")
+            end
         else
             self:SetText("fuck")
         end
@@ -353,13 +406,36 @@ local function CreateStartReactorUI()
     rightDisplay:SetContentAlignment(5)
     function rightDisplay:Think()
 
-        if rightDisplayDormant then
+        if leftDisplayDormant then
             self:SetText("WAIT")
-        
+
+        elseif isCountingDown then
+            self:SetText("GO")
+
         elseif wasSuccessful then
+            self:SetText("CORRECT")
+
+        elseif beepText then
             self:SetText("WAIT")
+
+        else
+            self:SetText("fuck")
         end
+
+        -- if rightDisplayDormant then
+        --     self:SetText("WAIT")
+        -- elseif isCountingDown then
+        --     self:SetText("GO")
+        -- elseif wasSuccessful then
+        --     self:SetText("CORRECT")
+        -- end
     end
+
+    -- Start Reactor UI background image (red)
+    -- panels_red = vgui.Create("DImage", StartReactorFrame)
+    -- panels_red:SetSize(width, height)
+    -- panels_red:SetImage("vgui/ttt/startreactor/ssbackground_red.png")
+    -- panels_red:SetVisible(false)
 
 end
 
@@ -397,7 +473,7 @@ net.Receive("RdmtStartReactorEjectionAnnouncement", function()
         surface.PlaySound("startreactor/eject_text_loud.wav")
 
         if charIndex > #fullString then
-            timer.Simple(4, function()
+            timer.Create("RdmtStartReactorAnnouncementTimer", 4, 1, function()
                 isShowingAnnouncement = false
             end)
         end
@@ -436,16 +512,33 @@ function EVENT:Begin()
         local x = ScrW() / 2
         local y = ScrH() / 2
 
-        -- Text
-        draw.SimpleText(announcementText, "AmogusFont_Giant", x, y, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         -- Shadow
         draw.SimpleText(announcementText, "AmogusFont_Giant", x + 4, y + 4, Color(0, 0, 0, 200), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        -- Text
+        draw.SimpleText(announcementText, "AmogusFont_Giant", x, y, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        
     end)
 end
 
 function EVENT:End()
     HideHUDForClient()
     timer.Remove("RdmtStartReactorEjectionTyper")
+
+    timer.Remove("RdmtStartReactorBeeps1Timer")
+    timer.Remove("RdmtStartReactorBeeps2Timer")
+    timer.Remove("RdmtStartReactorBeeps3Timer")
+    timer.Remove("RdmtStartReactorBeeps4Timer")
+    timer.Remove("RdmtStartReactorEnterTimer")
+    timer.Remove("RdmtStartReactorLightsTimer")
+    timer.Remove("RdmtStartReactorStartInputTimer")
+    timer.Remove("RdmtStartReactorDarkButtonsTimer")
+    timer.Remove("RdmtStartReactorPlayPatternTimer")
+    timer.Remove("RdmtStartReactorAnnouncementTimer")
+    timer.Remove("RdmtStartReactorPlayPattern")
+    timer.Remove("RdmtStartReactorWarning1Timer")
+    timer.Remove("RdmtStartReactorWarning2Timer")
+    timer.Remove("RdmtStartReactorWarning3Timer")
+
     hook.Remove("HUDPaint", "RdmtStartReactorDrawEjectionAnnouncement")
     DestroyStartReactorUI()
 end
