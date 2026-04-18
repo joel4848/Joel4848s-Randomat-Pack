@@ -26,7 +26,10 @@ local fontSize = 8 * scale
 local announcementText = ""
 local isShowingAnnouncement = false
 
-local restTime = GetConVar("randomat_startreactor_rest_time"):GetInt()
+local restTime
+function EVENT:Initialize()
+    restTime = GetConVar("randomat_startreactor_rest_time"):GetInt()
+end
 
 resource.AddFile("resource/fonts/inyourfacejoffrey.ttf")
 surface.CreateFont("AmogusFont", {
