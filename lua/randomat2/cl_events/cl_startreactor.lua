@@ -26,9 +26,8 @@ local fontSize = 8 * scale
 local announcementText = ""
 local isShowingAnnouncement = false
 
-local restTime
-function EVENT:Initialize()
-    restTime = GetConVar("randomat_startreactor_rest_time"):GetInt()
+local function GetRestTime()
+    return GetConVar("randomat_startreactor_rest_time"):GetInt()
 end
 
 resource.AddFile("resource/fonts/inyourfacejoffrey.ttf")
@@ -62,6 +61,7 @@ local function CountdownBeeps()
         if #pattern == 0 then
             startBeeps = initialDelay - 4
         else
+            local restTime = GetRestTime()
             startBeeps = restTime - 4
         end
 
