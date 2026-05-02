@@ -25,7 +25,7 @@ function EVENT:Begin()
     list:AddColumn("Votes")
 
     for _, v in player.Iterator() do
-        if v:Alive() and not v:IsSpec() then
+        if v:Alive() and not v:IsSpec() and not v:IsDetectiveTeam() then
             list:AddLine(v:Nick(), 0)
         end
     end
