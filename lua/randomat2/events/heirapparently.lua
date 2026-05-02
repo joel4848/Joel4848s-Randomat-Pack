@@ -30,7 +30,7 @@ function EVENT:Begin()
     playersvoted = {}
 
     for k, v in player.Iterator() do
-        if v:Alive() and not v:IsSpec() then
+        if v:Alive() and not v:IsSpec() and not v:IsDetectiveTeam() then
             votableplayers[k] = v
             playervotes[k] = 0
         end
