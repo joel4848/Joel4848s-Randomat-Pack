@@ -26,6 +26,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 - [No strafing](#No-strafing) - 'A' and 'D' keys are disabled
 - [R-Tex Vision](#R-Tex-Vision) - Your vision is now based on YOUR movement
 - [The Heir Apparent(ly)](#The-Heir-Apparent(ly)) - Vote to deputise someone, but beware: non-innocents become something else...
+- [Whose line is it anyway?](#Whose-line-is-it-anyway?) - Shows where other players are looking, and warns you if it's at you!
 - [YOU made this personal](#YOU-made-this-personal) - RDMd teammates return as active Vindicators. Friendly fire = hostile consequences!
 - [You MUST jump twice.](#You-MUST-jump-twice.) - Explodes players who DON'T use their double jumps!
 
@@ -192,6 +193,22 @@ _randomat_heirapparently_show_votes_ - Default: 1 - Whether to show when a targe
 _randomat_heirapparently_show_votes_anon_ - Default: 0 - Whether to hide who voted in chat\
 _randomat_heirapparently_allow_self_votes_ - Default: 0 - Whether players can vote for themselves\
 _randomat_heirapparently_allow_detectoclown_ - Default: 1 - Whether jesters/independents/monsters become Detectoclows (if Jingle Jam Roles 2022 is present)\
+
+## Whose line is it anyway?
+
+By default, this randomat:
+- Draws a laser along the line each player is looking
+- Has per-player colours for the lasers
+- Shows each player a list of any players who are looking at them
+- Shows colour-matched warning icons for each player looking at them (requires per-player colours to be on)
+
+_randomat_whoseline_ - Default: 1 - Whether this event is enabled\
+_randomat_whoseline_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_randomat_whoseline_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
+_randomat_whoseline_per_player_colours_ - Default: 1 - Gives each player's view line a unique colour\
+_randomat_whoseline_warn_target_colour_ - Default: 1 - Shows coloured symbols when looked at (requires per-player colours)\
+_randomat_whoseline_warn_target_name_ - Default: 1 - Shows the names of players looking at you\
+_randomat_whoseline_show_lines_ - Default: 1 - Shows the view lines (if for some reason you want to disable that?)
 
 ## YOU made this personal
 

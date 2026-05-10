@@ -37,7 +37,7 @@ function EVENT:Begin()
     -- Beam/sprite
     hook.Add("PostDrawOpaqueRenderables", "randomat_whoseline_lasers", function()
         local localPly = LocalPlayer()
-        if not IsValid(localPly) then return end
+        if not IsValid(localPly) or not GetConVar("randomat_whoseline_show_lines"):GetBool() then return end
 
         for _, ply in ipairs(player.GetAll()) do
             if IsValid(ply) and ply:Alive() and ply ~= localPly and not ply:GetNoDraw() then
@@ -96,8 +96,7 @@ function EVENT:Begin()
     hook.Add("HUDPaint", "randomat_whoseline_warning_icons", function()
         if #lookers == 0 then return end
 
-        local warnColConVar = GetConVar("randomat_whoseline_warn_target_colour")
-        if not warnColConVar or not warnColConVar:GetBool() then return end
+        if not GetConVar("randomat_whoseline_warn_target_colour"):GetBool() or not GetConVar("randomat_whoseline_per_player_colours"):GetBool() then return end
 
         local iconSize = 96
         local spacing = 8
@@ -133,8 +132,7 @@ function EVENT:Begin()
 
     hook.Add("HUDPaint", "randomat_whoseline_hud", function()
 
-        local warnNameConVar = GetConVar("randomat_whoseline_warn_target_name")
-        if not warnNameConVar or not warnNameConVar:GetBool() then return end
+        if not GetConVar("randomat_whoseline_warn_target_name"):GetBool() then return end
 
         local lines = { "Players looking at you:" }
         for _, ply in ipairs(lookers) do
