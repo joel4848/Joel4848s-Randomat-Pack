@@ -9,7 +9,6 @@ local buttons = {}
 local disabledButtons = {}
 local leftTimerText = "unchanged"
 local rightDisplayText = ""
-local client = LocalPlayer()
 local pattern = {}
 local inputRequired = nil
 local sequencePos = nil
@@ -53,10 +52,9 @@ local function HideHUDForClient()
 end
 
 local function CountdownBeeps()
-    local client = LocalPlayer()
     local startBeeps = 0
 
-    if client:Alive() and not client:IsSpec() then
+    if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
         -- No idea why this has to be == 0 but here we are, I'm sure if it wasn't 3am I could work it out
         if #pattern == 0 then
             startBeeps = initialDelay - 4
@@ -67,26 +65,26 @@ local function CountdownBeeps()
 
         if startBeeps > 0 then
             timer.Create("RdmtStartReactorBeeps1Timer", startBeeps, 1, function()
-                if client:Alive() and not client:IsSpec() then
-                    client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
+                if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+                    Randomat.Client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
                     leftDisplayDormant = false
                     isCountingDown = true
                     wasSuccessful = false
                     beepText = "3.."
                 end
                 timer.Create("RdmtStartReactorBeeps2Timer", 1, 1, function()
-                    if client:Alive() and not client:IsSpec() then
-                        client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
+                    if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+                        Randomat.Client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
                         beepText = "2.."
                     end
                     timer.Create("RdmtStartReactorBeeps3Timer", 1, 1, function()
-                        if client:Alive() and not client:IsSpec() then
-                            client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
+                        if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+                            Randomat.Client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
                             beepText = "1.."
                         end
                         timer.Create("RdmtStartReactorBeeps4Timer", 1, 1, function()
-                            if client:Alive() and not client:IsSpec() then
-                                client:EmitSound("startreactor/countdown_beep_long.wav", 100, 200, 1)
+                            if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+                                Randomat.Client:EmitSound("startreactor/countdown_beep_long.wav", 100, 200, 1)
                                 beepText = "Go!"
                             end
                         end)
@@ -116,19 +114,19 @@ function StartClientCountdown(timeToEnter)
 
     timer.Create("RdmtStartReactorWarning1Timer", warning1, 1, function()
         if not wasSuccessful then
-            client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
+            Randomat.Client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
         end
     end)
 
     timer.Create("RdmtStartReactorWarning2Timer", warning2, 1, function()
         if not wasSuccessful then
-            client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
+            Randomat.Client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
         end
     end)
 
     timer.Create("RdmtStartReactorWarning3Timer", warning3, 1, function()
         if not wasSuccessful then
-            client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
+            Randomat.Client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
         end
     end)
 end
@@ -167,7 +165,6 @@ local function StartInput()
 end
 
 local function PlayPattern()
-    local client = LocalPlayer()
     local length = #pattern
     local patternPosition = 1
     local currentLight = pattern[patternPosition]
@@ -182,7 +179,7 @@ local function PlayPattern()
 
         if lights[currentLight] then
             lights[currentLight].lit = true
-            client:EmitSound("startreactor/panel_reactorstart_loud.wav", 100, pitch, 1)
+            Randomat.Client:EmitSound("startreactor/panel_reactorstart_loud.wav", 100, pitch, 1)
         end
         timer.Create("RdmtStartReactorLightsTimer", 0.25, 1, function()
             if lights[currentLight] then
@@ -201,7 +198,6 @@ local function PlayPattern()
 end
 
 local function InputSuccessful()
-    local client = LocalPlayer()
 
     isCountingDown = false
     wasSuccessful = true
@@ -209,7 +205,7 @@ local function InputSuccessful()
     net.Start("RdmtStartReactorSuccess")
     net.SendToServer()
     timer.Create("RdmtStartReactorSuccessSoundTimer", 0.2, 1, function()
-        client:EmitSound("startreactor/task_complete_loud.wav", 100, pitch, 1)
+        Randomat.Client:EmitSound("startreactor/task_complete_loud.wav", 100, pitch, 1)
 
         if panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
             panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
@@ -218,10 +214,9 @@ local function InputSuccessful()
 end
 
 local function InputReceived(btn)
-    local client = LocalPlayer()
     
     if btn ~= pattern[sequencePos] then
-        client:EmitSound("startreactor/panel_reactor_startfail.wav", 100, 100, 1)
+        Randomat.Client:EmitSound("startreactor/panel_reactor_startfail.wav", 100, 100, 1)
         DisableButtons()
         for id, btnd in pairs(disabledButtons) do
             if IsValid(btnd) then
@@ -247,7 +242,6 @@ local function InputReceived(btn)
 end
 
 local function CreateStartReactorUI()
-    local client = LocalPlayer()
     local scrW, scrH = ScrW(), ScrH()
     local height = 81 * scale
     local width = 143 * scale
@@ -323,7 +317,7 @@ local function CreateStartReactorUI()
                 local pitch = pitches[id]
                 btn:SetImage("vgui/ttt/startreactor/ssbutton" .. id .. "_blue.png")
 
-                client:EmitSound("startreactor/panel_reactorstart_loud.wav", 100, pitch, 1)
+                Randomat.Client:EmitSound("startreactor/panel_reactorstart_loud.wav", 100, pitch, 1)
 
                 if inputRequired then
                     InputReceived(id)
@@ -452,12 +446,10 @@ local function DestroyStartReactorUI()
 end
 
 net.Receive("RdmtStartReactorPattern", function()
-    local client = LocalPlayer()
-    
     pattern = net.ReadTable()
     local timeToEnter = net.ReadFloat()
 
-    if client:Alive() and not client:IsSpec() then
+    if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
         StartClientCountdown(timeToEnter) 
         PlayPattern()
     end
@@ -484,8 +476,7 @@ net.Receive("RdmtStartReactorEjectionAnnouncement", function()
 end)
 
 function EVENT:Begin()
-    local client = LocalPlayer()
-    if client:Alive() and not client:IsSpec() then
+    if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
         CreateStartReactorUI()
         DisableButtons()
         CountdownBeeps()

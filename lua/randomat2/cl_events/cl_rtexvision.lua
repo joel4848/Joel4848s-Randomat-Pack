@@ -16,13 +16,12 @@ end
 
 function EVENT:Begin()
     self:AddHook("Think", function()
-        local client = LocalPlayer()
-        if not IsPlayerValid(client) then return end
+        if not IsPlayerValid(Randomat.Client) then return end
 
-        local can_see = client:GetNWBool("RdmtRTexVisionActive", false)
+        local can_see = Randomat.Client:GetNWBool("RdmtRTexVisionActive", false)
 
         for _, ply in ipairs(player.GetAll()) do
-            if ply ~= client and IsPlayerValid(ply) then
+            if ply ~= Randomat.Client and IsPlayerValid(ply) then
                 SetHidden(ply, not can_see)
             end
         end

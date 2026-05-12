@@ -19,9 +19,8 @@ end)
 
 -- Start traitor blindness
 net.Receive("rdmtStartBlind", function()
-    client = LocalPlayer()
     hook.Add("HUDPaint", "BlindPlayer", function()
-        if IsValid(client) and client:Alive() and Randomat:IsTraitorTeam(client) then
+        if IsValid(Randomat.Client) and Randomat.Client:Alive() and Randomat:IsTraitorTeam(Randomat.Client) then
             surface.SetDrawColor(0, 0, 0, 255)
             surface.DrawRect(0, 0, ScrW(), ScrH())
         end
@@ -30,7 +29,6 @@ end)
 
 -- Stop traitor blindness
 net.Receive("rdmtStopBlind", function()
-    client = nil
     hook.Remove("HUDPaint", "BlindPlayer")
 end)
 
