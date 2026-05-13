@@ -12,7 +12,7 @@ local rightDisplayText = ""
 local pattern = {}
 local inputRequired = nil
 local sequencePos = nil
-local initialDelay = 5
+local initialDelay = 6
 local alivePlayers = alivePlayers or {}
 local lastPatternLenth = 0
 local showSuccessHUD = showSuccessHUD or false
@@ -23,6 +23,7 @@ local wasSuccessful = false
 local leftDisplayDormant = true
 local rightDisplayDormant = true
 
+local beepText = nil
 local startBeeps = nil
 local restTime = nil
 local timerLength = nil
@@ -344,6 +345,7 @@ local function CreateStartReactorUI()
     panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
 
     -- Lights
+    lights = {}
     local lightCellSize = (width * 0.97)/10
 
     for y=1,3 do
@@ -410,7 +412,7 @@ local function CreateStartReactorUI()
 
     -- Disabled 'button' grid
     local buttonCellSize = width * 0.105
-    disabledbuttons = {}
+    disabledButtons = {}
 
     for y=1,3 do
         for x=1,3 do
@@ -506,13 +508,11 @@ local function DestroyStartReactorUI()
     end
 
     StartReactorFrame = nil
-    leftLights = {}
+    Lights = {}
 end
 
 net.Receive("RdmtStartReactorSuccess", function()
     successfulPlayers = net.ReadTable()
-    print("RdmtStartReactorSuccess")
-    PrintTable(successfulPlayers)
 end)
 
 net.Receive("RdmtStartReactorPattern", function()
@@ -667,6 +667,7 @@ function EVENT:Begin()
 end
 
 function EVENT:End()
+    pattern = {}
     lastPatternLenth = 0
     countdownEnd = 0
     isCountingDown = false
@@ -676,6 +677,14 @@ function EVENT:End()
     startBeeps = nil
     restTime = nil
     timerLength = nil
+    beepText = nil
+    inputRequired = nil
+    sequencePos = nil
+    isShowingAnnouncement = false
+    announcementText = ""
+    showSuccessHUD = false
+    successfulPlayers = {}
+    lights = {}
 
     HideHUDForClient()
 

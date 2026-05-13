@@ -18,7 +18,7 @@ local eject = CreateConVar("randomat_startreactor_actually_eject", 1, FCVAR_NONE
 
 local pattern = {}
 local ejectedPlayers = {}
-local initialDelay = 5
+local initialDelay = 6
 local roundCount = 0
 local alivePlayers = alivePlayers or {}
 local successfulPlayers = successfulPlayers or {}
@@ -189,6 +189,12 @@ function EVENT:End()
 
     successfulPlayers = {}
     roundCount = 0
+    pattern = {}
+    ejectedPlayers = {}
+
+    for _, ply in ipairs(player.GetAll()) do
+        ply.successful = false
+    end
 end
 
 function EVENT:GetConVars()
