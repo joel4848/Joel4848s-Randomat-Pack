@@ -159,21 +159,21 @@ function EVENT:Begin()
         ply.successful = false
     end
 
-    BroadcastAlivePlayers()
     BroadcastSuccessfulPlayers()
+    BroadcastAlivePlayers()
 
     timer.Create("RdmtStartReactorInitialTimer", initialDelay, 1, function()
         StartReactorRound()
     end)
 
     hook.Add("PostPlayerDeath", "randomat_startreactor_postplayerdeath", function()
-        BroadcastAlivePlayers()
         BroadcastSuccessfulPlayers()
+        BroadcastAlivePlayers()
     end)
 
     hook.Add("PlayerSpawn", "randomat_startreactor_playerspawn", function()
-        BroadcastAlivePlayers()
         BroadcastSuccessfulPlayers()
+        BroadcastAlivePlayers()
     end)
 end
 
