@@ -8,6 +8,7 @@ EVENT.Categories = {"gamemode", "largeimpact"}
 util.AddNetworkString("RdmtStartReactorPattern")
 util.AddNetworkString("RdmtStartReactorSuccess")
 util.AddNetworkString("RdmtStartReactorEjectionAnnouncement")
+util.AddNetworkString("RdmtStartReactorDeadAliveChange")
 
 local initialTime = CreateConVar("randomat_startreactor_initial_time", 10, FCVAR_NONE, "Time (s) for players to enter the first pattern", 5, 60):GetInt()
 local timeIncrease = CreateConVar("randomat_startreactor_additional_time", 1, FCVAR_NONE, "Additional time (s) players get for each additional light in the pattern", 5, 60):GetInt()
@@ -19,6 +20,36 @@ local pattern = {}
 local ejectedPlayers = {}
 local initialDelay = 5
 local roundCount = 0
+local alivePlayers = alivePlayers or {}
+local successfulPlayers = successfulPlayers or {}
+
+local function BroadcastSuccessfulPlayers()
+    successfulPlayers = {}
+
+    for _, ply in ipairs(player.GetAll()) do
+        print("Running add to successfulPlayers for " .. ply:Nick())
+        print("ply.successful = " .. tostring(ply.successful))
+        successfulPlayers[ply:SteamID64()] = ply.successful
+        print("successfulPlayers now contains:")
+        PrintTable(successfulPlayers)
+    end
+
+    net.Start("RdmtStartReactorSuccess")
+        net.WriteTable(successfulPlayers)
+    net.Broadcast()
+end
+
+local function BroadcastAlivePlayers()
+    local alivePlayers = {}
+
+    for _, ply in ipairs(player.GetAll()) do
+        alivePlayers[ply:SteamID64()] = (ply:Alive() and not ply:IsSpec())
+    end
+
+    net.Start("RdmtStartReactorDeadAliveChange")
+        net.WriteTable(alivePlayers)
+    net.Broadcast()
+end
 
 local function GetRestTime()
     return GetConVar("randomat_startreactor_rest_time"):GetInt()
@@ -34,15 +65,20 @@ local function CreatePattern(timeLimit)
 
     for _, ply in ipairs(player.GetAll()) do
         if IsValid(ply) then
-            ply.successful = nil
+            ply.successful = false
         end
     end
+
+    successfulPlayers = {}
+
+    net.Start("RdmtStartReactorSuccess")
+        net.WriteTable(successfulPlayers)
+    net.Broadcast()
 
     net.Start("RdmtStartReactorPattern")
         net.WriteTable(pattern) 
         net.WriteFloat(timeLimit) 
     net.Broadcast()
-    
 end
 
 function EjectionAnnouncement(names)
@@ -119,14 +155,32 @@ function EVENT:Begin()
     roundCount = 0
     pattern = {}
 
+    for _, ply in ipairs(player.GetAll()) do
+        ply.successful = false
+    end
+
+    BroadcastAlivePlayers()
+    BroadcastSuccessfulPlayers()
+
     timer.Create("RdmtStartReactorInitialTimer", initialDelay, 1, function()
         StartReactorRound()
+    end)
+
+    hook.Add("PostPlayerDeath", "randomat_startreactor_postplayerdeath", function()
+        BroadcastAlivePlayers()
+        BroadcastSuccessfulPlayers()
+    end)
+
+    hook.Add("PlayerSpawn", "randomat_startreactor_playerspawn", function()
+        BroadcastAlivePlayers()
+        BroadcastSuccessfulPlayers()
     end)
 end
 
 net.Receive("RdmtStartReactorSuccess", function(ln, ply)
     ply.successful = true
-    print(ply:Nick() .. " was successful!")
+
+    BroadcastSuccessfulPlayers()
 end)
 
 function EVENT:End()
@@ -135,6 +189,43 @@ function EVENT:End()
     timer.Remove("RdmtStartReactorRagdollTimer")
     timer.Remove("RdmtStartReactorRestTimer")
     timer.Remove("RdmtStartReactorInitialTimer")
+
+    hook.Remove("PostPlayerDeath", "randomat_startreactor_postplayerdeath")
+    hook.Remove("PlayerSpawn", "randomat_startreactor_playerspawn")
+
+    successfulPlayers = {}
+    roundCount = 0
+end
+
+function EVENT:GetConVars()
+    local sliders = {}
+    
+    for _, v in ipairs({"initial_time", "additional_time", "rest_time"}) do
+        local name = "randomat_" .. self.id .. "_" .. v
+        if ConVarExists(name) then
+            local convar = GetConVar(name)
+            table.insert(sliders, {
+                cmd = v,
+                dsc = convar:GetHelpText(),
+                min = convar:GetMin(),
+                max = convar:GetMax(),
+                dcm = 0
+            })
+        end
+    end
+
+    local checks = {}
+    for _, v in ipairs({"actually_eject"}) do
+        local name = "randomat_" .. self.id .. "_" .. v
+        if ConVarExists(name) then
+            local convar = GetConVar(name)
+            table.insert(checks, {
+                cmd = v,
+                dsc = convar:GetHelpText()
+            })
+        end
+    end
+    return sliders, checks
 end
 
 Randomat:register(EVENT)

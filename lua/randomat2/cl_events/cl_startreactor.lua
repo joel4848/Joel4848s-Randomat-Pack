@@ -13,6 +13,8 @@ local pattern = {}
 local inputRequired = nil
 local sequencePos = nil
 local initialDelay = 5
+local alivePlayers = alivePlayers or {}
+local lastPatternLenth = 0
 
 local countdownEnd = 0
 local isCountingDown = false
@@ -27,6 +29,11 @@ local isShowingAnnouncement = false
 
 local function GetRestTime()
     return GetConVar("randomat_startreactor_rest_time"):GetInt()
+end
+
+local function ClientAlive()
+    if not IsValid(Randomat.Client) then return false end
+    return alivePlayers[Randomat.Client:SteamID64()] or false
 end
 
 resource.AddFile("resource/fonts/inyourfacejoffrey.ttf")
@@ -53,46 +60,56 @@ end
 
 local function CountdownBeeps()
     local startBeeps = 0
+    local restTime = GetRestTime()
+    local timerLength = 0
 
-    if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
-        -- No idea why this has to be == 0 but here we are, I'm sure if it wasn't 3am I could work it out
+    if lastPatternLenth == 0 then
+        timerLength = initialDelay - 1
+    else
+        timerLength = GetRestTime() - 1
+    end
+
+    timer.Create("RdmtStartReactorWaitTime", timerLength, 1, function()
+    end)
+
+    -- if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
         if #pattern == 0 then
             startBeeps = initialDelay - 4
         else
-            local restTime = GetRestTime()
+            restTime = GetRestTime()
             startBeeps = restTime - 4
         end
 
         if startBeeps > 0 then
             timer.Create("RdmtStartReactorBeeps1Timer", startBeeps, 1, function()
-                if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+                -- if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
                     Randomat.Client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
                     leftDisplayDormant = false
                     isCountingDown = true
                     wasSuccessful = false
-                    beepText = "3.."
-                end
+                    beepText = "WAIT: 3"
+                -- end
                 timer.Create("RdmtStartReactorBeeps2Timer", 1, 1, function()
-                    if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+                    -- if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
                         Randomat.Client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
-                        beepText = "2.."
-                    end
+                        beepText = "WAIT: 2"
+                    -- end
                     timer.Create("RdmtStartReactorBeeps3Timer", 1, 1, function()
-                        if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+                        -- if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
                             Randomat.Client:EmitSound("startreactor/countdown_beep.wav", 100, 100, 1)
-                            beepText = "1.."
-                        end
+                            beepText = "WAIT: 1"
+                        -- end
                         timer.Create("RdmtStartReactorBeeps4Timer", 1, 1, function()
-                            if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+                            -- if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
                                 Randomat.Client:EmitSound("startreactor/countdown_beep_long.wav", 100, 200, 1)
                                 beepText = "Go!"
-                            end
+                            -- end
                         end)
                     end)
                 end)
             end)
         end
-    end
+    -- end
 end
 
 function StartClientCountdown(timeToEnter)
@@ -106,32 +123,34 @@ function StartClientCountdown(timeToEnter)
     beepText = nil
     timer.Create("RdmtStartReactorEnterTimer", timeToEnter, 1, function()
         leftDisplayDormant = true
-        if not wasSuccessful then
-            HideHUDForClient()
-        end
+        -- if not wasSuccessful then
+        --     HideHUDForClient()
+        -- end
         CountdownBeeps()
     end)
 
     timer.Create("RdmtStartReactorWarning1Timer", warning1, 1, function()
-        if not wasSuccessful then
+        if not wasSuccessful and Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
             Randomat.Client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
         end
     end)
 
     timer.Create("RdmtStartReactorWarning2Timer", warning2, 1, function()
-        if not wasSuccessful then
+        if not wasSuccessful and Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
             Randomat.Client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
         end
     end)
 
     timer.Create("RdmtStartReactorWarning3Timer", warning3, 1, function()
-        if not wasSuccessful then
+        if not wasSuccessful and Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
             Randomat.Client:EmitSound("startreactor/alarm_sabotage_loud.wav", 100, 100, 1)
         end
     end)
 end
 
 local function EnableButtons()
+    if not (Randomat.Client:Alive() and not Randomat.Client:IsSpec()) then return end
+
     for _, btn in pairs(buttons) do
         if IsValid(btn) then
             btn:SetVisible(true)
@@ -168,6 +187,8 @@ local function PlayPattern()
     local length = #pattern
     local patternPosition = 1
     local currentLight = pattern[patternPosition]
+
+    lastPatternLenth = length or 0
     
     DisableButtons()
     rightDisplayDormant = true
@@ -363,8 +384,20 @@ local function CreateStartReactorUI()
     leftDisplay:SetContentAlignment(5)
     function leftDisplay:Think()
 
-        if leftDisplayDormant then
-            self:SetText("WAIT")
+        if beepText then
+            self:SetText(beepText)
+
+            if panels:GetImage() == "vgui/ttt/startreactor/ssbackgroundd.png" then
+                panels:SetImage("vgui/ttt/startreactor/ssbackground_red.png")
+            end
+        elseif leftDisplayDormant then
+            if lastPatternLenth == 0 then
+                self:SetText("WAIT: " .. math.ceil(timer.TimeLeft("RdmtStartReactorWaitTime")))
+            elseif lastPatternLenth > 0 then
+                self:SetText("WAIT: " .. math.ceil(timer.TimeLeft("RdmtStartReactorWaitTime")))
+            else
+                self:SetText("WAIT")
+            end
 
             if panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
                 panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
@@ -382,12 +415,6 @@ local function CreateStartReactorUI()
             if panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
                 panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
             end
-        elseif beepText then
-            self:SetText(beepText)
-
-            if panels:GetImage() == "vgui/ttt/startreactor/ssbackgroundd.png" then
-                panels:SetImage("vgui/ttt/startreactor/ssbackground_red.png")
-            end
         else
             self:SetText("fuck")
         end
@@ -401,39 +428,24 @@ local function CreateStartReactorUI()
     rightDisplay:SetPos(width/1.64, height/6.3)
     rightDisplay:SetFont("AmogusFont")
     rightDisplay:SetContentAlignment(5)
+
     function rightDisplay:Think()
-
-        if leftDisplayDormant then
-            self:SetText("WAIT")
-
-        elseif isCountingDown then
-            self:SetText("GO")
-
-        elseif wasSuccessful then
-            self:SetText("CORRECT")
-
-        elseif beepText then
-            self:SetText("WAIT")
-
+        if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+            if leftDisplayDormant then
+                self:SetText("WAIT")
+            elseif isCountingDown then
+                self:SetText("GO")
+            elseif wasSuccessful then
+                self:SetText("CORRECT")
+            elseif beepText then
+                self:SetText("WAIT")
+            else
+                self:SetText("fuck")
+            end
         else
-            self:SetText("fuck")
+            self:SetText("You are dead")
         end
-
-        -- if rightDisplayDormant then
-        --     self:SetText("WAIT")
-        -- elseif isCountingDown then
-        --     self:SetText("GO")
-        -- elseif wasSuccessful then
-        --     self:SetText("CORRECT")
-        -- end
     end
-
-    -- Start Reactor UI background image (red)
-    -- panels_red = vgui.Create("DImage", StartReactorFrame)
-    -- panels_red:SetSize(width, height)
-    -- panels_red:SetImage("vgui/ttt/startreactor/ssbackground_red.png")
-    -- panels_red:SetVisible(false)
-
 end
 
 local function DestroyStartReactorUI()
@@ -445,14 +457,19 @@ local function DestroyStartReactorUI()
     leftLights = {}
 end
 
+net.Receive("RdmtStartReactorSuccess", function()
+    successfulPlayers = net.ReadTable()
+    PrintTable(successfulPlayers)
+end)
+
 net.Receive("RdmtStartReactorPattern", function()
     pattern = net.ReadTable()
     local timeToEnter = net.ReadFloat()
 
-    if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+    -- if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
         StartClientCountdown(timeToEnter) 
         PlayPattern()
-    end
+    -- end
 end)
 
 net.Receive("RdmtStartReactorEjectionAnnouncement", function()
@@ -475,12 +492,53 @@ net.Receive("RdmtStartReactorEjectionAnnouncement", function()
     end)
 end)
 
+net.Receive("RdmtStartReactorDeadAliveChange", function()
+    alivePlayers = net.ReadTable()
+
+    if alivePlayers[Randomat.Client:SteamID64()] then
+        hook.Remove("HUDPaint", "RdmtStartReactorDrawSuccessfulPlayersHud")
+    else
+        DisableButtons()
+
+        hook.Add("HUDPaint", "RdmtStartReactorDrawSuccessfulPlayersHud", function()
+            local lines = { "Players:" }
+
+            for _, ply in ipairs(successfulPlayers) do
+                -- if IsValid(ply) then
+                    table.insert(lines, "Test")
+                    table.insert(lines, ply:Nick() .. ": " .. tostring(successfulPlayers[ply:SteamID64()]))
+                -- end
+            end
+
+            local x = ScrW() * 0.02
+            local y = ScrH() * 0.35
+            local lineH = 28
+            local padding = 10
+
+            surface.SetFont("AmogusFont")
+            local maxW = 0
+            for _, line in ipairs(lines) do
+                local w = surface.GetTextSize(line)
+                if w > maxW then maxW = w end
+            end
+
+            local boxW = maxW + (padding * 2)
+            local boxH = (#lines * lineH) + (padding * 2)
+            draw.RoundedBox(4, x - padding, y - padding, boxW, boxH, Color(0, 0, 0, 250))
+
+            for i, line in ipairs(lines) do
+                draw.SimpleText(line, "AmogusFont", x, y + ((i - 1) * lineH), Color(255, 255, 255, 255))
+            end
+        end)
+    end
+end)
+
 function EVENT:Begin()
-    if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
+    -- if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
         CreateStartReactorUI()
         DisableButtons()
         CountdownBeeps()
-    end
+    -- end
 
     self:AddHook("Think", function()
         if not isCountingDown then return end
@@ -515,9 +573,16 @@ function EVENT:Begin()
 end
 
 function EVENT:End()
-    HideHUDForClient()
-    timer.Remove("RdmtStartReactorEjectionTyper")
+    lastPatternLenth = 0
+    countdownEnd = 0
+    isCountingDown = false
+    wasSuccessful = false
+    leftDisplayDormant = true
+    rightDisplayDormant = true
 
+    HideHUDForClient()
+
+    timer.Remove("RdmtStartReactorEjectionTyper")
     timer.Remove("RdmtStartReactorBeeps1Timer")
     timer.Remove("RdmtStartReactorBeeps2Timer")
     timer.Remove("RdmtStartReactorBeeps3Timer")
@@ -532,8 +597,10 @@ function EVENT:End()
     timer.Remove("RdmtStartReactorWarning1Timer")
     timer.Remove("RdmtStartReactorWarning2Timer")
     timer.Remove("RdmtStartReactorWarning3Timer")
+    timer.Remove("RdmtStartReactorWaitTime")
 
     hook.Remove("HUDPaint", "RdmtStartReactorDrawEjectionAnnouncement")
+    hook.Remove("HUDPaint", "RdmtStartReactorDrawSuccessfulPlayersHud")
     DestroyStartReactorUI()
 end
 
