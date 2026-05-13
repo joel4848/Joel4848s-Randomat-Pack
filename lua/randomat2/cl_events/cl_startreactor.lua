@@ -459,6 +459,7 @@ end
 
 net.Receive("RdmtStartReactorSuccess", function()
     successfulPlayers = net.ReadTable()
+    print("RdmtStartReactorSuccess")
     PrintTable(successfulPlayers)
 end)
 
@@ -503,11 +504,11 @@ net.Receive("RdmtStartReactorDeadAliveChange", function()
         hook.Add("HUDPaint", "RdmtStartReactorDrawSuccessfulPlayersHud", function()
             local lines = { "Players:" }
 
-            for _, ply in ipairs(successfulPlayers) do
-                -- if IsValid(ply) then
-                    table.insert(lines, "Test")
-                    table.insert(lines, ply:Nick() .. ": " .. tostring(successfulPlayers[ply:SteamID64()]))
-                -- end
+            for sid64, _ in pairs(successfulPlayers) do
+                local ply = player.GetBySteamID64(sid64)
+                if IsValid(ply) then
+                    table.insert(lines, ply:Nick() .. ": " .. tostring(successfulPlayers[sid64]))
+                end
             end
 
             local x = ScrW() * 0.02
