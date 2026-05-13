@@ -15,12 +15,17 @@ local sequencePos = nil
 local initialDelay = 5
 local alivePlayers = alivePlayers or {}
 local lastPatternLenth = 0
+local showSuccessHUD = showSuccessHUD or false
 
 local countdownEnd = 0
 local isCountingDown = false
 local wasSuccessful = false
 local leftDisplayDormant = true
 local rightDisplayDormant = true
+
+local startBeeps = nil
+local restTime = nil
+local timerLength = nil
 
 local scale = 4
 local fontSize = 8 * scale
@@ -48,9 +53,44 @@ surface.CreateFont("AmogusFont_Giant", {
     additive = false,
     antialias = true
 })
-surface.CreateFont("AmogusFont_Small", {
+surface.CreateFont("AmogusFont_25", {
     font = "inyourfacejoffrey",
     size = 25,
+    weight = 500,
+    additive = false,
+    antialias = true
+})
+surface.CreateFont("AmogusFont_30", {
+    font = "inyourfacejoffrey",
+    size = 30,
+    weight = 500,
+    additive = false,
+    antialias = true
+})
+surface.CreateFont("AmogusFont_35", {
+    font = "inyourfacejoffrey",
+    size = 35,
+    weight = 500,
+    additive = false,
+    antialias = true
+})
+surface.CreateFont("AmogusFont_40", {
+    font = "inyourfacejoffrey",
+    size = 40,
+    weight = 500,
+    additive = false,
+    antialias = true
+})
+surface.CreateFont("AmogusFont_45", {
+    font = "inyourfacejoffrey",
+    size = 45,
+    weight = 500,
+    additive = false,
+    antialias = true
+})
+surface.CreateFont("AmogusFont_50", {
+    font = "inyourfacejoffrey",
+    size = 50,
     weight = 500,
     additive = false,
     antialias = true
@@ -66,9 +106,9 @@ local function HideHUDForClient()
 end
 
 local function CountdownBeeps()
-    local startBeeps = 0
-    local restTime = GetRestTime()
-    local timerLength = 0
+    startBeeps = 0
+    restTime = GetRestTime()
+    timerLength = 0
 
     if lastPatternLenth == 0 then
         timerLength = initialDelay - 1
@@ -226,31 +266,34 @@ local function PlayPattern()
 end
 
 local function InputSuccessful()
-
     isCountingDown = false
     wasSuccessful = true
+
     DisableButtons()
+
     net.Start("RdmtStartReactorSuccess")
     net.SendToServer()
+
     timer.Create("RdmtStartReactorSuccessSoundTimer", 0.2, 1, function()
         Randomat.Client:EmitSound("startreactor/task_complete_loud.wav", 100, pitch, 1)
 
-        if panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
+        if panels:GetImage() and panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
             panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
         end
     end)
 end
 
 local function InputReceived(btn)
-    
     if btn ~= pattern[sequencePos] then
         Randomat.Client:EmitSound("startreactor/panel_reactor_startfail.wav", 100, 100, 1)
         DisableButtons()
+
         for id, btnd in pairs(disabledButtons) do
             if IsValid(btnd) then
                 btnd:SetImage("vgui/ttt/startreactor/ssbutton" .. id .. "_red.png")
             end
         end
+
         timer.Create("RdmtStartReactorDarkButtonsTimer", 1, 1, function()
             for id, btnd in pairs(disabledButtons) do
                 if IsValid(btnd) then
@@ -258,10 +301,12 @@ local function InputReceived(btn)
                 end
             end
         end)
+
         timer.Create("RdmtStartReactorPlayPatternTimer", 1.6, 1, function()
             PlayPattern()
         end)
     end
+
     if sequencePos == #pattern and btn == pattern[sequencePos] then
         InputSuccessful()
     end
@@ -394,7 +439,7 @@ local function CreateStartReactorUI()
         if beepText then
             self:SetText(beepText)
 
-            if panels:GetImage() == "vgui/ttt/startreactor/ssbackgroundd.png" then
+            if panels:GetImage() and panels:GetImage() == "vgui/ttt/startreactor/ssbackgroundd.png" then
                 panels:SetImage("vgui/ttt/startreactor/ssbackground_red.png")
             end
         elseif leftDisplayDormant then
@@ -406,24 +451,24 @@ local function CreateStartReactorUI()
                 self:SetText("WAIT")
             end
 
-            if panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
+            if panels:GetImage() and panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
                 panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
             end
 
         elseif isCountingDown then
             self:SetText(leftTimerText or "No Timer Text")
 
-            if panels:GetImage() == "vgui/ttt/startreactor/ssbackground.png" then
+            if panels:GetImage() and panels:GetImage() == "vgui/ttt/startreactor/ssbackground.png" then
                 panels:SetImage("vgui/ttt/startreactor/ssbackground_red.png")
             end
         elseif wasSuccessful then
             self:SetText(leftTimerText or "CORRECT")
 
-            if panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
+            if panels:GetImage() and panels:GetImage() == "vgui/ttt/startreactor/ssbackground_red.png" then
                 panels:SetImage("vgui/ttt/startreactor/ssbackground.png")
             end
         else
-            self:SetText("fuck")
+            self:SetText("404 text not found")
         end
     end
 
@@ -447,7 +492,7 @@ local function CreateStartReactorUI()
             elseif beepText then
                 self:SetText("WAIT")
             else
-                self:SetText("fuck")
+                self:SetText("404 text not found")
             end
         else
             self:SetText("You are dead")
@@ -478,6 +523,8 @@ net.Receive("RdmtStartReactorPattern", function()
         StartClientCountdown(timeToEnter) 
         PlayPattern()
     -- end
+
+    showSuccessHUD = true
 end)
 
 net.Receive("RdmtStartReactorEjectionAnnouncement", function()
@@ -498,6 +545,8 @@ net.Receive("RdmtStartReactorEjectionAnnouncement", function()
             end)
         end
     end)
+
+    showSuccessHUD = false
 end)
 
 net.Receive("RdmtStartReactorDeadAliveChange", function()
@@ -509,33 +558,71 @@ net.Receive("RdmtStartReactorDeadAliveChange", function()
         DisableButtons()
 
         hook.Add("HUDPaint", "RdmtStartReactorDrawSuccessfulPlayersHud", function()
-            local lines = { "Players:" }
+            if showSuccessHUD then
+                local titleFont = "AmogusFont_45"
+                local rowFont = "AmogusFont_35"
+                local lineH = 38
+                local padding = 15
+                local iconSize = 30
+                local columnGap = 20
 
-            for sid64, _ in pairs(successfulPlayers) do
-                local ply = player.GetBySteamID64(sid64)
-                if IsValid(ply) then
-                    table.insert(lines, ply:Nick() .. ": " .. tostring(successfulPlayers[sid64]))
+                local plys = {}
+                surface.SetFont(rowFont)
+                local maxNameW = 0
+
+                for sid64, isSuccess in pairs(successfulPlayers) do
+                    local ply = player.GetBySteamID64(sid64)
+                    if IsValid(ply) then
+                        local name = ply:Nick()
+                        local w, _ = surface.GetTextSize(name)
+                        if w > maxNameW then maxNameW = w end
+
+                        table.insert(plys, {
+                            name = name,
+                            success = isSuccess
+                        })
+                    end
                 end
-            end
 
-            local x = ScrW() * 0.02
-            local y = ScrH() * 0.35
-            local lineH = 28
-            local padding = 10
+                -- Box bigness
+                surface.SetFont(titleFont)
+                local titleW, titleH = surface.GetTextSize("Task Complete:")
 
-            surface.SetFont("AmogusFont_Small")
-            local maxW = 0
-            for _, line in ipairs(lines) do
-                local w = surface.GetTextSize(line)
-                if w > maxW then maxW = w end
-            end
+                local contentW = math.max(titleW, maxNameW + columnGap + iconSize)
+                local boxW = contentW + (padding * 2)
+                local boxH = titleH + (#plys * lineH) + (padding * 2)
 
-            local boxW = maxW + (padding * 2)
-            local boxH = (#lines * lineH) + (padding * 2)
-            draw.RoundedBox(4, x - padding, y - padding, boxW, boxH, Color(0, 0, 0, 250))
+                -- Location location location
+                local x = ScrW() * 0.02
+                local y = ScrH() * 0.35
 
-            for i, line in ipairs(lines) do
-                draw.SimpleText(line, "AmogusFont_Small", x, y + ((i - 1) * lineH), Color(255, 255, 255, 255))
+                -- Background Box
+                draw.RoundedBox(8, x, y, boxW, boxH, Color(0, 0, 0, 200))
+
+                -- Title
+                draw.SimpleText("Task Complete:", titleFont, x + (boxW / 2), y + padding, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER)
+
+                local startListY = y + padding + titleH + 10
+
+                for i, data in ipairs(plys) do
+                    local rowY = startListY + ((i - 1) * lineH)
+
+                    -- Player Names
+                    draw.SimpleText(data.name, rowFont, x + padding, rowY, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT)
+
+                    -- Icons
+                    local ssTick = Material("vgui/ttt/startreactor/sstick.png")
+                    local ssCross = Material("vgui/ttt/startreactor/sscross.png")
+
+                    surface.SetDrawColor(255, 255, 255, 255)
+                    if data.success then
+                        surface.SetMaterial(ssTick)
+                    else
+                        surface.SetMaterial(ssCross)
+                    end
+
+                    surface.DrawTexturedRect(x + boxW - padding - iconSize, rowY + (lineH - iconSize) / 2, iconSize, iconSize)
+                end
             end
         end)
     end
@@ -576,7 +663,6 @@ function EVENT:Begin()
         draw.SimpleText(announcementText, "AmogusFont_Giant", x + 4, y + 4, Color(0, 0, 0, 200), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         -- Text
         draw.SimpleText(announcementText, "AmogusFont_Giant", x, y, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        
     end)
 end
 
@@ -587,6 +673,9 @@ function EVENT:End()
     wasSuccessful = false
     leftDisplayDormant = true
     rightDisplayDormant = true
+    startBeeps = nil
+    restTime = nil
+    timerLength = nil
 
     HideHUDForClient()
 
@@ -606,6 +695,7 @@ function EVENT:End()
     timer.Remove("RdmtStartReactorWarning2Timer")
     timer.Remove("RdmtStartReactorWarning3Timer")
     timer.Remove("RdmtStartReactorWaitTime")
+    timer.Remove("RdmtStartReactorSuccessSoundTimer")
 
     hook.Remove("HUDPaint", "RdmtStartReactorDrawEjectionAnnouncement")
     hook.Remove("HUDPaint", "RdmtStartReactorDrawSuccessfulPlayersHud")
