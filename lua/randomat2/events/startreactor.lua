@@ -18,7 +18,7 @@ local eject = CreateConVar("randomat_startreactor_actually_eject", 1, FCVAR_NONE
 
 local pattern = {}
 local ejectedPlayers = {}
-local initialDelay = 6
+local initialDelay = 11
 local roundCount = 0
 local alivePlayers = alivePlayers or {}
 local successfulPlayers = successfulPlayers or {}

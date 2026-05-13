@@ -12,7 +12,7 @@ local rightDisplayText = ""
 local pattern = {}
 local inputRequired = nil
 local sequencePos = nil
-local initialDelay = 6
+local initialDelay = 11
 local alivePlayers = alivePlayers or {}
 local lastPatternLenth = 0
 local showSuccessHUD = showSuccessHUD or false
@@ -50,6 +50,20 @@ surface.CreateFont("AmogusFont", {
 surface.CreateFont("AmogusFont_Giant", {
     font = "inyourfacejoffrey",
     size = 60,
+    weight = 500,
+    additive = false,
+    antialias = true
+})
+surface.CreateFont("AmogusFont_10", {
+    font = "inyourfacejoffrey",
+    size = 10,
+    weight = 500,
+    additive = false,
+    antialias = true
+})
+surface.CreateFont("AmogusFont_15", {
+    font = "inyourfacejoffrey",
+    size = 15,
     weight = 500,
     additive = false,
     antialias = true
@@ -102,6 +116,7 @@ local function HideHUDForClient()
         StartReactorFrame:SetVisible(false)
     end
 
+    hook.Remove("HUDPaint", "RdmtStartReactorPromptText")
     hook.Remove("Think", "RdmtStartReactorTimerUpdate")
     timer.Remove("RdmtStartReactorPlayPattern")
 end
@@ -339,6 +354,32 @@ local function CreateStartReactorUI()
         draw.RoundedBox(0,4,4,w-8,h-8,Color(0, 0, 0))
     end
 
+    -- "Hold tab to interact" prompt
+    hook.Add("HUDPaint", "RdmtStartReactorPromptText", function()
+        local x = ScrW() / 2
+        local y = top + height + 15
+        
+        local showscores = Key("+showscores", "TAB")
+        local promptText = "Hold " .. showscores .. " to interact"
+        local promptFont = "TargetID"
+
+        surface.SetFont(promptFont)
+        local textW, textH = surface.GetTextSize(promptText)
+
+        local padding = 10
+        local boxW = textW + padding
+        local boxH = textH + padding / 2
+        local boxX = x - boxW / 2
+        local boxY = y - boxH / 2
+
+        -- Box
+        draw.RoundedBox(4, boxX, boxY, boxW, boxH, Color(0, 0, 0, 200))
+        -- Shadow
+        -- draw.SimpleText(promptText, promptFont, x + 1, y + 1, Color(0, 0, 0, 200), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        -- Text
+        draw.SimpleText(promptText, promptFont, x, y, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end)
+
     -- Start Reactor UI background image (green)
     panels = vgui.Create("DImage", StartReactorFrame)
     panels:SetSize(width, height)
@@ -509,6 +550,8 @@ local function DestroyStartReactorUI()
 
     StartReactorFrame = nil
     Lights = {}
+
+    hook.Remove("HUDPaint", "RdmtStartReactorPromptText")
 end
 
 net.Receive("RdmtStartReactorSuccess", function()
@@ -708,6 +751,7 @@ function EVENT:End()
 
     hook.Remove("HUDPaint", "RdmtStartReactorDrawEjectionAnnouncement")
     hook.Remove("HUDPaint", "RdmtStartReactorDrawSuccessfulPlayersHud")
+    hook.Remove("HUDPaint", "RdmtStartReactorPromptText")
     DestroyStartReactorUI()
 end
 
