@@ -48,6 +48,13 @@ surface.CreateFont("AmogusFont_Giant", {
     additive = false,
     antialias = true
 })
+surface.CreateFont("AmogusFont_Small", {
+    font = "inyourfacejoffrey",
+    size = 25,
+    weight = 500,
+    additive = false,
+    antialias = true
+})
 
 local function HideHUDForClient()
     if IsValid(StartReactorFrame) then
@@ -278,7 +285,7 @@ local function CreateStartReactorUI()
     StartReactorFrame:SetPos(left, top)
     StartReactorFrame:SetTitle("")
     StartReactorFrame:SetDraggable(false)
-    StartReactorFrame:ShowCloseButton(true)
+    StartReactorFrame:ShowCloseButton(false)
     StartReactorFrame:SetDeleteOnClose(true)
 
     -- Have to draw something apparently but then make it alpha 0
@@ -516,7 +523,7 @@ net.Receive("RdmtStartReactorDeadAliveChange", function()
             local lineH = 28
             local padding = 10
 
-            surface.SetFont("AmogusFont")
+            surface.SetFont("AmogusFont_Small")
             local maxW = 0
             for _, line in ipairs(lines) do
                 local w = surface.GetTextSize(line)
@@ -528,7 +535,7 @@ net.Receive("RdmtStartReactorDeadAliveChange", function()
             draw.RoundedBox(4, x - padding, y - padding, boxW, boxH, Color(0, 0, 0, 250))
 
             for i, line in ipairs(lines) do
-                draw.SimpleText(line, "AmogusFont", x, y + ((i - 1) * lineH), Color(255, 255, 255, 255))
+                draw.SimpleText(line, "AmogusFont_Small", x, y + ((i - 1) * lineH), Color(255, 255, 255, 255))
             end
         end)
     end
