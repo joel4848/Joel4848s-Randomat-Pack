@@ -27,11 +27,9 @@ local function BroadcastSuccessfulPlayers()
     successfulPlayers = {}
 
     for _, ply in ipairs(player.GetAll()) do
-        print("Running add to successfulPlayers for " .. ply:Nick())
-        print("ply.successful = " .. tostring(ply.successful))
-        successfulPlayers[ply:SteamID64()] = ply.successful
-        print("successfulPlayers now contains:")
-        PrintTable(successfulPlayers)
+        if ply:Alive() and not ply:IsSpec() then
+            successfulPlayers[ply:SteamID64()] = ply.successful
+        end
     end
 
     net.Start("RdmtStartReactorSuccess")
@@ -69,11 +67,7 @@ local function CreatePattern(timeLimit)
         end
     end
 
-    successfulPlayers = {}
-
-    net.Start("RdmtStartReactorSuccess")
-        net.WriteTable(successfulPlayers)
-    net.Broadcast()
+    BroadcastSuccessfulPlayers()
 
     net.Start("RdmtStartReactorPattern")
         net.WriteTable(pattern) 
