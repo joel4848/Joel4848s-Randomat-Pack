@@ -664,4 +664,9 @@ function EVENT:GetConVars()
     return sliders, checks
 end
 
+function EVENT:Condition()
+    local harpoonExists = weapons.Get("weapon_ttt_hwapoon") ~= nil
+    return harpoonExists
+end
+
 Randomat:register(EVENT)
