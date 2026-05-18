@@ -22,6 +22,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 - [cOmMuNiSm](#cOmMuNiSm) - Whenever anyone buys something from a shop, all other players get a random buyable item
 - [Compulsory Blood Donation](#Compulsory-Blood-Donation) - Gain temporary health equal to the damage you deal
 - [Don't. Stop. Me. Noooooowwwwwww](#Don't.-Stop.-Me.-Noooooowwwwwww) - Everyone randomly freezes - no immunity!
+- [Invisibees!](#Invisibees) - There DEFINITELY aren't any bees...
 - [Maljumption](#Maljumption) - Causes players to randomly jump
 - [No strafing](#No-strafing) - 'A' and 'D' keys are disabled
 - [R-Tex Vision](#R-Tex-Vision) - Your vision is now based on YOUR movement
@@ -134,6 +135,14 @@ _randomat_dontstopmenow_affectAll_ - Default: 0 - Does the event affect everyone
 _randomat_dontstopmenow_allowMouseInput_ - Default: 1 - Can players look and shoot while frozen\
 \
 It's a horrible (yet hopefully still fun) bastardisation of Malvil's [FREEZE! aka Winter has come at last. aka The Ice Man cometh. aka In this universe, there is only one absolute: everything freezes! aka Tonight, Hell freezes over. aka I'm afraid my condition has left me cold to your pleas of mercy. aka Cool party. aka You are not sending me to the cooler. aka Stay cool, bird boy. aka Alright, everyone! Chill! aka It's a cold town. aka Tonight's forecast: a freeze is coming! aka What killed the dinosaurs?! The ice age! aka Let's kick some ice! aka Can you feel it coming? The icy cold of space! aka Freeze in hell, Batman!](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/freeze.lua).
+
+## Invisibees
+
+Silently triggers the "Not the bees!" randomat, but the bees are invisible!\
+\
+_ttt_randomat_invisibees_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_invisibees_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_invisibees_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process
 
 ## Maljumption
 
