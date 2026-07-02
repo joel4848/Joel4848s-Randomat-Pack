@@ -17,7 +17,11 @@ EVENT.Categories = {"smallimpact"}
 function EVENT:Begin()
     self:AddHook("EntityTakeDamage", function(ply, dmginfo)
         if not IsValid(ply) or not ply:IsPlayer() then return end
+        if ply.ignoreDamageTest then return end
 
+        local dmgType = dmginfo:GetDamageType()
+        local damage = dmginfo:GetDamage()
+        local inflictor = dmginfo:GetInflictor()
         local attacker = dmginfo:GetAttacker()
         if not IsValid(attacker) then return end
 
@@ -26,8 +30,6 @@ function EVENT:Begin()
         -- Push away in the direction the attacker is shooting
         local vec = Vector(attacker:EyePos().x - attacker:GetEyeTrace().HitPos.x, attacker:EyePos().y - attacker:GetEyeTrace().HitPos.y, attacker:EyePos().z - attacker:GetEyeTrace().HitPos.z)
         vec:Normalize()
-
-        local damage = dmginfo:GetDamage()
 
         -- Borrowing The Stig's "weird maths"
         local newVelocity = vec * math.exp(tonumber(math.pow(damage / 2, 1 / 2))) * GetConVar("randomat_realisticimpacts_mul"):GetFloat()
@@ -44,31 +46,22 @@ function EVENT:Begin()
             ply:SetPos(ply:GetPos() + Vector(0, 0, 10))
         end
 
-        timer.Simple(1, function()
-            local body = ply.server_ragdoll or ply:GetRagdollEntity()
-            local phys
+        -- Send 'em
+        ply:SetGroundEntity(NULL)
+        ply:SetVelocity(-newVelocity)
 
-            if IsValid(body) then
-                phys = body:GetPhysicsObject()
-                if not IsValid(phys) then return end
-
-                phys:SetMass(1)
-                print(phys:GetVelocity())
-
-                timer.Simple(1, function()
-                    phys:SetPos(phys:GetPos() + Vector(0, 0, 100))
-                    timer.Simple(0, function()
-                        phys:SetVelocity(-newVelocity)
-                        print(phys:GetVelocity())
-                    end)
-                end)
-            else
-                ply:SetVelocity(-newVelocity)
-            end
+        timer.Simple(0.1, function()
+            local newDmg = DamageInfo()
+            newDmg:SetDamageType(dmgType)
+            newDmg:SetDamage(damage)
+            newDmg:SetInflictor(inflictor)
+            newDmg:SetAttacker(attacker)
+            ply.ignoreDamageTest = true
+            ply:TakeDamageInfo(newDmg)
+            ply.ignoreDamageTest = false
         end)
 
-        -- Send 'em
-        -- ply:SetVelocity(-newVelocity)
+        return true
     end)
 end
 
