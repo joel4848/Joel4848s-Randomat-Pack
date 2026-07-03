@@ -40,15 +40,40 @@ function EVENT:Begin()
             newVelocity = (newVelocity / newVelocity:Length()) * maxForce
         end
 
-        -- Lift the target off the ground a bit before applying force so gmod friction doesn't cuck us
-        -- (Same as how a discombob does it)
-        if ply:IsOnGround() then
-            ply:SetPos(ply:GetPos() + Vector(0, 0, 10))
-        end
+        timer.Simple(0.1, function()
+            -- Lift the target off the ground a bit before applying force so gmod friction doesn't cuck us
+            -- (Same as how a discombob does it)
+            if ply:IsOnGround() then
+                ply:SetPos(ply:GetPos() + Vector(0, 0, 10))
+            end
+
+            local body = ply.server_ragdoll or ply:GetRagdollEntity()
+            local phys
+
+            if IsValid(body) then
+                phys = body:GetPhysicsObject()
+                if not IsValid(phys) then return end
+
+                phys:SetMass(1)
+                print(phys:GetVelocity())
+
+                timer.Simple(0.1, function()
+                    phys:SetPos(phys:GetPos() + Vector(0, 0, 10))
+                    timer.Simple(0.1, function()
+                        body:SetGroundEntity(NULL)
+                        phys:SetVelocity(-newVelocity)
+                        print(phys:GetVelocity())
+                    end)
+                end)
+            else
+                ply:SetGroundEntity(NULL)
+                ply:SetVelocity(-newVelocity)
+            end
+        end)
 
         -- Send 'em
-        ply:SetGroundEntity(NULL)
-        ply:SetVelocity(-newVelocity)
+        -- ply:SetGroundEntity(NULL)
+        -- ply:SetVelocity(-newVelocity)
 
         timer.Simple(0.1, function()
             local newDmg = DamageInfo()
