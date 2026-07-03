@@ -3,7 +3,7 @@ local innocentPlayer = nil
 -- Start drawing halo on the innocent
 net.Receive("rdmtStartHalo", function()
     innocentPlayer = net.ReadEntity()
-    
+
     hook.Add("PreDrawHalos", "BaitSharkRandomatHalos", function()
         if IsValid(innocentPlayer) then
             halo.Add({innocentPlayer}, Color(0, 255, 0), 0, 0, 1, true, true)

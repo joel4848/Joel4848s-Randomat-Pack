@@ -57,7 +57,7 @@ function EVENT:Begin()
         if not IsValid(wep) then return false end
 
         local class = WEPS.GetClass(wep)
-        
+
         -- Allow freeze guns and homerun bats
         if class == "weapon_ttt_freezegun" or class == "weapon_ttt_homebat" or class == "weapon_ttt_unarmed" then
             return true
@@ -77,7 +77,7 @@ function EVENT:Begin()
     end)
 
     for i, ply in pairs(self:GetAlivePlayers()) do
-        
+
         -- Strip all living players' weapons except grenades
         for _, wep in ipairs(ply:GetWeapons()) do
             if IsValid(wep) and wep.Kind ~= WEAPON_NADE then
@@ -127,37 +127,37 @@ function EVENT:Begin()
             for _, ply in pairs(self:GetAlivePlayers()) do
                 local wep = ply:GetActiveWeapon()
                 if not IsValid(wep) then continue end
-            
+
                 local class = wep:GetClass()
-            
+
                 -- Always keep homerun bat 'clip' full
                 if class == "weapon_ttt_homebat" then
                     if wep.Primary and wep.Primary.ClipSize then
                         wep:SetClip1(wep.Primary.ClipSize)
                     end
-                
+
                 -- Freeze gun stuff:
                 elseif class == "weapon_ttt_freezegun" then
                     local ammoType = wep:GetPrimaryAmmoType()
                     if ammoType < 0 then continue end
-                
+
                     -- Limit clip to 1
                     if wep:Clip1() > 1 then
                         wep:SetClip1(1)
                     end
-                
+
                     -- Force 1 reserve ammo
                     ply:SetAmmo(1, ammoType)
-                
+
                     -- Auto-reload
                     if wep:Clip1() == 0
                         and ply:GetAmmoCount(ammoType) > 0
                         and not wep.Randomat_AutoReloading then
-                        
+
                         wep.Randomat_AutoReloading = true
                         wep:Reload()
                     end
-                
+
                     -- Reset flag once the clip is refilled
                     if wep:Clip1() > 0 then
                         wep.Randomat_AutoReloading = false

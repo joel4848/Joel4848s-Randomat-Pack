@@ -141,15 +141,15 @@ function EVENT:Begin()
 
     -- Change innocent player's model to shark
     self.OriginalPlayerModels = self.OriginalPlayerModels or {}
-    
+
     local shark = GetAvailableSharkModel()
-    
+
     if IsValid(self.innocent)
         and shark
         and GetConVar("randomat_baitshark_makeInnocentShark"):GetBool() then
-        
+
         self.OriginalPlayerModels[self.innocent] = Randomat:GetPlayerModelData(self.innocent)
-        
+
         Randomat:ForceSetPlayermodel(self.innocent, {
             model = shark.model,
             skin = shark.skin,
@@ -179,7 +179,7 @@ function EVENT:Begin()
     -- Prevent players from picking up weapons except poons (otherwise I can't give them poons)
     self:AddHook("PlayerCanPickupWeapon", function(ply, wep)
         if not IsValid(wep) then return false end
-        
+
         local class = WEPS.GetClass(wep)
 
         if class == "weapon_ttt_hwapoon" then
@@ -216,10 +216,10 @@ function EVENT:Begin()
 
             -- Unblind and unfreeze traitors after duration
             timer.Create("rdmtBlindDurationTimer", blindDuration, 1, function()
-                
-                for _, ply in ipairs(traitors) do
-                    if not IsValid(ply) or not ply:Alive() then continue end
-                    ply:Freeze(false)
+
+                for _, p in ipairs(traitors) do
+                    if not IsValid(p) or not p:Alive() then continue end
+                    p:Freeze(false)
                 end
 
                 net.Start("rdmtStopBlind")
@@ -233,11 +233,11 @@ function EVENT:Begin()
     self:AddHook("EntityTakeDamage", function(target, dmginfo)
         local inf = dmginfo:GetInflictor()
         local attacker = dmginfo:GetAttacker()
-        
+
         if not IsValid(attacker) or not IsValid(inf) then return end
         if inf:GetClass() ~= "hwapoon_arrow" then return end
         if not self.TrackedHarpoons[inf] then return end
-        
+
         -- Record what the poon hit
         inf.Hit = true
         inf.HitEnt = target
@@ -268,11 +268,11 @@ function EVENT:Begin()
 
                         ply.rdmtHarpoonsRemaining = ply.rdmtHarpoonsRemaining - 1
 
-                        local finalHarpoon = true 
+                        local finalHarpoon = true
 
-                        for _, ply in ipairs(self:GetAlivePlayers(true)) do
-                            if ply:IsTraitor() then
-                                if (ply.rdmtHarpoonsRemaining or 0) > 0 then
+                        for _, p in ipairs(self:GetAlivePlayers(true)) do
+                            if p:IsTraitor() then
+                                if (p.rdmtHarpoonsRemaining or 0) > 0 then
                                     finalHarpoon = false
                                 end
                             end
@@ -306,12 +306,12 @@ function EVENT:Begin()
     self:AddHook("TTTEndRound", function()
         if not self.RoundEnded then
             self.RoundEnded = true
-            
+
             -- Restore timescale immediately
             if self.OriginalTimeScale then
                 game.SetTimeScale(self.OriginalTimeScale)
             end
-            
+
             -- Stop forcing spectate on players
             for ply, _ in pairs(self.SpectatingPlayers) do
                 if IsValid(ply) then
@@ -332,8 +332,6 @@ function EVENT:Begin()
     self:AddHook("Think", function()
 
         if self.RoundEnded then return end
-
-        local maxHarpoons = GetConVar("randomat_baitshark_harpoonAmount"):GetInt()
 
         self.TrackedHarpoons = self.TrackedHarpoons or {}
         self.MissedCounts = self.MissedCounts or {}
@@ -375,7 +373,7 @@ function EVENT:Begin()
                 -- Count as miss unless it hit the innocent
                 local missed = true
                 if IsValid(hitEnt) and hitEnt:IsPlayer() and hitEnt == self.innocent then
-                    
+
                     missed = false
                     innocentHit = true
 
@@ -396,15 +394,15 @@ function EVENT:Begin()
 
                         dmg:SetDamage(9999)
                         dmg:SetDamageType(DMG_SLASH)
-                    
+
                         if IsValid(owner) then
                             dmg:SetAttacker(owner)
                         end
-                    
+
                         dmg:SetInflictor(IsValid(ent) and ent or owner)
                         dmg:SetDamageForce(ent:GetVelocity())
                         dmg:SetDamagePosition(self.innocent:WorldSpaceCenter())
-                    
+
                         self.innocent:TakeDamageInfo(dmg)
                     end
                 end
@@ -439,7 +437,7 @@ function EVENT:Begin()
 
         -- End round with innocent win if all poons have missed
         local allMissed = true
-            
+
         for _, ply in ipairs(self:GetAlivePlayers(true)) do
             if ply:IsTraitor() and not ply.rdmtMissedAll then
                 allMissed = false
@@ -492,7 +490,7 @@ function EVENT:Begin()
                     game.SetTimeScale(0.2)
                 end
             end)
-            
+
             -- Find the last thrown poon
             local lastArrow = nil
             if self.TrackedHarpoons then
@@ -595,7 +593,7 @@ function EVENT:End()
     net.Broadcast()
 
     for _, ply in ipairs(player.GetAll()) do
-        if IsValid(ply) then        
+        if IsValid(ply) then
             ply:Freeze(false)
         end
     end
@@ -621,7 +619,7 @@ end
 
 function EVENT:GetConVars()
     local sliders = {}
-    
+
     for _, v in ipairs({"harpoonAmount", "traitorBlindDuration"}) do
         local name = "randomat_" .. self.id .. "_" .. v
         if ConVarExists(name) then
@@ -635,7 +633,7 @@ function EVENT:GetConVars()
             })
         end
     end
-    
+
     for _, v in ipairs({"innocentSpeedMulti"}) do
         local name = "randomat_" .. self.id .. "_" .. v
         if ConVarExists(name) then

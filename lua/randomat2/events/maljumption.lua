@@ -15,17 +15,17 @@ function EVENT:Begin()
     local lower = GetConVar("randomat_maljumption_lower"):GetInt()
     local upper = GetConVar("randomat_maljumption_upper"):GetInt()
     local affectall = GetConVar("randomat_maljumption_affectall"):GetBool()
-    
+
     -- For sanity (Thanks Mal)
     if lower > upper then
         upper = lower + 1
     end
-    
+
     self.MaljumptionTimers = self.MaljumptionTimers or {}
-    
+
     local function ForceJump(ply)
         if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
-        
+
         ply:ConCommand("+jump")
         timer.Simple(0.1, function()
             if IsValid(ply) then
@@ -33,33 +33,33 @@ function EVENT:Begin()
             end
         end)
     end
-    
+
     -- affectall = 1 global timer
     if affectall then
         timer.Create("RdmtMaljumptionMain", math.random(lower, upper), 0, function()
             for _, ply in ipairs(self:GetAlivePlayers(true)) do
                 ForceJump(ply)
             end
-            
+
             timer.Adjust("RdmtMaljumptionMain", math.random(lower, upper))
         end)
         return
     end
-    
+
     -- affectall = 0 individual timers
     timer.Create("RdmtMaljumptionIndividual", 1, 0, function()
         for _, ply in ipairs(self:GetAlivePlayers(true)) do
             if not self.MaljumptionTimers[ply] then
                 local timerName = "RdmtMaljumption_" .. ply:SteamID64()
                 self.MaljumptionTimers[ply] = timerName
-                
+
                 timer.Create(timerName, math.random(lower, upper), 0, function()
                     if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then
                         timer.Remove(timerName)
                         self.MaljumptionTimers[ply] = nil
                         return
                     end
-                    
+
                     ForceJump(ply)
                     timer.Adjust(timerName, math.random(lower, upper))
                 end)
@@ -69,10 +69,10 @@ function EVENT:Begin()
 end
 
 function EVENT:End()
-    
+
     timer.Remove("RdmtMaljumptionMain")
     timer.Remove("RdmtMaljumptionIndividual")
-    
+
     if self.MaljumptionTimers then
         for ply, timerName in pairs(self.MaljumptionTimers) do
             timer.Remove(timerName)
@@ -81,7 +81,7 @@ function EVENT:End()
             end
         end
     end
-    
+
     self.MaljumptionTimers = nil
 end
 
@@ -100,7 +100,7 @@ function EVENT:GetConVars()
             })
         end
     end
-    
+
     local checks = {}
     for _, v in ipairs({"affectall"}) do
         local name = "randomat_" .. self.id .. "_" .. v

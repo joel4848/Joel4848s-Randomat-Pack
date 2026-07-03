@@ -90,14 +90,14 @@ function EVENT:Begin()
                         self:SmallNotify("You have been elected Impersonator!", 3, chosen)
 
                     else
-                        
+
                         if GetConVar("randomat_heirapparently_allow_detectoclown"):GetBool() and ConVarExists("ttt_detectoclown_override_marshal_badge") then
-                            
+
                             chosen:SetRole(ROLE_DETECTOCLOWN)
                             self:SmallNotify("You have been elected Detectoclown!", 3, chosen)
 
                         else
-                        
+
                             chosen:SetRole(ROLE_IMPERSONATOR)
                             self:SmallNotify("You have been elected Impersonator!", 3, chosen)
 
@@ -179,7 +179,7 @@ function EVENT:GetConVars()
             })
         end
     end
-    
+
     local checks = {}
     for _, v in ipairs({"deputises", "tie_deputises", "show_votes", "show_votes_anon", "allow_self_votes", "allow_detectoclown"}) do
         local name = "randomat_" .. self.id .. "_" .. v

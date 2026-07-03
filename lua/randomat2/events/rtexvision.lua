@@ -38,19 +38,19 @@ function EVENT:Begin()
     for _, ply in ipairs(self:GetAlivePlayers()) do
         SetVision(ply, false)
     end
-    
+
     self:AddHook("PlayerSpawn", function(ply)
         if not IsPlayer(ply) or not ply:Alive() or ply:IsSpec() then return end
         SetVision(ply, false)
     end)
-    
+
     -- Players given vision back when they die
     self:AddHook("PlayerDeath", function(victim)
         if IsValid(victim) then
             SetVision(victim, true)
         end
     end)
-    
+
     -- Detect movement
     self:AddHook("FinishMove", function(ply, mv)
         if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
@@ -64,12 +64,12 @@ function EVENT:Begin()
             crouching = false
             prone = false
         end
-        
+
         local moving =
             not IsTooSlow(crouching, prone, vel.x) or
             not IsTooSlow(crouching, prone, vel.y) or
             not IsTooSlow(crouching, prone, vel.z)
-        
+
         if moving then
             SetVision(ply, true)
             local moveDelay = GetConVar("randomat_rtexvision_moveRevealTime"):GetFloat()
@@ -77,13 +77,13 @@ function EVENT:Begin()
                 RefreshVisionTimer(ply, moveDelay, "Move")
             end
         end
-        
+
         -- Bodged continuous attack detection in here because I'm no longer using EntityFireBullets
         -- Please don't judge me
         local attackHeld = ply:KeyDown(IN_ATTACK)
         local attackDelay = GetConVar("randomat_rtexvision_attackRevealTime"):GetFloat()
         local wasAttacking = attackState[ply] or false
-        
+
         if attackHeld then
             SetVision(ply, true)
             timer.Remove("RdmtRTexVision_Attack_" .. ply:SteamID64())

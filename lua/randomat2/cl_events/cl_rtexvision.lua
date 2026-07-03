@@ -43,7 +43,7 @@ end
 function EVENT:End()
     for _, ply in ipairs(player.GetAll()) do
         ply:SetNoDraw(false)
-        
+
         local wep = ply:GetActiveWeapon()
         if IsValid(wep) then
             wep:SetNoDraw(false)

@@ -38,7 +38,7 @@ local function BroadcastSuccessfulPlayers()
 end
 
 local function BroadcastAlivePlayers()
-    local alivePlayers = {}
+    alivePlayers = {}
 
     for _, ply in ipairs(player.GetAll()) do
         alivePlayers[ply:SteamID64()] = (ply:Alive() and not ply:IsSpec())
@@ -70,8 +70,8 @@ local function CreatePattern(timeLimit)
     BroadcastSuccessfulPlayers()
 
     net.Start("RdmtStartReactorPattern")
-        net.WriteTable(pattern) 
-        net.WriteFloat(timeLimit) 
+        net.WriteTable(pattern)
+        net.WriteFloat(timeLimit)
     net.Broadcast()
 end
 
@@ -101,7 +101,7 @@ local function StartReactorRound()
     local timeToSucceed = initialTime + ((roundCount - 1) * timeIncrease)
 
     CreatePattern(timeToSucceed)
-    
+
     timer.Create("RdmtStartReactorSuccessTimer", timeToSucceed, 1, function()
         ejectedPlayers = {}
         for _, ply in ipairs(player.GetAll()) do
@@ -127,7 +127,7 @@ local function StartReactorRound()
                                     phys:EnableGravity(false)
                                 end
                             end
-                    
+
                             timer.Create("RdmtStartReactorRagdollTimer", 1, 1, function()
                                 ragdoll:SetCollisionGroup(originalCollisionGroup)
                             end)
@@ -140,7 +140,7 @@ local function StartReactorRound()
         EjectionAnnouncement(ejectedPlayers)
 
         timer.Create("RdmtStartReactorRestTimer", GetRestTime(), 1, function()
-            StartReactorRound() 
+            StartReactorRound()
         end)
     end)
 end
@@ -199,7 +199,7 @@ end
 
 function EVENT:GetConVars()
     local sliders = {}
-    
+
     for _, v in ipairs({"initial_time", "additional_time", "rest_time"}) do
         local name = "randomat_" .. self.id .. "_" .. v
         if ConVarExists(name) then

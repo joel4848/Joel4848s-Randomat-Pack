@@ -252,7 +252,7 @@ local function PlayPattern()
     local currentLight = pattern[patternPosition]
 
     lastPatternLenth = length or 0
-    
+
     DisableButtons()
     rightDisplayDormant = true
 
@@ -277,7 +277,7 @@ local function PlayPattern()
             end
         end)
         patternPosition = patternPosition + 1
-        
+
     end)
 end
 
@@ -358,7 +358,7 @@ local function CreateStartReactorUI()
     hook.Add("HUDPaint", "RdmtStartReactorPromptText", function()
         local x = ScrW() / 2
         local y = top + height + 15
-        
+
         local showscores = Key("+showscores", "TAB")
         local promptText = "Hold " .. showscores .. " to interact"
         local promptFont = "TargetID"
@@ -418,7 +418,7 @@ local function CreateStartReactorUI()
             local id = (y-1)*3 + x
 
             local btn = vgui.Create("DImageButton", StartReactorFrame)
-            
+
             btn:SetSize(buttonCellSize*0.95, buttonCellSize*0.95)
             btn:SetPos((x-1)*buttonCellSize + (width/16.7)*10, (y-1)*buttonCellSize + (height/32)*10)
             btn:SetText("")
@@ -430,10 +430,10 @@ local function CreateStartReactorUI()
 
             btn.OnDepressed = function(self)
                 local pitches = {50, 60, 70, 80, 90, 105, 115, 127, 139}
-                local pitch = pitches[id]
+                local thisPitch = pitches[id]
                 btn:SetImage("vgui/ttt/startreactor/ssbutton" .. id .. "_blue.png")
 
-                Randomat.Client:EmitSound("startreactor/panel_reactorstart_loud.wav", 100, pitch, 1)
+                Randomat.Client:EmitSound("startreactor/panel_reactorstart_loud.wav", 100, thisPitch, 1)
 
                 if inputRequired then
                     InputReceived(id)
@@ -452,7 +452,7 @@ local function CreateStartReactorUI()
     end
 
     -- Disabled 'button' grid
-    local buttonCellSize = width * 0.105
+    local disabledButtonCellSize = width * 0.105
     disabledButtons = {}
 
     for y=1,3 do
@@ -460,8 +460,8 @@ local function CreateStartReactorUI()
             local id = (y-1)*3 + x
 
             local btnd = vgui.Create("DImage", StartReactorFrame)
-            btnd:SetSize(buttonCellSize*0.95, buttonCellSize*0.95)
-            btnd:SetPos((x-1)*buttonCellSize + (width/16.7)*10, (y-1)*buttonCellSize + (height/32)*10)
+            btnd:SetSize(disabledButtonCellSize*0.95, disabledButtonCellSize*0.95)
+            btnd:SetPos((x-1)*disabledButtonCellSize + (width/16.7)*10, (y-1)*disabledButtonCellSize + (height/32)*10)
 
             btnd:SetImage("vgui/ttt/startreactor/ssbutton" .. id .. "_dark.png")
 

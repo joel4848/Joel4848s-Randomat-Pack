@@ -23,7 +23,6 @@ function EVENT:Begin()
     local spam = GetConVar("randomat_mustjump_spam"):GetBool()
     local spamTimer = GetConVar("randomat_mustjump_spamTimer"):GetInt()
     local killBlastImmune = GetConVar("randomat_mustjump_killBlastImmune"):GetBool()
-    local event = self
 
     self:AddHook("PlayerDeath", function(victim)
         if not IsValid(victim) then return end
@@ -78,10 +77,9 @@ function EVENT:Begin()
                     if ply.rdmtWasOnGround == nil then
                         ply.rdmtWasOnGround = ply:OnGround()
                     end
-                    if ply.rdmtWasOnGround == false and ply:OnGround() then
 
+                    if ply.rdmtWasOnGround == false and ply:OnGround() then
                         if ply:GetJumpLevel() < 1 and ply.rdmtSurvived ~= true then
-                        
                             util.BlastDamage(ply, ply, ply:GetPos(), 100, 500)
                             if not Randomat:ShouldActLikeJester(ply) and killBlastImmune then
                                 local timerId = "RdmtMustJumpKillDelay_" .. ply:SteamID64()
@@ -102,11 +100,10 @@ function EVENT:Begin()
                                 ply.rdmtSurvived = true
                                 ply.rdmtSurvivedRole = ply:GetRole()
                             end
-                        
+
                                 self:SmallNotify(ply:Nick() .. " forgot to double jump.")
-                        
+
                         elseif ply:GetJumpLevel() < 1 and spam then
-    
                             if ply.rdmtSpamCooldown == false then
                                 self:SmallNotify(ply:Nick() .. " forgot to double jump.")
                                 ply.rdmtSpamCooldown = true

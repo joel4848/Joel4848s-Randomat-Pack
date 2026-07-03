@@ -102,16 +102,16 @@ function EVENT:Begin()
         local spacing = 8
         local padding = 10
         local count = #lookers
-        
+
         local totalIconsWidth = (count * iconSize) + ((count - 1) * spacing)
         local boxW = totalIconsWidth + (padding * 2)
         local boxH = iconSize + (padding * 2)
-        
+
         local startX = (ScrW() / 2) - (totalIconsWidth / 2)
         local yPos = 20
-        
+
         draw.RoundedBox(8, startX - padding, yPos - padding, boxW, boxH, Color(0, 0, 0, 245))
-        
+
         for i, ply in ipairs(lookers) do
             if IsValid(ply) then
                 local col = GetPlayerColor(ply, 255)

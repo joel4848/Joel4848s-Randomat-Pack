@@ -94,14 +94,14 @@ function EVENT:Begin()
                             end
                         end
                     end
-                    
+
                     StartDelayTimer()
                 end)
             end)
         end
-        
+
         StartDelayTimer()
-        
+
     else
         timer.Create("RdmtDSMNIndividualTimers", 1, 0, function()
             for _, ply in ipairs(self:GetAlivePlayers(true)) do
@@ -139,12 +139,12 @@ function EVENT:Begin()
                                         Randomat:SmallNotify("Unstop!", 3, ply, false, false, Color(50, 255, 50))
                                     end
                                 end
-                                
+
                                 StartPlayerDelayTimer()
                             end)
                         end)
                     end
-                    
+
                     StartPlayerDelayTimer()
                 end
             end
@@ -161,10 +161,10 @@ function EVENT:End()
         if IsValid(ply) then
             local freezeTimerName = "RdmtDSMNIndividualFreeze_" .. ply:SteamID64()
             local unfreezeTimerName = "RdmtDSMNIndividualUnfreeze_" .. ply:SteamID64()
-        
+
             timer.Remove(freezeTimerName)
             timer.Remove(unfreezeTimerName)
-        
+
             ply:Freeze(false)
             ply:SetNWBool("RdmtNoMoveButMouse", false)
         end
@@ -190,7 +190,7 @@ function EVENT:GetConVars()
             })
         end
     end
-    
+
     local checks = {}
     for _, v in ipairs({"affectAll", "allowMouseInput"}) do
         local name = "randomat_" .. self.id .. "_" .. v

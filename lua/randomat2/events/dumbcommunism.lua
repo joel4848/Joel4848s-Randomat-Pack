@@ -18,7 +18,6 @@ CreateConVar("randomat_dumbcommunism_useOtherBlocklists", 1, FCVAR_NONE, "Use 'W
 local allowequipment = GetConVar("randomat_dumbcommunism_allowEquipment"):GetBool()
 local givesameitem = GetConVar("randomat_dumbcommunism_sameItem"):GetBool()
 local given_item = nil
-local item = nil
 local item_id = false
 
 
@@ -75,40 +74,19 @@ function EVENT:Begin()
         end
 
         local shoproles = Randomat:GetShopRoles()
-        local shareditem = nil
 
         -------------------------------
         -- If givesameitem
         -------------------------------
         if givesameitem then
-
             local tries = 0
             item, item_id, swep, item_role = Randomat:GetShopEquipment(ply, shoproles, blocklist, allowequipment, tries, function(val) tries = val end)
-        
+
             if item.ClassName then
                 given_item = item.ClassName
             elseif swep and swep.ClassName then
                 given_item = swep.ClassName
             end
-
-            -- PrintMessage(HUD_PRINTTALK, "- givesameitem = " .. tostring(givesameitem))
-            -- PrintMessage(HUD_PRINTTALK, "--------------------------------------------------------------")
-            -- PrintMessage(HUD_PRINTTALK, "- item = " .. tostring(item))
-            -- if item then
-            --     PrintMessage(HUD_PRINTTALK, "- item.ClassName = " .. tostring(item.ClassName))
-            -- end
-            -- if swep then
-            --     PrintMessage(HUD_PRINTTALK, "- swep.ClassName = " .. tostring(swep.ClassName))
-            -- end
-            -- PrintMessage(HUD_PRINTTALK, "- item_id = " .. tostring(item_id))
-            -- PrintMessage(HUD_PRINTTALK, "- swep = " .. tostring(swep))
-            -- PrintMessage(HUD_PRINTTALK, "- item_role = " .. tostring(item_role))
-            -- PrintMessage(HUD_PRINTTALK, "--------------------------------------------------------------")
-            -- PrintMessage(HUD_PRINTTALK, "- item = " .. item)
-            -- PrintMessage(HUD_PRINTTALK, "- item_id = " .. item_id)
-            -- PrintMessage(HUD_PRINTTALK, "- _ = " .. _)
-            -- PrintMessage(HUD_PRINTTALK, "- item_role = " .. item_role)
-            -- PrintMessage(HUD_PRINTTALK, "--------------------------------------------------------------")
 
             for _, v in player.Iterator() do
                 if v ~= ply and v:Alive() then
@@ -128,32 +106,26 @@ function EVENT:Begin()
 
                     --Event started in cl_networkstrings
                     net.Receive("AlertTriggerFinal", function()
-                        -- PrintMessage(HUD_PRINTTALK, "- Received net return")
                         local event = net.ReadString()
                         if event ~= EVENT.id then return end
-                    
-                        local name = self:RenameWeps(net.ReadString())
-                        local purchaser = net.ReadString()
 
-                        -- PrintMessage(HUD_PRINTTALK, "- net name = " .. tostring(name))
-                        -- PrintMessage(HUD_PRINTTALK, "- net purchaser = " .. tostring(purchaser))
-                    
+                        local name = self:RenameWeps(net.ReadString())
+                        purchaser = net.ReadString()
+
                         self:SmallNotify(purchaser .. " gave you a " .. name, 3, v)
                     end)
 
                 end
             end
-        
-    
+
         -------------------------------
         -- If not givesameitem
         -------------------------------
 
         else
-
             local tries = 0
             item, item_id, swep, item_role = Randomat:GetShopEquipment(ply, shoproles, blocklist, allowequipment, tries, function(val) tries = val end)
-        
+
             if item and item.ClassName then
                 given_item = item.ClassName
             elseif swep and swep.ClassName then
@@ -162,25 +134,6 @@ function EVENT:Begin()
                 given_item = item_id
             end
 
-            -- PrintMessage(HUD_PRINTTALK, "- givesameitem = " .. tostring(givesameitem))
-            -- PrintMessage(HUD_PRINTTALK, "--------------------------------------------------------------")
-            -- PrintMessage(HUD_PRINTTALK, "- item = " .. tostring(item))
-            -- if item then
-            --     PrintMessage(HUD_PRINTTALK, "- item.ClassName = " .. tostring(item.ClassName))
-            -- end
-            -- if swep then
-            --     PrintMessage(HUD_PRINTTALK, "- swep.ClassName = " .. tostring(swep.ClassName))
-            -- end
-            -- PrintMessage(HUD_PRINTTALK, "- item_id = " .. tostring(item_id))
-            -- PrintMessage(HUD_PRINTTALK, "- swep = " .. tostring(swep))
-            -- PrintMessage(HUD_PRINTTALK, "- item_role = " .. tostring(item_role))
-            -- PrintMessage(HUD_PRINTTALK, "--------------------------------------------------------------")
-            -- PrintMessage(HUD_PRINTTALK, "- item = " .. item)
-            -- PrintMessage(HUD_PRINTTALK, "- item_id = " .. item_id)
-            -- PrintMessage(HUD_PRINTTALK, "- _ = " .. _)
-            -- PrintMessage(HUD_PRINTTALK, "- item_role = " .. item_role)
-            -- PrintMessage(HUD_PRINTTALK, "--------------------------------------------------------------")
-
             for _, v in player.Iterator() do
                 if v ~= ply and v:Alive() then
                     if item_id then
@@ -202,13 +155,13 @@ function EVENT:Begin()
                         -- PrintMessage(HUD_PRINTTALK, "- Received net return")
                         local event = net.ReadString()
                         if event ~= EVENT.id then return end
-                    
+
                         local name = self:RenameWeps(net.ReadString())
-                        local purchaser = net.ReadString()
+                        purchaser = net.ReadString()
 
                         -- PrintMessage(HUD_PRINTTALK, "- net name = " .. tostring(name))
                         -- PrintMessage(HUD_PRINTTALK, "- net purchaser = " .. tostring(purchaser))
-                    
+
                         self:SmallNotify(purchaser .. " gave you a " .. name, 3, v)
                     end)
 
