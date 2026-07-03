@@ -17,11 +17,8 @@ EVENT.Categories = {"smallimpact"}
 function EVENT:Begin()
     self:AddHook("EntityTakeDamage", function(ply, dmginfo)
         if not IsValid(ply) or not ply:IsPlayer() then return end
-        if ply.ignoreDamageTest then return end
 
-        local dmgType = dmginfo:GetDamageType()
         local damage = dmginfo:GetDamage()
-        local inflictor = dmginfo:GetInflictor()
         local attacker = dmginfo:GetAttacker()
         if not IsValid(attacker) then return end
 
@@ -32,15 +29,20 @@ function EVENT:Begin()
         vec:Normalize()
 
         -- Borrowing The Stig's "weird maths"
-        local newVelocity = vec * math.exp(tonumber(math.pow(damage / 2, 1 / 2))) * GetConVar("randomat_realisticimpacts_mul"):GetFloat()
+        -- local newVelocity = vec * math.exp(tonumber(math.pow(damage / 2, 1 / 2))) * GetConVar("randomat_realisticimpacts_mul"):GetFloat()
 
-        -- IF the force is greater than the convar allows, cap it
-        local maxForce = GetConVar("randomat_realisticimpacts_max"):GetInt() * 10000
+        local baseForce = math.sqrt(damage) * 30
+        local forceMultiplier = GetConVar("randomat_realisticimpacts_mul"):GetFloat()
+        local forceMagnitude = baseForce * forceMultiplier
+        local newVelocity = vec * forceMagnitude
+
+        -- If the force is greater than the convar allows, cap it
+        local maxForce = GetConVar("randomat_realisticimpacts_max"):GetInt() * 100
         if newVelocity:Length() > maxForce then
-            newVelocity = (newVelocity / newVelocity:Length()) * maxForce
+            newVelocity = newVelocity:GetNormalized() * maxForce
         end
 
-        timer.Simple(0.1, function()
+        timer.Simple(0, function()
             -- Lift the target off the ground a bit before applying force so gmod friction doesn't cuck us
             -- (Same as how a discombob does it)
             if ply:IsOnGround() then
@@ -48,21 +50,23 @@ function EVENT:Begin()
             end
 
             local body = ply.server_ragdoll or ply:GetRagdollEntity()
-            local phys
 
             if IsValid(body) then
-                phys = body:GetPhysicsObject()
-                if not IsValid(phys) then return end
+                timer.Simple(0, function()
+                    body:SetPos(body:GetPos() + Vector(0, 0, 100))
 
-                phys:SetMass(1)
-                print(phys:GetVelocity())
+                    timer.Simple(0, function()
+                        for i=0, body:GetPhysicsObjectCount() - 1 do
+                            local phys = body:GetPhysicsObjectNum(i)
+                            phys:SetPos(phys:GetPos() + Vector(0, 0, 10))
 
-                timer.Simple(0.1, function()
-                    phys:SetPos(phys:GetPos() + Vector(0, 0, 10))
-                    timer.Simple(0.1, function()
-                        body:SetGroundEntity(NULL)
-                        phys:SetVelocity(-newVelocity)
-                        print(phys:GetVelocity())
+                            timer.Simple(0, function()
+                                body:SetGroundEntity(NULL)
+                                phys:SetMass(0)
+                                phys:SetDragCoefficient(0)
+                                phys:ApplyForceCenter(-newVelocity * 2)
+                            end)
+                        end
                     end)
                 end)
             else
@@ -70,23 +74,6 @@ function EVENT:Begin()
                 ply:SetVelocity(-newVelocity)
             end
         end)
-
-        -- Send 'em
-        -- ply:SetGroundEntity(NULL)
-        -- ply:SetVelocity(-newVelocity)
-
-        timer.Simple(0.1, function()
-            local newDmg = DamageInfo()
-            newDmg:SetDamageType(dmgType)
-            newDmg:SetDamage(damage)
-            newDmg:SetInflictor(inflictor)
-            newDmg:SetAttacker(attacker)
-            ply.ignoreDamageTest = true
-            ply:TakeDamageInfo(newDmg)
-            ply.ignoreDamageTest = false
-        end)
-
-        return true
     end)
 end
 
