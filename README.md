@@ -180,6 +180,8 @@ Credit: [/u/Draken09 for the original idea](https://www.reddit.com/r/Yogscast/co
 
 ## Realistic ~~recoil~~ impacts
 
+Getting shot pushes you away in the direction the bullet was going (though getting shot from above will fling you sideways, because otherwise you get crushed into the ground and die lol). More damage = more pushing power. Configurable min and max pushing forces and overall push multiplier.\
+\
 _ttt_randomat_realisticimpacts_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_realisticimpacts_min_players_ - Default: 0 - The minimum number of players required for this event to start\
 _ttt_randomat_realisticimpacts_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
