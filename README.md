@@ -25,7 +25,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 - [Invisibees!](#Invisibees) - There DEFINITELY aren't any bees...
 - [Maljumption](#Maljumption) - Causes players to randomly jump
 - [No strafing](#No-strafing) - 'A' and 'D' keys are disabled
-- [Realistic ~~recoil~~ impacts](#Realistic-~~recoil~~-impacts) - Getting shot pushes you away
+- [Realistic ~~recoil~~ impacts](#Realistic-recoil-impacts) - Getting shot pushes you away
 - [R-Tex Vision](#R-Tex-Vision) - Your vision is now based on YOUR movement
 - [The Heir Apparent(ly)](#The-Heir-Apparent(ly)) - Vote to deputise someone, but beware: non-innocents become something else...
 - [Whose line is it anyway?](#Whose-line-is-it-anyway?) - Shows where other players are looking, and warns you if it's at you!
