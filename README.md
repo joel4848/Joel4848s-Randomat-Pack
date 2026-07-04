@@ -25,6 +25,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 - [Invisibees!](#Invisibees) - There DEFINITELY aren't any bees...
 - [Maljumption](#Maljumption) - Causes players to randomly jump
 - [No strafing](#No-strafing) - 'A' and 'D' keys are disabled
+- [Realistic ~~recoil~~ impacts](#Realistic-~~recoil~~-impacts) - Getting shot pushes you away
 - [R-Tex Vision](#R-Tex-Vision) - Your vision is now based on YOUR movement
 - [The Heir Apparent(ly)](#The-Heir-Apparent(ly)) - Vote to deputise someone, but beware: non-innocents become something else...
 - [Whose line is it anyway?](#Whose-line-is-it-anyway?) - Shows where other players are looking, and warns you if it's at you!
@@ -176,6 +177,15 @@ _ttt_randomat_nostrafing_min_players_ - Default: 0 - The minimum number of playe
 _ttt_randomat_nostrafing_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
 \
 Credit: [/u/Draken09 for the original idea](https://www.reddit.com/r/Yogscast/comments/8pf3oc/im_coding_a_randomat_20_for_ttt_and_would_like/e0cz3as/)
+
+## Realistic ~~recoil~~ impacts
+
+_ttt_randomat_realisticimpacts_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_realisticimpacts_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_realisticimpacts_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
+_randomat_realisticimpacts_max_ - Default: 1500 - Maximum magnitude by which a gun can change someone's velocity by\
+_randomat_realisticimpacts_min_ - Default: 200 - Minimum magnitude by which a gun can change someone's velocity by\
+_randomat_realisticimpacts_mul_ - Default: 10 - Push multiplier
 
 ## R-Tex Vision
 

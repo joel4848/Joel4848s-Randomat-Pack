@@ -1,8 +1,8 @@
 local EVENT = {}
 
 -- Create the ConVars (Customizable settings)
-CreateConVar("randomat_realisticimpacts_max", 1500, FCVAR_NONE, "Maximum magnitude by which a gun can change someone's velocity")
-CreateConVar("randomat_realisticimpacts_min", 200, FCVAR_NONE, "Minimum magnitude by which a gun can change someone's velocity")
+CreateConVar("randomat_realisticimpacts_max", 1500, FCVAR_NONE, "Maximum magnitude by which a gun can change someone's velocity by")
+CreateConVar("randomat_realisticimpacts_min", 200, FCVAR_NONE, "Minimum magnitude by which a gun can change someone's velocity by")
 CreateConVar("randomat_realisticimpacts_mul", 10, FCVAR_NONE, "Push multiplier", 1, 100)
 
 EVENT.Title = {
