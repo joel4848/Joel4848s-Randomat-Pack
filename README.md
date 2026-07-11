@@ -25,6 +25,7 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 - [Invisibees!](#Invisibees) - There DEFINITELY aren't any bees...
 - [Maljumption](#Maljumption) - Causes players to randomly jump
 - [No strafing](#No-strafing) - 'A' and 'D' keys are disabled
+- [Oppositeness intensifies](#Oppositeness-intensifies) - Controls periodically switch
 - [Realistic ~~recoil~~ impacts](#Realistic-recoil-impacts) - Getting shot pushes you away
 - [R-Tex Vision](#R-Tex-Vision) - Your vision is now based on YOUR movement
 - [The Heir Apparent(ly)](#The-Heir-Apparent(ly)) - Vote to deputise someone, but beware: non-innocents become something else...
@@ -178,7 +179,38 @@ _ttt_randomat_nostrafing_weight_ - Default: - 1 - The weight this event should u
 \
 Credit: [/u/Draken09 for the original idea](https://www.reddit.com/r/Yogscast/comments/8pf3oc/im_coding_a_randomat_20_for_ttt_and_would_like/e0cz3as/)
 
+## Oppositeness _Intensifies_
+
+Periodically switches/reverses controls:
+
+- Mouse X axis
+- Mouse Y axis
+- Forwards/Backwards
+- Left/Right
+- Jump/Crouch
+- Shoot/Reload
+- Sprint/Drop Weapon
+
+\
+_ttt_randomat_oppositeness_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_oppositeness_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_oppositeness_weight_ - Default: - 1 - The weight this event should use during the _randomized event selection process\
+_randomat_oppositeness_interval_ - Default 30 - Interval (s) between switches\
+_randomat_oppositeness_accelerates_ - Default 1 - Whether interval reduces each switch\
+_randomat_oppositeness_accelerates_rate_ - Default 2 - How much (s) the interval reduces each switch\
+_randomat_oppositeness_accelerates_minimum_time_ - Default 10 - The shortest interval between switches\
+_randomat_oppositeness_allow_mouse_inversion_ - Default 1 - Whether the mouse axes can be inverted\
+_randomat_oppositeness_mouseX_weight_ - Default 1 - How likely the mouse X axis is to be inverted\
+_randomat_oppositeness_mouseY_weight_ - Default 1 - How likely the mouse Y axis is to be inverted\
+_randomat_oppositeness_forwards_backwards_weight_ - Default 1 - How likely forwads/backwards are to be switched\
+_randomat_oppositeness_left_right_weight_ - Default 1 - How likely left/right are to be switched\
+_randomat_oppositeness_jump_crouch_weight_ - Default 1 - How likely jump/crouch are to be switched\
+_randomat_oppositeness_shoot_reload_weight_ - Default 1 - How likely shoot/reload are to be switched\
+_randomat_oppositeness_sprint_drop_weight_ - Default 1 - How likely sprint/drop weapon are to be switched
+
 ## Realistic ~~recoil~~ impacts
+
+Getting shot pushes you away - the more damage you take, the further you're flung
 
 _ttt_randomat_realisticimpacts_ - Default: 1 - Whether this event is enabled\
 _ttt_randomat_realisticimpacts_min_players_ - Default: 0 - The minimum number of players required for this event to start\
