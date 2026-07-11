@@ -85,7 +85,7 @@ aka Glacial Knockers\
 Everyone gets an infinite-ammo freeze gun and an infinite-ammo homerun bat. Players are stripped of, and cannot pick up, other weapons except grenades, and can only buy passive items from role shops. Independent roles are turned into traitors and jester roles are turned into innocents.\
 \
 **Dependencies:**
-- Calvinbo_GER and Immortal Slayer 38's [Freeze Gun](https://steamcommunity.com/sharedfiles/filedetails/?id=888948962)\
+- Calvinbo_GER and Immortal Slayer 38's [Freeze Gun](https://steamcommunity.com/sharedfiles/filedetails/?id=888948962)
 - Hagen's [Homerun Bat](https://steamcommunity.com/sharedfiles/filedetails/?id=648957314)
 
 _ttt_randomat_chillyswingers_ - Default: 1 - Whether this event is enabled\
