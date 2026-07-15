@@ -26,10 +26,7 @@ function EVENT:Begin()
         if not dmginfo:IsBulletDamage() then return end
 
         -- If CR4TTT present, check whether headshots have been disabled
-        local headshotsEnabled = true
-        if cvars.Number("ttt_disable_headshots", -1) ~= -1 and GetConVar("ttt_disable_headshots"):GetBool() then
-            headshotsEnabled = false
-        end
+        local headshotsEnabled = not cvars.Bool("ttt_disable_headshots")
 
         -- Calculate velocity based on pre-headshot-multiplier damage
         if headshotsEnabled and ply:LastHitGroup() == 1 then
