@@ -320,27 +320,6 @@ function EVENT:GetConVars()
         }
     }
 
-    local positions = {}
-    local categories = {}
-    self.CategoryConfig = {}
-
-    for key, data in pairs(layout) do
-        if type(data) == "table" then
-            self.CategoryConfig[key] = {
-                pos = data.pos,
-                collapsible = data.collapsible or false,
-                expanded = data.expanded or false
-            }
-
-            for k, v in pairs(data.items or {}) do
-                positions[v] = k
-                categories[v] = key
-            end
-        else
-            positions[key] = data
-        end
-    end
-
     local sliders = {}
     for _, v in ipairs({"interval", "accelerates_minimum_time", "mouseX_weight", "mouseY_weight", "forwards_backwards_weight", "left_right_weight", "jump_crouch_weight", "shoot_reload_weight", "sprint_drop_weight"}) do
         local name = "randomat_" .. self.id .. "_" .. v
@@ -352,8 +331,6 @@ function EVENT:GetConVars()
                 min = convar:GetMin(),
                 max = convar:GetMax(),
                 dcm = 0,
-                pos = positions[v],
-                cat = categories[v]
             })
         end
     end
@@ -368,8 +345,6 @@ function EVENT:GetConVars()
                 min = convar:GetMin(),
                 max = convar:GetMax(),
                 dcm = 1,
-                pos = positions[v],
-                cat = categories[v]
             })
         end
     end
@@ -382,13 +357,11 @@ function EVENT:GetConVars()
             table.insert(checks, {
                 cmd = v,
                 dsc = convar:GetHelpText(),
-                pos = positions[v],
-                cat = categories[v] -- NEW
             })
         end
     end
 
-    return sliders, checks
+    return sliders, checks, nil, layout
 end
 
 Randomat:register(EVENT)
