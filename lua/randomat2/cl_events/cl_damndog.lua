@@ -6,6 +6,7 @@ local dogSpawnKey = KEY_T
 local dogKeyWasDown = false
 
 function EVENT:Begin()
+    -- TESTING ONLY - REMOVE BEFORE RELEASE
     hook.Add("Think", "DogKeyWatch", function()
         local ply = LocalPlayer()
         if not IsValid(ply) or not ply:Alive() then return end
