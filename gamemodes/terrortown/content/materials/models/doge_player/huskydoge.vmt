@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$model" 1
+	"$basetexture" "models/doge_player/huskydoge"
+	"$halflambert" "1"
+}

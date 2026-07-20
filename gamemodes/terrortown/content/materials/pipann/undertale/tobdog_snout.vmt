@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+
+	$basetexture "pipann/undertale/TobdogShines_DIF"
+	$phongexponenttexture "pipann/undertale/Tobdog_PHONG"
+	$bumpmap "pipann/undertale/Tobdog_NRM"
+
+
+	 $phong "1"
+	 $phongboost  "10"
+	 $phoneexponent "5"
+	 $phongfresnelranges "[0 0.5 1]"
+}

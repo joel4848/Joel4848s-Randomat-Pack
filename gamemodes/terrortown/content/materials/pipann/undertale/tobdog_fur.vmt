@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+
+	$basetexture "pipann/undertale/TobdogFur_DIF"
+	$phongexponenttexture "pipann/undertale/Tobdog_PHONG"
+	$bumpmap "pipann/undertale/Tobdog_NRM"
+
+
+	 $phong "1"
+}

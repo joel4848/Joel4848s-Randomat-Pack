@@ -18,27 +18,61 @@ local upper
 local affectAll
 local dogSpawnDistance
 
+local dogChoices = {
+    [1] = {model = "dog2/annoying_dog"},
+    [2] = {model = "dog1/npc_dog"},
+    [3] = {model = "dog3/doge_player", height = 21, scale = 0.75, skin = 0},
+    [4] = {model = "dog3/doge_player", height = 21, scale = 0.75, skin = 1},
+    [5] = {model = "dog3/doge_player", height = 21, scale = 0.75, skin = 2},
+    [6] = {model = "dog3/doge_player", height = 21, scale = 0.75, skin = 3}
+}
+
+local function ChooseDog()
+    choice = math.random(1, #dogChoices)
+    table.Shuffle(dogChoices)
+    return dogChoices[choice].model, dogChoices[choice].height or nil, dogChoices[choice].scale or nil, dogChoices[choice].skin or nil
+end
+
 local function SpawnDog(ply)
     local plyPos = ply:GetPos()
     dogSpawnDistance = GetConVar("randomat_damndog_spawn_distance"):GetInt()
 
     local moveDir = ply:GetVelocity()
 
+    dogSpawnDistance = dogSpawnDistance * math.Clamp(moveDir:Length() / 220, 1, math.huge)
+
     -- A dog shouldn't spawn if they're not moving, but for safety if somehow it still does, use eye angles
     if moveDir:LengthSqr() <= 0 then
         moveDir = ply:EyeAngles():Forward()
     end
 
-    moveDir.z = 0
     moveDir = moveDir:GetNormalized()
 
     local pos = plyPos + moveDir * dogSpawnDistance
+    -- local ang = moveDir:Angle()
 
-    local ang = moveDir:Angle()
+    local dogModel, dogHeight, dogScale, dogSkin = ChooseDog()
+
+    local zOffset = (ply:IsOnGround() and dogHeight) and dogHeight or 0
+    local targetPos = pos + Vector(0, 0, zOffset)
+
+    local trace = util.TraceLine({
+        start = plyPos + Vector(0, 0, 32),
+        endpos = targetPos,
+        filter = ply,
+        mask = MASK_SOLID
+    })
+
+    if trace.Hit then
+        targetPos = trace.HitPos + (trace.HitNormal * 2)
+    end
 
     local dog = ents.Create("ttt_rdmt_damndog_dog")
-    dog:SetPos(pos + Vector(0, 0, 5))
-    dog:SetAngles(ang)
+    dog:SetModel("models/damndog/" .. dogModel .. ".mdl")
+    dog:SetPos(targetPos)
+    dog:SetModelScale(dogScale or 1, 0)
+    if dogSkin then dog:SetSkin(dogSkin) end
+    -- dog:SetAngles(ang)
     dog:Spawn()
     dog:Activate()
 
@@ -153,6 +187,26 @@ function EVENT:Begin()
             if ent == v.ragdoll and v.spawnInfo then
                 v.spawnInfo.health = v.spawnInfo.health - dmg:GetDamage()
                 return
+            end
+        end
+    end)
+
+    self:AddHook("EntityTakeDamage", function(target, dmg)
+        -- Check if the thing taking damage is a valid, alive player
+        if IsValid(target) and target:IsPlayer() and target:Alive() then
+            -- Check if it's fall or physics crush damage
+            if dmg:IsDamageType(DMG_FALL) or dmg:IsDamageType(DMG_CRUSH) then
+                -- Look for any nearby damn dogs to see if they caused/are involved in the collision
+                for _, dog in ipairs(ents.FindByClass("ttt_rdmt_damndog_dog")) do
+                    if IsValid(dog) then
+                        -- If the player is essentially touching the dog's bounding area, nullify the damage
+                        local maxDistance = dog:BoundingRadius() * dog:GetModelScale() + 32
+                        if target:GetPos():Distance(dog:GetPos()) <= maxDistance then
+                            dmg:ScaleDamage(0)
+                            return true -- Overrides the damage completely
+                        end
+                    end
+                end
             end
         end
     end)

@@ -1,10 +1,10 @@
 AddCSLuaFile()
+
 ENT.Type = "anim"
 
 local dogEntity = dogEntity or nil
 
 function ENT:Initialize()
-    self:SetModel("models/damndog/dog1/npc_dog.mdl")
     self:PhysicsInit(SOLID_VPHYSICS)
     self:SetHealth(1)
 
@@ -250,6 +250,7 @@ local function RagdollPlayer(v)
     end
     v.PendingDogSpawn = false -- Cancel any pending spawns so they don't trigger mid-ragdoll
 
+    v.onGround = v:OnGround()
     v.inRagdoll = true
     v.lastRagdoll = CurTime()
 
@@ -328,7 +329,7 @@ local function RagdollPlayer(v)
 
     for k = 0, ragdoll:GetPhysicsObjectCount() - 1 do
         local phys_obj = ragdoll:GetPhysicsObjectNum(k)
-        if IsValid(phys_obj) then
+        if IsValid(phys_obj) and v.onGround then
             local targetVel = Vector(baseVel.x, baseVel.y, baseVel.z)
 
             if isLower[k] then
@@ -397,7 +398,11 @@ end
 
 function ENT:Touch(ply)
     if IsValid(ply) and ply:IsPlayer() and ply:Alive() and not ply.inRagdoll then
+        self:SetCollisionGroup(COLLISION_GROUP_WORLD)
+
         ply.ragdollDog = self
         RagdollPlayer(ply)
+
+        -- self:SetCollisionGroup(COLLISION_GROUP_WORLD)
     end
 end
