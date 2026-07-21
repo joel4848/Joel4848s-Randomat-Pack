@@ -201,12 +201,12 @@ function EVENT:Begin()
     end
 
     -- TESTING ONLY - REMOVE BEFORE RELEASE
-    net.Receive("DamnDogSpawnDog", function(_, ply)
-        if IsValid(ply) then
-            if IsValid(ply.LastSpawnedDog) then ply.LastSpawnedDog:Remove() end
-            ply.LastSpawnedDog = SpawnDog(ply)
-        end
-    end)
+    -- net.Receive("DamnDogSpawnDog", function(_, ply)
+    --     if IsValid(ply) then
+    --         if IsValid(ply.LastSpawnedDog) then ply.LastSpawnedDog:Remove() end
+    --         ply.LastSpawnedDog = SpawnDog(ply)
+    --     end
+    -- end)
 
     -- Make ragdolled players immune to crushing and falling damage
     self:AddHook("PostEntityTakeDamage", function(ent, dmg, taken)
