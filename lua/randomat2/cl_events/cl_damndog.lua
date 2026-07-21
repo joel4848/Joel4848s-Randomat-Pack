@@ -23,7 +23,7 @@ function EVENT:Begin()
     end)
 
     ---------------------------------------------------------------------------------
-    surface.CreateFont("RdmtDamnDogBubbleFont", {
+    surface.CreateFont("RdmtDamnDog_BubbleFont", {
         font = "Arial",
         size = 28,
         weight = 800,
@@ -34,9 +34,9 @@ function EVENT:Begin()
         local ragdolls = ents.FindByClass("prop_ragdoll")
 
         for _, rag in ipairs(ragdolls) do
-            if IsValid(rag) and rag:GetNWBool("RdmtDamnDogHasBubble") then
+            if IsValid(rag) and rag:GetNWBool("RdmtDamnDog_HasBubble") then
 
-                local text = rag:GetNWString("RdmtDamnDogBubbleText")
+                local text = rag:GetNWString("RdmtDamnDog_BubbleText")
 
                 local headBone = rag:LookupBone("ValveBiped.Bip01_Head1") or rag:LookupBone("ValveBiped.Bip01_Head")
                 local headPos = nil
@@ -54,7 +54,7 @@ function EVENT:Begin()
                 clientAngles:RotateAroundAxis(clientAngles:Forward(), 90)
 
                 cam.Start3D2D(drawPos, clientAngles, 0.15)
-                    surface.SetFont("RdmtDamnDogBubbleFont")
+                    surface.SetFont("RdmtDamnDog_BubbleFont")
                     local textWidth, textHeight = surface.GetTextSize(text)
                     local padX, padY = 20, 14
                     local boxWidth = textWidth + (padX * 2)
@@ -64,7 +64,7 @@ function EVENT:Begin()
 
                     draw.RoundedBox(boxHeight / 2, boxX, boxY, boxWidth, boxHeight, Color(255, 255, 255, 240))
 
-                    draw.SimpleText(text, "RdmtDamnDogBubbleFont", -boxX * 2, boxY + padY, Color(20, 20, 20, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+                    draw.SimpleText(text, "RdmtDamnDog_BubbleFont", -boxX * 2, boxY + padY, Color(20, 20, 20, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 
                     local circleY = boxY + boxHeight + 4
                     draw.RoundedBox(6, 0, circleY, 12, 12, Color(255, 255, 255, 240))
@@ -77,18 +77,18 @@ function EVENT:Begin()
 
     local clientEyesSet = 0
 
-    hook.Add("Think", "RdmtDamnDogClientCameraTrack", function()
+    hook.Add("Think", "RdmtDamnDog_DogView", function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return end
 
         -- Check if the local player is currently ragdolled by a dog
-        if not ply:GetNWBool("RdmtIsRagdolledByDog", false) then
+        if not ply:GetNWBool("RdmtDamnDog_IsRagdolled", false) then
             -- Reset frame counter when not ragdolled
             clientEyesSet = 0
             return
         end
 
-        local dog = ply:GetNWEntity("RdmtRagdollDog")
+        local dog = ply:GetNWEntity("RdmtDamnDog_Dog")
 
         -- Track camera angles toward the dog for the first 120 frames
         if IsValid(dog) and clientEyesSet < 240 then
@@ -111,9 +111,7 @@ end
 
 function EVENT:End()
     hook.Remove("Think", "DogKeyWatch")
-    hook.Remove("CalcView", "RdmtDamnDog_SmoothView")
-    hook.Remove("CalcView", "RdmtDamnDog_SmoothCamera")
-    hook.Remove("Think", "RdmtDamnDogClientCameraTrack")
+    hook.Remove("Think", "RdmtDamnDog_DogView")
 end
 
 Randomat:register(EVENT)

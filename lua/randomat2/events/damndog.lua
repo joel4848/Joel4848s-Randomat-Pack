@@ -3,6 +3,7 @@ local EVENT = {}
 Joel4848 = Joel4848 or {}
 
 EVENT.Title = "That &#@%!*% dog!"
+EVENT.AltTitle = "Damn Dog!"
 EVENT.Description = "Randomly spawns &#@%!*% dogs that'll get under your &#@%!*% feet"
 EVENT.id = "damndog"
 EVENT.Categories = {"moderateimpact"}
@@ -57,10 +58,9 @@ end
 
 local function SpawnDog(ply)
     local plyPos = ply:GetPos()
-    dogSpawnDistance = GetConVar("randomat_damndog_spawn_distance"):GetInt()
-
     local moveDir = ply:GetVelocity()
-
+    dogSpawnDistance = GetConVar("randomat_damndog_spawn_distance"):GetInt()
+    -- Increase spawn distance depending on movement speed
     dogSpawnDistance = dogSpawnDistance * math.Clamp(moveDir:Length() / 220, 1, math.huge)
 
     -- A dog shouldn't spawn if they're not moving, but for safety if somehow it still does, use eye angles
@@ -68,13 +68,17 @@ local function SpawnDog(ply)
         moveDir = ply:EyeAngles():Forward()
     end
 
-    moveDir = moveDir:GetNormalized()
+    moveDir:Normalize()
 
     local pos = plyPos + moveDir * dogSpawnDistance
     local ang = moveDir:Angle()
     ang.p = 0
 
     local dogModel, dogScale, dogSkin, notDog = ChooseDog()
+
+    -- Why does this one model spawn facing 180° from how every other model spawns?! 
+    if dogModel == "dog7/jinxcat" then ang.y = ang.y + 180 end
+
     ply.notDog = notDog
 
     local zOffset = 0
@@ -100,7 +104,7 @@ local function SpawnDog(ply)
     dog:Spawn()
     dog:Activate()
 
-    ply:SetNWEntity("RdmtRagdollDog", dog)
+    ply:SetNWEntity("RdmtDamnDog_Dog", dog)
 
     return dog -- Not that my own dog ever listens when I tell her to return. Thanks Bel.
 end
@@ -176,7 +180,7 @@ function EVENT:Begin()
     end)
 
     if affectAll then
-        timer.Create("RdmtDamnDogMain", math.random(lowerTime, upperTime), 0, function()
+        timer.Create("RdmtDamnDog_Main", math.random(lowerTime, upperTime), 0, function()
             -- If player is moving when the main timer runs out, spawn a dog
             for _, ply in ipairs(self:GetAlivePlayers()) do
                 if ply:GetVelocity():LengthSqr() > 10 then
@@ -188,7 +192,7 @@ function EVENT:Begin()
                 end
             end
 
-            timer.Adjust("RdmtDamnDogMain", math.random(lowerTime, upperTime))
+            timer.Adjust("RdmtDamnDog_Main", math.random(lowerTime, upperTime))
         end)
     else
         for _, ply in ipairs(self:GetAlivePlayers()) do
@@ -335,7 +339,7 @@ local function UnstuckPlayer(ply)
 end
 
 function UnRagdollPlayer(v)
-    v.ragdoll:SetNWBool("RdmtDamnDogHasBubble", false)
+    v.ragdoll:SetNWBool("RdmtDamnDog_HasBubble", false)
     v.inRagdoll = false
     v:SetParent()
 
@@ -547,7 +551,7 @@ function Joel4848:RagdollPlayer(v)
     v:SetParent(ragdoll)
 
     if v.notDog then
-        ragdoll:SetNWBool("RdmtDamnDogHasBubble", true)
+        ragdoll:SetNWBool("RdmtDamnDog_HasBubble", true)
 
         local textOptions = {
             "&#@%!*% cat!",
@@ -557,7 +561,7 @@ function Joel4848:RagdollPlayer(v)
         table.Shuffle(textOptions)
         local bubbleText = textOptions[math.random(1, #textOptions)]
 
-        ragdoll:SetNWString("RdmtDamnDogBubbleText", bubbleText)
+        ragdoll:SetNWString("RdmtDamnDog_BubbleText", bubbleText)
     end
 
     local velocityMultiplier = GetConVar("randomat_damndog_trip_power_multiplier"):GetFloat()
@@ -605,8 +609,8 @@ function Joel4848:RagdollPlayer(v)
         end)
     end
 
-    v:SetNWEntity("RdmtRagdollDog", dog)
-    v:SetNWBool("RdmtIsRagdolledByDog", true)
+    v:SetNWEntity("RdmtDamnDog_Dog", dog)
+    v:SetNWBool("RdmtDamnDog_IsRagdolled", true)
 
     v.ragdoll = ragdoll
     local ragdolltime = 5
@@ -625,8 +629,8 @@ function Joel4848:RagdollPlayer(v)
         if physObj:GetVelocity():Length() <= 10 and (CurTime() - v.lastRagdoll) > ragdolltime then
             hook.Remove("Think", v:SteamID64() .. "UnragdollTimer")
 
-            v:SetNWBool("RdmtIsRagdolledByDog", false)
-            v:SetNWEntity("RdmtRagdollDog", nil)
+            v:SetNWBool("RdmtDamnDog_IsRagdolled", false)
+            v:SetNWEntity("RdmtDamnDog_Dog", nil)
 
             UnRagdollPlayer(v)
 
@@ -638,7 +642,7 @@ function Joel4848:RagdollPlayer(v)
 end
 
 function EVENT:End()
-    timer.Remove("RdmtDamnDogMain")
+    timer.Remove("RdmtDamnDog_Main")
 
     for _, ply in player.Iterator() do
         timer.Remove("RdmtDamnDog_" .. ply:SteamID64())
