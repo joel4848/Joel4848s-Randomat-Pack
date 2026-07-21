@@ -16,22 +16,23 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 
 # Randomats
 
-- [Bait Shark](#Bait-Shark) - Lone Sharky vs Traitors with limited harpoons. Sharky wins if all harpoons miss!
-- [Budget Jetpacks For All!](#Budget-Jetpacks-For-All!) - Infinite stronger multijumps!
-- [Chilly Swingers](#Chilly-Swingers) - Forces everyone to use freeze guns, homerun bats and grenades
-- [cOmMuNiSm](#cOmMuNiSm) - Whenever anyone buys something from a shop, all other players get a random buyable item
-- [Compulsory Blood Donation](#Compulsory-Blood-Donation) - Gain temporary health equal to the damage you deal
-- [Don't. Stop. Me. Noooooowwwwwww](#Don't.-Stop.-Me.-Noooooowwwwwww) - Everyone randomly freezes - no immunity!
-- [Invisibees!](#Invisibees) - There DEFINITELY aren't any bees...
-- [Maljumption](#Maljumption) - Causes players to randomly jump
-- [No strafing](#No-strafing) - 'A' and 'D' keys are disabled
-- [Oppositeness intensifies](#Oppositeness-intensifies) - Controls periodically switch
-- [Realistic ~~recoil~~ impacts](#Realistic-recoil-impacts) - Getting shot pushes you away
-- [R-Tex Vision](#R-Tex-Vision) - Your vision is now based on YOUR movement
-- [The Heir Apparent(ly)](#The-Heir-Apparent(ly)) - Vote to deputise someone, but beware: non-innocents become something else...
-- [Whose line is it anyway?](#Whose-line-is-it-anyway?) - Shows where other players are looking, and warns you if it's at you!
-- [YOU made this personal](#YOU-made-this-personal) - RDMd teammates return as active Vindicators. Friendly fire = hostile consequences!
-- [You MUST jump twice.](#You-MUST-jump-twice.) - Explodes players who DON'T use their double jumps!
+- [Bait Shark](#bait-shark) - Lone Sharky vs Traitors with limited harpoons. Sharky wins if all harpoons miss!
+- [Budget Jetpacks For All!](#budget-jetpacks-for-all) - Infinite stronger multijumps!
+- [Chilly Swingers](#chilly-swingers) - Forces everyone to use freeze guns, homerun bats and grenades
+- [cOmMuNiSm](#communism) - Whenever anyone buys something from a shop, all other players get a random buyable item
+- [Compulsory Blood Donation](#compulsory-blood-donation) - Gain temporary health equal to the damage you deal
+- [Don't. Stop. Me. Noooooowwwwwww](#dont-stop-me-noooooowwwwwww) - Everyone randomly freezes - no immunity!
+- [Invisibees!](#invisibees) - There DEFINITELY aren't any bees...
+- [Maljumption](#maljumption) - Causes players to randomly jump
+- [No strafing](#no-strafing) - 'A' and 'D' keys are disabled
+- [Oppositeness intensifies](#oppositeness-intensifies) - Controls periodically switch
+- [Realistic ~~recoil~~ impacts](#realistic-recoil-impacts) - Getting shot pushes you away
+- [R-Tex Vision](#r-tex-vision) - Your vision is now based on YOUR movement
+- [That &#@%!\*% dog!](#that--dog) - Randomly spawns &#@%!*% dogs that'll get under your &#@%!*% feet
+- [The Heir Apparent(ly)](#the-heir-apparently) - Vote to deputise someone, but beware: non-innocents become something else...
+- [Whose line is it anyway?](#whose-line-is-it-anyway) - Shows where other players are looking, and warns you if it's at you!
+- [YOU made this personal](#you-made-this-personal) - RDMd teammates return as active Vindicators. Friendly fire = hostile consequences!
+- [You MUST jump twice.](#you-must-jump-twice) - Explodes players who DON'T use their double jumps!
 
 ## Bait Shark
 
@@ -231,6 +232,22 @@ _randomat_rtexvision_moveRevealTime_ - Default: 1 - Vision time after stopping m
 \
 A reverse of [Malivil's T-Rex Vision randomat](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/trexvision.lua), updated to trigger on any kind of attack (i.e. including crowbars and non-bullet weapons) rather than using `EntityFireBullets`.
 
+## That &#@%!\*% dog!
+
+Periodically spawns a dog prop in front of players, which ragdolls/trips them up if they touch it. Occasionally, the dog will in fact be a cat.
+
+Enabling 'affect all' will mean all players get a dog at the same random time; otherwise, players get dogs at different times.
+
+_ttt_randomat_damndog_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_damndog_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_damndog_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process\
+_randomat_damndog_trip_power_multiplier_ - Default: 1.5 - How far the player is flung when they trip
+_randomat_damndog_interval_lower_ - Default: 20 - The shortest time between damn dog spawns
+_randomat_damndog_interval_upper_ - Default: 30 - The longest time between damn dog spawns
+_randomat_damndog_affect_all_ - Default: 0 - Whether everyone gets a dog at the same time
+_randomat_damndog_spawn_distance_ - Default: 75 - How far dogs spawn from their players
+_randomat_damndog_cat_chance_ - Default: 10 - Percentage chance the dog is, in fact, a cat
+
 ## The Heir Apparent(ly)
 
 Players vote once to deputise someone. A chosen Innocent Team member becomes a Deputy, but a chosen Evil Team member becomes an Impersonator. Jester, Indepdent and Monster Team members become a Detectoclown if `randomat_heirapparently_allow_detectoclown` is enabled and the [Jingle Jam 2022 Custom Roles Pack](https://steamcommunity.com/sharedfiles/filedetails/?id=2942056355) is installed, or otherwise become an Impersonator.\
@@ -292,3 +309,16 @@ It's Malvil's [You can only jump once.](https://github.com/Malivil/TTT-Randomat-
 ## Steam Workshop Link
 
 https://steamcommunity.com/sharedfiles/filedetails/?id=3651886053
+
+## Special Thanks
+
+- [2XMM2](https://steamcommunity.com/id/2XMM2) for the [Doge Playermodel](https://steamcommunity.com/sharedfiles/filedetails/?id=656834283)
+- [Brock](https://steamcommunity.com/id/72kme) for the [extra Doge skins](https://steamcommunity.com/sharedfiles/filedetails/?id=1404838085)
+- [Pipann](https://steamcommunity.com/id/pipann) and [Denic](https://steamcommunity.com/profiles/76561198104198083) for the [Annoying Dog (Undertale) model](https://steamcommunity.com/sharedfiles/filedetails/?id=934358679)
+- [A_Thing](https://steamcommunity.com/id/A_ThingSteam) for the [Slinky Dog model](https://steamcommunity.com/sharedfiles/filedetails/?id=3712997137)
+- [lorensj](https://steamcommunity.com/id/lorensj) for the [Snoop Dogg model](https://steamcommunity.com/sharedfiles/filedetails/?id=348376962)
+- [Turbo Granny](https://steamcommunity.com/id/Kyliesx) for the [Hotdog Dog Quieres model](https://steamcommunity.com/sharedfiles/filedetails/?id=2016906584)
+- [icewallowp1ss](https://steamcommunity.com/id/icewallowp1ss) for the [Jinx the Cat model](https://steamcommunity.com/sharedfiles/filedetails/?id=2715395667)
+- [coolbenaslol101](https://steamcommunity.com/profiles/76561199186655009) for the [Cat Burger model](https://steamcommunity.com/sharedfiles/filedetails/?id=3435190029)
+- [maximmax42](https://steamcommunity.com/id/maximmax42) for the [Garfield model](https://steamcommunity.com/sharedfiles/filedetails/?id=128844998)
+- [Jacob](https://steamcommunity.com/id/JacobLenstar) for the [Odie model](https://steamcommunity.com/sharedfiles/filedetails/?id=455327588)

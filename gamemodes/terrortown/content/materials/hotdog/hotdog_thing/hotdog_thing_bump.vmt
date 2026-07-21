@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture" ""hotdog/hotdog_thing/hotdog_thing"
+	"$bumpmap" "hotdog/hotdog_thing/hotdog_thing_bump"
+}

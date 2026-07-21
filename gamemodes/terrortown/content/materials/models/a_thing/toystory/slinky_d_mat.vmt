@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/a_thing/toystory/slinky_d_mat"
+	"$nocull" 1
+}
