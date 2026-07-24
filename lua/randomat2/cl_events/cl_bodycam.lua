@@ -92,6 +92,58 @@ function EVENT:Begin()
         SurfaceDrawPoly(oval)
     end
 
+    ------------------------------------------------------------------
+    -- HUD Mode Status Text
+    ------------------------------------------------------------------
+    surface.CreateFont("HUD_ModeLarge", {
+        font = "Verdana",
+        size = 40,
+        weight = 900,
+        antialias = true,
+        shadow = true
+    })
+
+    surface.CreateFont("HUD_HintLarge", {
+        font = "Verdana",
+        size = 28,
+        weight = 500,
+        antialias = true,
+        shadow = true
+    })
+
+    local modeNames = {
+        [0] = "Normal",
+        [1] = "Night Vision",
+        [2] = "FLIR"
+    }
+
+    local function DrawHUDText()
+        local currentModeText = modeNames[NV_Mode] or "Normal"
+
+        local textX = 50
+        local textY = 50
+
+        draw.SimpleText(
+            "MODE: " .. currentModeText,
+            "HUD_ModeLarge",
+            textX,
+            textY,
+            Color(50, 255, 50, 255),
+            TEXT_ALIGN_LEFT,
+            TEXT_ALIGN_TOP
+        )
+
+        draw.SimpleText(
+            "Press 'G' to change",
+            "HUD_HintLarge",
+            textX,
+            textY + 40,
+            Color(200, 200, 200, 220),
+            TEXT_ALIGN_LEFT,
+            TEXT_ALIGN_TOP
+        )
+    end
+
     hook.Add("HUDPaint", "RdmtBodycam_FisheyeBorder", function()
         RenderSetStencilWriteMask(0xFF)
         RenderSetStencilTestMask(0xFF)
@@ -117,6 +169,8 @@ function EVENT:Begin()
         SurfaceSetDrawColor(0, 0, 0, 255)
         SurfaceDrawRect(0, 0, screenWidth, screenHeight)
         RenderSetStencilEnable(false)
+
+        DrawHUDText()
     end)
 
     hook.Add("RenderScreenspaceEffects", "RdmtBodycam_FisheyeEffect", function()
