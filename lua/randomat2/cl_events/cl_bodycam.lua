@@ -1,6 +1,8 @@
 local EVENT = {}
 EVENT.id = "bodycam"
 
+CreateClientConVar("cl_randomat_bodycam_fisheye_enabled", 1, true, false, "Whether to enable the fisheye screen distortion", 0, 1)
+
 ----------------------------------------------------------------
 -- Cache stuff
 ----------------------------------------------------------------
@@ -73,6 +75,9 @@ local NV_USE_ISIB = true
 local NV_ISIB_SENSITIVITY = 10 -- 2 to 10
 
 function EVENT:Begin()
+
+    LocalPlayer():PrintMessage(HUD_PRINTTALK, "If the fisheye effect makes you nauseous, run")
+    LocalPlayer():PrintMessage(HUD_PRINTTALK, "'cl_randomat_bodycam_fisheye_enabled 0' in the console")
 
     ----------------------------------------------------------------
     -- Fisheye and border
@@ -174,10 +179,16 @@ function EVENT:Begin()
     end)
 
     hook.Add("RenderScreenspaceEffects", "RdmtBodycam_FisheyeEffect", function()
+        local enableFisheye = GetConVar("cl_randomat_bodycam_fisheye_enabled"):GetBool()
+        if not enableFisheye then return end
+
         DrawMaterialOverlay("models/props_c17/fisheyelens", -0.1)
     end)
 
     hook.Add("CalcView", "RdmtBodycam_FisheyeCorrection", function(ply, pos, angles, fov)
+        local enableFisheye = GetConVar("cl_randomat_bodycam_fisheye_enabled"):GetBool()
+        if not enableFisheye then return end
+
         local correctionOffset = 0.00016 * fov * fov + 0.01216 * fov + 0.195
         correctionOffset = MathMax(0, correctionOffset)
         local viewAngles = Angle(angles.p, angles.y - correctionOffset, angles.r)
