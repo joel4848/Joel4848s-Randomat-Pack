@@ -41,12 +41,19 @@ function EVENT:Begin()
                     carriedWep.futterbingersImmune = true
 
                     carriedWep.OnDrop = function(droppedWep, ...)
+
                         local timerName = "RdmtFutterbingers_" .. droppedWep:EntIndex()
                         timer.Create(timerName, 10, 1, function()
                             if IsValid(droppedWep) then
                                 droppedWep.futterbingersImmune = false
                             end
                         end)
+
+                        local activeWep = ply:GetActiveWeapon() or nil
+
+                        if activeWep and activeWep == droppedWep then
+                            wep.ShouldEquip = true
+                        end
 
                         if oldOnDrop then
                             return oldOnDrop(droppedWep, ...)
@@ -59,6 +66,21 @@ function EVENT:Begin()
         end
 
         return true
+    end)
+
+    self:AddHook("WeaponEquip", function(wep, ply)
+        if not IsValid(ply) or not IsValid(wep) then return end
+
+        if wep.ShouldEquip then
+            local weaponClass = wep:GetClass()
+
+            timer.Simple(0.15, function()
+                if IsValid(ply) and IsValid(wep) then
+                    ply:SelectWeapon(weaponClass)
+                    wep.ShouldEquip = nil
+                end
+            end)
+        end
     end)
 end
 
