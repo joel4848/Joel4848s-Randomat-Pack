@@ -75,7 +75,6 @@ local NV_USE_ISIB = true
 local NV_ISIB_SENSITIVITY = 10 -- 2 to 10
 
 function EVENT:Begin()
-
     LocalPlayer():PrintMessage(HUD_PRINTTALK, "If the fisheye effect makes you nauseous, run")
     LocalPlayer():PrintMessage(HUD_PRINTTALK, "'cl_randomat_bodycam_fisheye_enabled 0' in the console")
 
@@ -290,7 +289,7 @@ function EVENT:Begin()
 
     hook.Add("RenderScreenspaceEffects", "RdmtBodycam_NVScreenEffects", function()
         local ply = LocalPlayer()
-        if not IsValid(ply) or not ply:Alive() then return end
+        if not IsValid(ply) then return end
         if NV_Mode ~= 1 then return end
 
         if NV_USE_DISTORT then
@@ -311,7 +310,7 @@ function EVENT:Begin()
 
     hook.Add("HUDPaintBackground", "RdmtBodycam_NVScalines", function()
         local ply = LocalPlayer()
-        if not IsValid(ply) or not ply:Alive() then return end
+        if not IsValid(ply) then return end
         if NV_Mode ~= 1 then return end
 
         -- Draw scanlines
@@ -432,7 +431,7 @@ function EVENT:Begin()
 
     hook.Add("Think", "RdmtBodycam_FLIRCoolGunHeat", function()
         local ply = LocalPlayer()
-        if not IsValid(ply) or not ply:Alive() then return end
+        if not IsValid(ply) then return end
 
         if gunHeat > 0 then
             local frameTime = FrameTime()
@@ -526,7 +525,7 @@ function EVENT:Begin()
 
     hook.Add("Think", "RdmtBodycam_NVUpdateIllumination", function()
         local ply = LocalPlayer()
-        if not IsValid(ply) or not ply:Alive() then return end
+        if not IsValid(ply) then return end
         if NV_Mode ~= 1 then return end
 
         local frameTime = FrameTime()
@@ -590,7 +589,7 @@ function EVENT:Begin()
 
     local function SetMode(newMode)
         local ply = LocalPlayer()
-        if not IsValid(ply) or not ply:Alive() then return end
+        if not IsValid(ply) then return end
 
         if newMode == NV_Mode then return end
 
@@ -629,30 +628,36 @@ function EVENT:Begin()
 
     gotCrosshairOriginalValues = false
 
-    hook.Add("PlayerBindPress", "RdmtBodycam_ChangeMode", function(ply, bind, pressed)
-        if pressed and (bind:find("impulse 201") or InputIsKeyDown(KEY_G)) then
-            if not gotCrosshairOriginalValues then
-                GetCrosshairOriginalValues()
-                gotCrosshairOriginalValues = true
-            end
+    self:AddHook("PlayerButtonDown", function(ply, button)
+        if button ~= KEY_G then return end
 
-            local nextMode = (NV_Mode + 1) % 3
-            SetMode(nextMode)
+        if not gotCrosshairOriginalValues then
+            GetCrosshairOriginalValues()
+            gotCrosshairOriginalValues = true
+        end
 
-            if nextMode == 1 then
-                cc_e:SetBool(true)
-                cc_r:SetInt(0)
-                cc_g:SetInt(0)
-                cc_b:SetInt(0)
-                cc_t:SetInt(3)
-            else
-                cc_e:SetBool(orig_cc_e)
-                cc_r:SetInt(orig_cc_r)
-                cc_g:SetInt(orig_cc_g)
-                cc_b:SetInt(orig_cc_b)
-                cc_t:SetInt(orig_cc_t)
-            end
+        local nextMode = (NV_Mode + 1) % 3
+        SetMode(nextMode)
 
+        if nextMode == 1 then
+            cc_e:SetBool(true)
+            cc_r:SetInt(0)
+            cc_g:SetInt(0)
+            cc_b:SetInt(0)
+            cc_t:SetInt(3)
+        else
+            cc_e:SetBool(orig_cc_e)
+            cc_r:SetInt(orig_cc_r)
+            cc_g:SetInt(orig_cc_g)
+            cc_b:SetInt(orig_cc_b)
+            cc_t:SetInt(orig_cc_t)
+        end
+
+        return true
+    end)
+
+    self:AddHook("PlayerBindPress", function(_, bind, pressed, key)
+        if pressed and bind:find("impulse 201") and key == KEY_G then
             return true
         end
     end)
