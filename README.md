@@ -17,16 +17,19 @@ Otherwise, randomat-specific convars will be detailed in each randomat's entry b
 # Randomats
 
 - [Bait Shark](#bait-shark) - Lone Sharky vs Traitors with limited harpoons. Sharky wins if all harpoons miss!
+- [Bodycam](#bodycam) - Adds a fisheye effect; press G to cycle between normal, nightvision and FLIR modes
 - [Budget Jetpacks For All!](#budget-jetpacks-for-all) - Infinite stronger multijumps!
 - [Chilly Swingers](#chilly-swingers) - Forces everyone to use freeze guns, homerun bats and grenades
 - [cOmMuNiSm](#communism) - Whenever anyone buys something from a shop, all other players get a random buyable item
 - [Compulsory Blood Donation](#compulsory-blood-donation) - Gain temporary health equal to the damage you deal
 - [Don't. Stop. Me. Noooooowwwwwww](#dont-stop-me-noooooowwwwwww) - Everyone randomly freezes - no immunity!
+- [Futterbingers](#futterbingers) - Makes players pick up every weapon they touch
 - [Invisibees!](#invisibees) - There DEFINITELY aren't any bees...
 - [Maljumption](#maljumption) - Causes players to randomly jump
 - [No strafing](#no-strafing) - 'A' and 'D' keys are disabled
 - [Oppositeness intensifies](#oppositeness-intensifies) - Controls periodically switch
 - [Realistic ~~recoil~~ impacts](#realistic-recoil-impacts) - Getting shot pushes you away
+- [Remember ~~Flat~~ Australian Stanley?](#remember-flat-australian-stanley) - Flips playermodels upside down
 - [R-Tex Vision](#r-tex-vision) - Your vision is now based on YOUR movement
 - [That &#@%!\*% dog!](#that--dog) - Randomly spawns &#@%!*% dogs that'll get under your &#@%!*% feet
 - [The Heir Apparent(ly)](#the-heir-apparently) - Vote to deputise someone, but beware: non-innocents become something else...
@@ -67,6 +70,16 @@ _randomat_baitshark_highlightInnocent_ - Default: 0 - Whether the traitors can s
 _randomat_baitshark_traitorBlindDuration_ - Default: 15 - How long to blind & freeze traitors for\
 \
 Credit: [/u/madman12308 for the original idea](https://www.reddit.com/r/Yogscast/comments/8pf3oc/im_coding_a_randomat_20_for_ttt_and_would_like/e0bhmvd/)
+
+## Bodycam
+
+Adds a fisheye effect with a black border; pressing G cycles through normal, nightvision and FLIR modes.
+
+If the fisheye effect makes players nauseous they can disable it by running `cl_randomat_bodycam_fisheye_enabled 0` in the console.
+
+_ttt_randomat_bodycam_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_bodycam_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_bodycam_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process
 
 ## Budget Jetpacks For All!
 
@@ -138,6 +151,14 @@ _randomat_dontstopmenow_affectAll_ - Default: 0 - Does the event affect everyone
 _randomat_dontstopmenow_allowMouseInput_ - Default: 1 - Can players look and shoot while frozen\
 \
 It's a horrible (yet hopefully still fun) bastardisation of Malvil's [FREEZE! aka Winter has come at last. aka The Ice Man cometh. aka In this universe, there is only one absolute: everything freezes! aka Tonight, Hell freezes over. aka I'm afraid my condition has left me cold to your pleas of mercy. aka Cool party. aka You are not sending me to the cooler. aka Stay cool, bird boy. aka Alright, everyone! Chill! aka It's a cold town. aka Tonight's forecast: a freeze is coming! aka What killed the dinosaurs?! The ice age! aka Let's kick some ice! aka Can you feel it coming? The icy cold of space! aka Freeze in hell, Batman!](https://github.com/Malivil/TTT-Randomat-20/blob/main/lua/randomat2/events/freeze.lua).
+
+## Futterbingers
+
+Makes players pick up every weapon they touch, dropping the weapon/item in that slot if they have one already. Dropped weapons have a short cooldown during which they won't be forced to be picked up, to prevent instant pick up/drop spamming between two weapons (it was a nightmare).
+
+_ttt_randomat_futterbingers_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_futterbingers_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_futterbingers_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process
 
 ## Invisibees
 
@@ -219,6 +240,14 @@ _ttt_randomat_realisticimpacts_weight_ - Default: - 1 - The weight this event sh
 _randomat_realisticimpacts_max_ - Default: 1500 - Maximum magnitude by which a gun can change someone's velocity by\
 _randomat_realisticimpacts_min_ - Default: 200 - Minimum magnitude by which a gun can change someone's velocity by\
 _randomat_realisticimpacts_mul_ - Default: 10 - Push multiplier
+
+## Remember ~~Flat~~ Australian Stanley?
+
+Flips playermodels upside down and moves players' viewpoints to the floor (where their heads are). Does **not** flip their cameras, don't worry!
+
+_ttt_randomat_australianmodels_ - Default: 1 - Whether this event is enabled\
+_ttt_randomat_australianmodels_min_players_ - Default: 0 - The minimum number of players required for this event to start\
+_ttt_randomat_australianmodels_weight_ - Default: - 1 - The weight this event should use during the randomized event selection process
 
 ## R-Tex Vision
 
@@ -312,6 +341,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=3651886053
 
 ## Special Thanks
 
+- [Spy](https://steamcommunity.com/id/yobanyvroot) for their awesome [night vision mod](https://steamcommunity.com/sharedfiles/filedetails/?id=224378049), which provided the base code framework for Bodycam's NV and FLIR modes
 - [2XMM2](https://steamcommunity.com/id/2XMM2) for the [Doge Playermodel](https://steamcommunity.com/sharedfiles/filedetails/?id=656834283)
 - [Brock](https://steamcommunity.com/id/72kme) for the [extra Doge skins](https://steamcommunity.com/sharedfiles/filedetails/?id=1404838085)
 - [Pipann](https://steamcommunity.com/id/pipann) and [Denic](https://steamcommunity.com/profiles/76561198104198083) for the [Annoying Dog (Undertale) model](https://steamcommunity.com/sharedfiles/filedetails/?id=934358679)
