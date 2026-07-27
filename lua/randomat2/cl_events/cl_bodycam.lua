@@ -326,6 +326,10 @@ function EVENT:Begin()
         local ply = LocalPlayer()
         if not IsValid(ply) then return end
 
+        if NV_Mode == 3 and ply:Alive() then NV_Mode = 0 end
+
+        if NV_Mode ~= 2 then return end
+
         local frameTime = FrameTime()
         local eyePos = ply:EyePos()
         local ambient = MathTruncate(GetAmbientLightLevel(eyePos), 3)
