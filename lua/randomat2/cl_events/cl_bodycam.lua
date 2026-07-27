@@ -3,6 +3,17 @@ EVENT.id = "bodycam"
 
 CreateClientConVar("cl_randomat_bodycam_fisheye_enabled", 1, true, false, "Whether to enable the fisheye screen distortion", 0, 1)
 
+local cc_e
+local cc_r
+local cc_g
+local cc_b
+local cc_t
+local orig_cc_e
+local orig_cc_r
+local orig_cc_g
+local orig_cc_b
+local orig_cc_t
+
 ----------------------------------------------------------------
 -- Cache stuff
 ----------------------------------------------------------------
@@ -13,7 +24,6 @@ local SurfaceDrawPoly	  = surface.DrawPoly
 
 local DrawNoTexture	 = draw.NoTexture
 local TableInsert	 = table.insert
-local InputIsKeyDown = input.IsKeyDown
 
 local screenWidth  = ScrW()
 local screenHeight = ScrH()
@@ -75,6 +85,19 @@ local NV_USE_ISIB = true
 local NV_ISIB_SENSITIVITY = 10 -- 2 to 10
 
 function EVENT:Begin()
+    cc_e = GetConVar("ttt_crosshair_color_enable")
+    cc_r = GetConVar("ttt_crosshair_color_r")
+    cc_g = GetConVar("ttt_crosshair_color_g")
+    cc_b = GetConVar("ttt_crosshair_color_b")
+    cc_t = GetConVar("ttt_crosshair_thickness")
+    orig_cc_e = cc_e:GetBool()
+    orig_cc_r = cc_r:GetInt()
+    orig_cc_g = cc_g:GetInt()
+    orig_cc_b = cc_b:GetInt()
+    orig_cc_t = cc_t:GetInt()
+
+    local NV_Mode = NV_Mode or 0
+
     LocalPlayer():PrintMessage(HUD_PRINTTALK, "If the fisheye effect makes you nauseous, run")
     LocalPlayer():PrintMessage(HUD_PRINTTALK, "'cl_randomat_bodycam_fisheye_enabled 0' in the console")
 
@@ -99,7 +122,15 @@ function EVENT:Begin()
     ------------------------------------------------------------------
     -- HUD Mode Status Text
     ------------------------------------------------------------------
-    surface.CreateFont("HUD_ModeLarge", {
+    surface.CreateFont("HUDMode_Medium", {
+        font = "Verdana",
+        size = 30,
+        weight = 900,
+        antialias = true,
+        shadow = true
+    })
+
+    surface.CreateFont("HUDMode_Large", {
         font = "Verdana",
         size = 40,
         weight = 900,
@@ -107,7 +138,7 @@ function EVENT:Begin()
         shadow = true
     })
 
-    surface.CreateFont("HUD_HintLarge", {
+    surface.CreateFont("HUDHint_Large", {
         font = "Verdana",
         size = 28,
         weight = 500,
@@ -118,7 +149,8 @@ function EVENT:Begin()
     local modeNames = {
         [0] = "Normal",
         [1] = "Night Vision",
-        [2] = "FLIR"
+        [2] = "FLIR",
+        [3] = "Disabled"
     }
 
     local function DrawHUDText()
@@ -127,66 +159,94 @@ function EVENT:Begin()
         local textX = 50
         local textY = 50
 
+        if NV_Mode == 3 then
+            draw.RoundedBox(10, textX - 10, textY - 10, 272, 88, Color(0, 0, 0, 200))
+        end
+
         draw.SimpleText(
-            "MODE: " .. currentModeText,
-            "HUD_ModeLarge",
+            "MODE",
+            "HUDMode_Medium",
             textX,
-            textY,
+            textY + 1,
+            Color(200, 200, 200, 255),
+            TEXT_ALIGN_LEFT,
+            TEXT_ALIGN_TOP
+        )
+
+        draw.SimpleText(
+            ":",
+            "HUDMode_Medium",
+            textX + 81,
+            textY - 1,
+            Color(200, 200, 200, 255),
+            TEXT_ALIGN_LEFT,
+            TEXT_ALIGN_TOP
+        )
+
+        draw.SimpleText(
+            currentModeText,
+            "HUDMode_Large",
+            textX + 94,
+            textY - 6,
             Color(50, 255, 50, 255),
             TEXT_ALIGN_LEFT,
             TEXT_ALIGN_TOP
         )
 
         draw.SimpleText(
-            "Press 'G' to change",
-            "HUD_HintLarge",
+            "Press Ⓖ to change",
+            "HUDHint_Large",
             textX,
             textY + 40,
-            Color(200, 200, 200, 220),
+            Color(200, 200, 200, 255),
             TEXT_ALIGN_LEFT,
             TEXT_ALIGN_TOP
         )
     end
 
     hook.Add("HUDPaint", "RdmtBodycam_FisheyeBorder", function()
-        RenderSetStencilWriteMask(0xFF)
-        RenderSetStencilTestMask(0xFF)
-        RenderSetStencilReferenceValue(0)
-        RenderSetStencilCompareFunction(STENCIL_ALWAYS)
-        RenderSetStencilPassOperation(STENCIL_KEEP)
-        RenderSetStencilFailOperation(STENCIL_KEEP)
-        RenderSetStencilZFailOperation(STENCIL_KEEP)
-        RenderClearStencil()
-        RenderSetStencilEnable(true)
-        RenderSetStencilReferenceValue(1)
-        RenderSetStencilCompareFunction(STENCIL_NEVER)
-        RenderSetStencilFailOperation(STENCIL_REPLACE)
-        DrawNoTexture()
-        SurfaceSetDrawColor(COLOR_WHITE)
-        local centerX = screenWidth / 2
-        local centerY = screenHeight / 2
-        local radiusX = screenWidth * 0.478
-        local radiusY = screenHeight * 0.478
-        DrawOval(centerX, centerY, radiusX, radiusY, 100)
-        RenderSetStencilCompareFunction(STENCIL_NOTEQUAL)
-        RenderSetStencilFailOperation(STENCIL_KEEP)
-        SurfaceSetDrawColor(0, 0, 0, 255)
-        SurfaceDrawRect(0, 0, screenWidth, screenHeight)
-        RenderSetStencilEnable(false)
+        if NV_Mode == 3 then
+            DrawHUDText()
+        else
+            RenderSetStencilWriteMask(0xFF)
+            RenderSetStencilTestMask(0xFF)
+            RenderSetStencilReferenceValue(0)
+            RenderSetStencilCompareFunction(STENCIL_ALWAYS)
+            RenderSetStencilPassOperation(STENCIL_KEEP)
+            RenderSetStencilFailOperation(STENCIL_KEEP)
+            RenderSetStencilZFailOperation(STENCIL_KEEP)
+            RenderClearStencil()
+            RenderSetStencilEnable(true)
+            RenderSetStencilReferenceValue(1)
+            RenderSetStencilCompareFunction(STENCIL_NEVER)
+            RenderSetStencilFailOperation(STENCIL_REPLACE)
+            DrawNoTexture()
+            SurfaceSetDrawColor(COLOR_WHITE)
+            local centerX = screenWidth / 2
+            local centerY = screenHeight / 2
+            local radiusX = screenWidth * 0.478
+            local radiusY = screenHeight * 0.478
+            DrawOval(centerX, centerY, radiusX, radiusY, 100)
+            RenderSetStencilCompareFunction(STENCIL_NOTEQUAL)
+            RenderSetStencilFailOperation(STENCIL_KEEP)
+            SurfaceSetDrawColor(0, 0, 0, 255)
+            SurfaceDrawRect(0, 0, screenWidth, screenHeight)
+            RenderSetStencilEnable(false)
 
-        DrawHUDText()
+            DrawHUDText()
+        end
     end)
 
     hook.Add("RenderScreenspaceEffects", "RdmtBodycam_FisheyeEffect", function()
         local enableFisheye = GetConVar("cl_randomat_bodycam_fisheye_enabled"):GetBool()
-        if not enableFisheye then return end
+        if NV_Mode == 3 or not enableFisheye then return end
 
         DrawMaterialOverlay("models/props_c17/fisheyelens", -0.1)
     end)
 
     hook.Add("CalcView", "RdmtBodycam_FisheyeCorrection", function(ply, pos, angles, fov)
         local enableFisheye = GetConVar("cl_randomat_bodycam_fisheye_enabled"):GetBool()
-        if not enableFisheye then return end
+        if NV_Mode == 3 or not enableFisheye then return end
 
         local correctionOffset = 0.00016 * fov * fov + 0.01216 * fov + 0.195
         correctionOffset = MathMax(0, correctionOffset)
@@ -203,8 +263,6 @@ function EVENT:Begin()
     ----------------------------------------------------------------
     -- NV/FLIR state/colour setup
     ----------------------------------------------------------------
-
-    NV_Mode = NV_Mode or 0
 
     local sndOn  = Sound("items/nvg_on.wav")
     local sndOff = Sound("items/nvg_off.wav")
@@ -602,41 +660,35 @@ function EVENT:Begin()
         NV_Mode = newMode
     end
 
-    local cc_e
-    local cc_r
-    local cc_g
-    local cc_b
-    local cc_t
-    local orig_cc_e
-    local orig_cc_r
-    local orig_cc_g
-    local orig_cc_b
-    local orig_cc_t
+    -- local function GetCrosshairOriginalValues()
+    --     cc_e = GetConVar("ttt_crosshair_color_enable")
+    --     cc_r = GetConVar("ttt_crosshair_color_r")
+    --     cc_g = GetConVar("ttt_crosshair_color_g")
+    --     cc_b = GetConVar("ttt_crosshair_color_b")
+    --     cc_t = GetConVar("ttt_crosshair_thickness")
+    --     orig_cc_e = cc_e:GetBool()
+    --     orig_cc_r = cc_r:GetInt()
+    --     orig_cc_g = cc_g:GetInt()
+    --     orig_cc_b = cc_b:GetInt()
+    --     orig_cc_t = cc_t:GetInt()
+    -- end
 
-    local function GetCrosshairOriginalValues()
-        cc_e = GetConVar("ttt_crosshair_color_enable")
-        cc_r = GetConVar("ttt_crosshair_color_r")
-        cc_g = GetConVar("ttt_crosshair_color_g")
-        cc_b = GetConVar("ttt_crosshair_color_b")
-        cc_t = GetConVar("ttt_crosshair_thickness")
-        orig_cc_e = cc_e:GetBool()
-        orig_cc_r = cc_r:GetInt()
-        orig_cc_g = cc_g:GetInt()
-        orig_cc_b = cc_b:GetInt()
-        orig_cc_t = cc_t:GetInt()
-    end
-
-    gotCrosshairOriginalValues = false
+    -- local gotCrosshairOriginalValues = false
 
     self:AddHook("PlayerButtonDown", function(ply, button)
         if button ~= KEY_G then return end
 
-        if not gotCrosshairOriginalValues then
-            GetCrosshairOriginalValues()
-            gotCrosshairOriginalValues = true
-        end
+        -- if not gotCrosshairOriginalValues then
+        --     GetCrosshairOriginalValues()
+        --     gotCrosshairOriginalValues = true
+        -- end
 
-        local nextMode = (NV_Mode + 1) % 3
+        local nextMode
+        if ply:Alive() then
+            nextMode = (NV_Mode + 1) % 3
+        else
+            nextMode = (NV_Mode + 1) % 4
+        end
         SetMode(nextMode)
 
         if nextMode == 1 then
@@ -689,6 +741,14 @@ function EVENT.End()
     hook.Remove("PostDrawViewModel", "RdmtBodycam_WeaponHeatPost")
     hook.Remove("PreDrawPlayerHands", "RdmtBodycam_HandHeatPre")
     hook.Remove("PostDrawPlayerHands", "RdmtBodycam_HandHeatPost")
+
+    if orig_cc_e and orig_cc_r and orig_cc_g and orig_cc_b and orig_cc_t then
+        cc_e:SetBool(orig_cc_e)
+        cc_r:SetInt(orig_cc_r)
+        cc_g:SetInt(orig_cc_g)
+        cc_b:SetInt(orig_cc_b)
+        cc_t:SetInt(orig_cc_t)
+    end
 end
 
 Randomat:register(EVENT)
