@@ -13,7 +13,7 @@ function EVENT:Begin()
     net.Broadcast()
 
     local prankenstein = nil
-    local prankensteinVanilla = nil
+    -- local prankensteinVanilla = nil
 
     -- Find who's available to make the Dr. Prankenstein
     local players = {}
