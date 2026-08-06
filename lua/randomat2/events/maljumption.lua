@@ -4,7 +4,7 @@ EVENT.Title = "Maljumption"
 EVENT.Description = "Causes players to randomly jump"
 EVENT.id = "maljumption"
 EVENT.Type = EVENT_TYPE_JUMPING
-EVENT.Categories = {"lowimpact"}
+EVENT.Categories = {"smallimpact"}
 
 CreateConVar("randomat_maljumption_upper", 10, FCVAR_NONE, "The upper limit for the random timer", 2, 60)
 CreateConVar("randomat_maljumption_lower", 1, FCVAR_NONE, "The lower limit for the random timer", 1, 60)
