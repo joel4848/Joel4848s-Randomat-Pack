@@ -664,28 +664,17 @@ function EVENT:Begin()
         NV_Mode = newMode
     end
 
-    -- local function GetCrosshairOriginalValues()
-    --     cc_e = GetConVar("ttt_crosshair_color_enable")
-    --     cc_r = GetConVar("ttt_crosshair_color_r")
-    --     cc_g = GetConVar("ttt_crosshair_color_g")
-    --     cc_b = GetConVar("ttt_crosshair_color_b")
-    --     cc_t = GetConVar("ttt_crosshair_thickness")
-    --     orig_cc_e = cc_e:GetBool()
-    --     orig_cc_r = cc_r:GetInt()
-    --     orig_cc_g = cc_g:GetInt()
-    --     orig_cc_b = cc_b:GetInt()
-    --     orig_cc_t = cc_t:GetInt()
-    -- end
-
-    -- local gotCrosshairOriginalValues = false
+    local modeKeyDown = false
 
     self:AddHook("PlayerButtonDown", function(ply, button)
         if button ~= KEY_G then return end
+        if modeKeyDown then return end
 
-        -- if not gotCrosshairOriginalValues then
-        --     GetCrosshairOriginalValues()
-        --     gotCrosshairOriginalValues = true
-        -- end
+        modeKeyDown = true
+
+        if not IsFirstTimePredicted() then
+            return
+        end
 
         local nextMode
         if ply:Alive() then
@@ -710,6 +699,13 @@ function EVENT:Begin()
         end
 
         return true
+    end)
+
+    self:AddHook("PlayerButtonUp", function(ply, button)
+        if button ~= KEY_G then return end
+        if not modeKeyDown then return end
+
+        modeKeyDown = false
     end)
 
     self:AddHook("PlayerBindPress", function(_, bind, pressed, key)
