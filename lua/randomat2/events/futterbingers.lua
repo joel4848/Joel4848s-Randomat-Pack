@@ -7,7 +7,7 @@ EVENT.Categories = {"lowimpact"}
 
 function EVENT:Begin()
     self:AddHook("PlayerCanPickupWeapon", function(ply, wep)
-        if not IsValid(ply) or not IsValid(wep) then return end
+        if not IsValid(ply) or not IsValid(wep) or not ply:Alive() then return end
 
         local targetKind = wep.Kind
         local wepClass = wep:GetClass()
@@ -22,14 +22,7 @@ function EVENT:Begin()
             end
         end
 
-        if slotEmpty then
-            timer.Simple(0, function()
-                if IsValid(ply) and IsValid(wep) then
-                    ply:PickupWeapon(wep)
-                end
-            end)
-            return true
-        end
+        if slotEmpty then return end
 
         if wep.futterbingersImmune then return end
 
@@ -43,7 +36,7 @@ function EVENT:Begin()
                     carriedWep.OnDrop = function(droppedWep, ...)
 
                         local timerName = "RdmtFutterbingers_" .. droppedWep:EntIndex()
-                        timer.Create(timerName, 10, 1, function()
+                        timer.Create(timerName, 1, 1, function()
                             if IsValid(droppedWep) then
                                 droppedWep.futterbingersImmune = false
                             end
@@ -65,7 +58,7 @@ function EVENT:Begin()
             end
         end
 
-        return true
+        -- return true
     end)
 
     self:AddHook("WeaponEquip", function(wep, ply)
