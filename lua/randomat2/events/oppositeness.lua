@@ -13,6 +13,7 @@ EVENT.Title = {
     { text = "Oppositeness " },
     { text = "Intensifies", italic = true }
 }
+EVENT.DisplayTitle = "Oppositeness Intensifies"
 EVENT.Description = "Controls periodically switch"
 EVENT.id = "oppositeness"
 EVENT.Categories = {"largeimpact"}

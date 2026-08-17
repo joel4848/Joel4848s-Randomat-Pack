@@ -6,7 +6,6 @@ EVENT.id = "personal"
 EVENT.Categories = {"moderateimpact"}
 
 local function IsSameTeam(attacker, victim)
-
     if attacker.IsSameTeam and isfunction(attacker.IsSameTeam) then
         return attacker:IsSameTeam(victim)
     end
@@ -27,11 +26,21 @@ local function IsSameTeam(attacker, victim)
 end
 
 function EVENT:Begin()
-    self:AddHook("DoPlayerDeath", function(victim, attacker, dmg)
+    RegisterRoleHooks(ROLE_VINDICATOR)
 
+    self:AddHook("DoPlayerDeath", function(victim, attacker, dmg)
+        print("111111111111111111111111")
         if not IsPlayer(victim) then return end
         if not IsPlayer(attacker) then return end
         if victim == attacker then return end
+        if victim:IsRespawning() then
+            victim:StopRespawning()
+        end
+
+        if IsValid(victim.PharaohAnkh) then
+            victim.PharaohAnkh:DestroyAnkh()
+            victim.PharaohAnkh = nil
+        end
 
         if GetRoundState() ~= ROUND_ACTIVE then return end
 
@@ -39,10 +48,15 @@ function EVENT:Begin()
 
         if victim:IsVindicator() then return end
 
+        victim:StripRoleWeapons()
         victim:SetRole(ROLE_VINDICATOR)
 
         SendFullStateUpdate()
     end)
+end
+
+function EVENT:End()
+    UnregisterRoleHooks(ROLE_VINDICATOR)
 end
 
 function EVENT:Condition()

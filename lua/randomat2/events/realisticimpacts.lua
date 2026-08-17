@@ -10,7 +10,7 @@ EVENT.Title = {
     {text = "Recoil", strikethrough = true},
     {text = " Impacts"},
 }
-
+EVENT.DisplayTitle = "Realistic Impacts"
 EVENT.Description = "Getting shot pushes you away"
 EVENT.id = "realisticimpacts"
 EVENT.Categories = {"smallimpact"}

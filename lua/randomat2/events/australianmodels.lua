@@ -5,10 +5,12 @@ EVENT.Title = {
     {text = "Flat", strikethrough = true},
     {text = " Australian Stanley?"},
 }
+EVENT.DisplayTitle = "Remember Australian Stanley?"
 EVENT.Description = {
     {text = "Now this is a randomat all about how"},
     {text = "\nmy playermodel got flipped turned uʍop ǝpᴉsdn"}
 }
+EVENT.DisplayDescription = "Flips player models upside down"
 EVENT.id = "australianmodels"
 
 local savedViewOffsets = {}
