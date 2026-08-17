@@ -33,7 +33,7 @@ local function ClearTimeoutTimer(ply)
     end
 end
 
-function SendSussyBuffetInfo(choices, rerolls, detCount, innCount, traCount, jesCount, indCount)
+local function SendSussyBuffetInfo(choices, rerolls, detCount, innCount, traCount, jesCount, indCount)
     local allowDupes  = GetConVar("randomat_sussybuffet_allow_duplicates"):GetBool()
     local respawnDead = GetConVar("randomat_sussybuffet_respawn_dead_players"):GetBool()
 

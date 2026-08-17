@@ -29,7 +29,6 @@ function EVENT:Begin()
     RegisterRoleHooks(ROLE_VINDICATOR)
 
     self:AddHook("DoPlayerDeath", function(victim, attacker, dmg)
-        print("111111111111111111111111")
         if not IsPlayer(victim) then return end
         if not IsPlayer(attacker) then return end
         if victim == attacker then return end
