@@ -483,6 +483,9 @@ local function CreateChoiceUI(choices)
     background:SetDraggable(false)
     background:ShowCloseButton(false)
     background:SetDeleteOnClose(true)
+    background:SetMouseInputEnabled(true)
+    background:MakePopup(true)
+    background:SetKeyboardInputEnabled(false)
 
     local allButtons = {}
     local roleButtons = {}
@@ -717,9 +720,6 @@ local function CreateQueueUI(queueSize, localIndex)
     -- table.insert(choicePanels, queuePanel)
     queuePanel:SetSize(totalWidth, totalHeight)
     queuePanel:SetPos(left, top)
-    queuePanel:SetMouseInputEnabled(true)
-    queuePanel:MakePopup(true)
-    queuePanel:SetKeyboardInputEnabled(false)
 
     -- Paint background and title
     queuePanel.Paint = function(self, w, h)

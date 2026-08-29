@@ -72,18 +72,18 @@ local function GetTeamAmounts(playerCount, innocentPoolTotal, detectivePoolTotal
     }
 end
 
-local function TestPrint()
-    for playerCount = 1, 15 do
-        roleAmounts = GetTeamAmounts(playerCount, 50, 50, 50, 50, 50)
-        print("**************************")
-        print("Player Count = " .. playerCount)
-        print("innocents    = " .. roleAmounts["innocents"] or 0)
-        print("detectives   = " .. roleAmounts["detectives"] or 0)
-        print("traitors     = " .. roleAmounts["traitors"] or 0)
-        print("jesters      = " .. roleAmounts["jesters"] or 0)
-        print("others       = " .. roleAmounts["others"] or 0)
-    end
-end
+-- local function TestPrint()
+--     for playerCount = 1, 15 do
+--         roleAmounts = GetTeamAmounts(playerCount, 50, 50, 50, 50, 50)
+--         print("**************************")
+--         print("Player Count = " .. playerCount)
+--         print("innocents    = " .. roleAmounts["innocents"] or 0)
+--         print("detectives   = " .. roleAmounts["detectives"] or 0)
+--         print("traitors     = " .. roleAmounts["traitors"] or 0)
+--         print("jesters      = " .. roleAmounts["jesters"] or 0)
+--         print("others       = " .. roleAmounts["others"] or 0)
+--     end
+-- end
 
 local function DetermineChoices(teamAmounts, choiceAmount)
     local choicePool = {}
@@ -159,13 +159,58 @@ local function NextPlayerTurn()
 
     -- Queue empty
     if not IsValid(currentPlayer) then
-        -- Send what's effectively a 'close queue' command to the clients
+        -- Tell clients to get rid of the queue UI
         net.Start("RdmtSussyBuffetQueueUpdate")
             net.WriteUInt(0, 8)
         net.Broadcast()
 
-        -- Remove all traces of the players' former roles, and give them their new ones
+        local choseDetective = {}
+        local choseInnocent  = {}
+        local choseTraitor   = {}
+        local choseVeteran   = {}
+        local choseJester    = {}
+        local choseOther     = {}
+        local choseSibling   = {}
+        local choseRevenger  = {}
+
         for _, ply in player.Iterator() do
+            if ply.buffetChosenRole then
+                local chosenRole = ply.buffetChosenRole
+                local chosenTeam = player.GetRoleTeam(chosenRole)
+
+                if chosenRole == ROLE_VETERAN then
+                    table.insert(choseVeteran, ply)
+                elseif chosenRole == ROLE_SIBLING then
+                    table.insert(choseSibling, ply)
+                elseif chosenRole == ROLE_REVENGER then
+                    table.insert(choseRevenger, ply)
+                elseif chosenTeam == ROLE_TEAM_DETECTIVE then
+                    table.insert(choseDetective, ply)
+                elseif chosenTeam == ROLE_TEAM_INNOCENT then
+                    table.insert(choseInnocent, ply)
+                elseif chosenTeam == ROLE_TEAM_TRAITOR then
+                    table.insert(choseTraitor, ply)
+                elseif chosenTeam == ROLE_TEAM_JESTER then
+                    table.insert(choseJester, ply)
+                else
+                    table.insert(choseOther, ply)
+                end
+            end
+        end
+
+        local assignOrder = {}
+
+        table.Add(assignOrder, choseDetective)
+        table.Add(assignOrder, choseInnocent)
+        table.Add(assignOrder, choseVeteran)
+        table.Add(assignOrder, choseTraitor)
+        table.Add(assignOrder, choseJester)
+        table.Add(assignOrder, choseOther)
+        table.Add(assignOrder, choseSibling)
+        table.Add(assignOrder, choseRevenger)
+
+        -- Make players their chosen roles
+        for _, ply in ipairs(assignOrder) do
             ClearTimeoutTimer(ply)
 
             Randomat:SmallNotify("The buffet is closed!", 5, ply)
@@ -193,6 +238,8 @@ local function NextPlayerTurn()
 
                 ply.buffetChoices = nil
                 ply.buffetChoiceAmount = nil
+
+                print("Made " .. ply:Nick() .. " " .. ROLE_STRINGS_EXT[ply.buffetChosenRole])
             end
         end
 
@@ -488,7 +535,19 @@ function EVENT:GetConVars()
         end
     end
 
-    return sliders, checks
+    local textboxes = {}
+    for _, v in ipairs({"excluded_roles"}) do
+        local name = "randomat_" .. self.id .. "_" .. v
+        if ConVarExists(name) then
+            local cv = GetConVar(name)
+            table.insert(textboxes, {
+                cmd = v,
+                dsc = cv:GetHelpText()
+            })
+        end
+    end
+
+    return sliders, checks, textboxes
 end
 
 Randomat:register(EVENT)
