@@ -65,32 +65,42 @@ function EVENT:Begin()
                 -- 3 - Completely submerged.
                 -- Going to go with >1 for now i.e. ignores if they're swimming, or waist-deep in water struggling to get out (wouldn't feel fair)
                 if ply:WaterLevel() > 1 then return end
-                    -- Don't start checks if jump WAS player using their double jump
-                    if ply:GetJumpLevel() > 0 then return end
+
+                -- Don't start checks if jump WAS player using their double jump
+                if ply:GetJumpLevel() > 0 then return end
+
                 ply.rdmtMustJumpActive = true
+                ply.rdmtDidDoubleJump = false
+            end
+        end)
+
+        self:AddHook("OnPlayerJump", function(ply, jumpSpeed, isMultiJump)
+            if isMultiJump and ply.rdmtMustJumpActive then
+                ply.rdmtDidDoubleJump = true
             end
         end)
 
         hook.Add("Think", "MustJumpDoubleJumpCheck", function()
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply.rdmtMustJumpActive then
                     if ply.rdmtWasOnGround == nil then
                         ply.rdmtWasOnGround = ply:OnGround()
                     end
 
+                    -- When they land
                     if ply.rdmtWasOnGround == false and ply:OnGround() then
-                        if ply:GetJumpLevel() < 1 and ply.rdmtSurvived ~= true then
+                        if not ply.rdmtDidDoubleJump and ply.rdmtSurvived ~= true then
                             util.BlastDamage(ply, ply, ply:GetPos(), 100, 500)
+
                             if not Randomat:ShouldActLikeJester(ply) and killBlastImmune then
                                 local timerId = "RdmtMustJumpKillDelay_" .. ply:SteamID64()
                                 table.insert(timerIds, timerId)
 
-                                -- Delay this by a frame so on-death hooks can trigger first (thanks Mal)
                                 timer.Create(timerId, 0, 1, function()
                                     if not IsPlayer(ply) then return end
                                     if not ply:Alive() or ply:IsSpec() then return end
 
-                                    timer.Create(timerId, 0.25, 1, function()
+                                    timer.Create(timerId .. "_kill", 0.25, 1, function()
                                         ply:Kill()
                                     end)
                                 end)
@@ -101,9 +111,9 @@ function EVENT:Begin()
                                 ply.rdmtSurvivedRole = ply:GetRole()
                             end
 
-                                self:SmallNotify(ply:Nick() .. " forgot to double jump.")
+                            self:SmallNotify(ply:Nick() .. " forgot to double jump.")
 
-                        elseif ply:GetJumpLevel() < 1 and spam then
+                        elseif not ply.rdmtDidDoubleJump and spam then
                             if ply.rdmtSpamCooldown == false then
                                 self:SmallNotify(ply:Nick() .. " forgot to double jump.")
                                 ply.rdmtSpamCooldown = true
@@ -115,9 +125,12 @@ function EVENT:Begin()
                             end
                         end
 
+                        -- Reset for their next jump
                         ply.rdmtMustJumpActive = nil
-                        ply.rdmtWasOnGround = nil
+                        ply.rdmtWasOnGround    = nil
+                        ply.rdmtDidDoubleJump  = nil
                     end
+
                     ply.rdmtWasOnGround = ply:OnGround()
                 end
             end
@@ -134,14 +147,12 @@ function EVENT:End()
 
     for _, ply in ipairs(player.GetAll()) do
         ply.rdmtMustJumpActive = nil
-        ply.rdmtWasOnGround = nil
-        ply.rdmtSurvived = nil
-        ply.rdmtSurvivedRole = nil
-        ply.rdmtSpamCooldown = nil
+        ply.rdmtWasOnGround    = nil
+        ply.rdmtSurvived       = nil
+        ply.rdmtSurvivedRole   = nil
+        ply.rdmtSpamCooldown   = nil
     end
 
-    -- Used normal hooks so I can name them and have two Think hooks
-    -- If this is dumb please tell me - I'm learning as I go along here!
     hook.Remove("Think", "MustJumpCheckRoleChange")
     hook.Remove("Think", "MustJumpDoubleJumpCheck")
 end
