@@ -228,7 +228,6 @@ function EVENT:Begin()
         end
     end
 
-
     -- Poon tracking/hit detection
     self:AddHook("EntityTakeDamage", function(target, dmginfo)
         local inf = dmginfo:GetInflictor()
@@ -328,10 +327,20 @@ function EVENT:Begin()
 
 
     -- Main randomat logic crap
-
     self:AddHook("Think", function()
-
         if self.RoundEnded then return end
+
+        if IsValid(self.innocent) then
+            local ply = self.innocent
+            for _, wep in ipairs(ply:GetWeapons()) do
+                local class = wep:GetClass()
+
+                if class ~= "weapon_ttt_unarmed" then
+                    ply:StripWeapon(class)
+                    ply:SetFOV(0, 0.2)
+                end
+            end
+        end
 
         self.TrackedHarpoons = self.TrackedHarpoons or {}
         self.MissedCounts = self.MissedCounts or {}
@@ -515,7 +524,6 @@ function EVENT:Begin()
         end
 
         -- Safetynet in case final poon hits but doesn't kill innocent: End round with innocent win if all poons thrown and no other resolution for 10 seconds.
-
         if allHarpoonsEmpty and traitorsWithPoon == 0 and not safetynetTimerCreated then
             safetynetTimerCreated = true
 
@@ -532,14 +540,10 @@ function EVENT:Begin()
                 end
             end)
         end
-
     end)
-
 end
 
-
 function EVENT:End()
-
     -- Restore game speed
     if self.OriginalTimeScale then
         game.SetTimeScale(self.OriginalTimeScale)
@@ -613,7 +617,6 @@ function EVENT:End()
     self.TrackedHarpoons = nil
     self.RoundEnded = nil
     self.innocent = nil
-
 end
 
 
