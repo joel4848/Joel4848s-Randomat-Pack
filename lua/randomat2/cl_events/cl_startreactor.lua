@@ -516,7 +516,7 @@ local function CreateStartReactorUI()
     end
 
     -- Right display
-    local displayH = height * 0.1
+    -- local displayH = height * 0.1
 
     local rightDisplay = vgui.Create("DLabel", panels)
     rightDisplay:SetSize(width * 0.29, displayH)
@@ -563,7 +563,7 @@ net.Receive("RdmtStartReactorPattern", function()
     local timeToEnter = net.ReadFloat()
 
     -- if Randomat.Client:Alive() and not Randomat.Client:IsSpec() then
-        StartClientCountdown(timeToEnter) 
+        StartClientCountdown(timeToEnter)
         PlayPattern()
     -- end
 
@@ -574,7 +574,7 @@ net.Receive("RdmtStartReactorEjectionAnnouncement", function()
     local fullString = net.ReadString()
     announcementText = ""
     isShowingAnnouncement = true
-    
+
     local charIndex = 1
 
     timer.Create("RdmtStartReactorEjectionTyper", 0.10, #fullString, function()
@@ -698,7 +698,7 @@ function EVENT:Begin()
 
     self:AddHook("HUDPaint", function()
         if not isShowingAnnouncement then return end
-        
+
         local x = ScrW() / 2
         local y = ScrH() / 2
 

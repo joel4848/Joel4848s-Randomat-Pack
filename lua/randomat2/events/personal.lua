@@ -54,10 +54,6 @@ function EVENT:Begin()
     end)
 end
 
-function EVENT:End()
-    UnregisterRoleHooks(ROLE_VINDICATOR)
-end
-
 function EVENT:Condition()
     return ROLE_VINDICATOR ~= nil
 end
