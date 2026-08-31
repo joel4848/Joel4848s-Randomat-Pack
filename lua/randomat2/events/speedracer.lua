@@ -16,12 +16,21 @@ EVENT.Description = "Make it to each location in time... or else!"
 EVENT.id          = "speedracer"
 EVENT.Categories  = {"gamemode", "largeimpact"}
 
-function RewardSuccess(players)
+function RewardSuccess(successfulPlayers)
+    for _, ply in ipairs(successfulPlayers) do
+        local reward = Joel4848:ApplyReward(ply)
+
+        Randomat:SmallNotify("You made it! Your reward is: " .. reward.Name)
+    end
 
 end
 
-function PunishFailure(players)
+function PunishFailure(failingPlayers)
+    for _, ply in ipairs(failingPlayers) do
+        local punishment = Joel4848:ApplyPunishment(ply)
 
+        Randomat:SmallNotify("Too slow! Your punishment is: " .. punishment.Name)
+    end
 end
 
 local function GetSpeedracerPosition()
@@ -50,11 +59,10 @@ local function FindStartLocation(pos)
     local mins = Vector(-halfWidth, -halfWidth, 0)
     local maxs = Vector(halfWidth, halfWidth, midsize.z)
 
-    -- Floor-checking hull box (a thin slice equal to the player's feet base)
     local feetMins = Vector(-halfWidth, -halfWidth, 0)
     local feetMaxs = Vector(halfWidth, halfWidth, 1)
 
-    -- First: Check if the exact center position is free
+    -- Check if the center position is free
     local trCenter = util.TraceHull({
         start = pos,
         endpos = pos,
@@ -63,14 +71,13 @@ local function FindStartLocation(pos)
     })
     if not trCenter.Hit then return pos end
 
-    -- Second: Spiral outward through multiple radii
     for radiusMultiplier = 1, 3 do
         local currentRadius = midsize.x * radiusMultiplier
 
         for i = 1, #offsets do
             local testPos = pos + (offsets[i] * currentRadius)
 
-            -- 1. Check if there is a FULL, SOLID FLOOR under the entire base box
+            -- Check if there is floor under the entire box
             local floorTrace = util.TraceHull({
                 start = testPos + Vector(0, 0, 30),
                 endpos = testPos - Vector(0, 0, 50),
@@ -84,7 +91,7 @@ local function FindStartLocation(pos)
 
             local spawnPos = floorTrace.HitPos
 
-            -- 2. Verify the full player box fits here (no walls, props, or other players)
+            -- Check the full player box fits here
             local tr = util.TraceHull({
                 start = spawnPos,
                 endpos = spawnPos,
@@ -139,7 +146,7 @@ function EVENT:Begin()
             end
         end
 
-        -- 2. Check if anyone who succeeded previously is dead/missing
+        -- Check if anyone who succeeded previously is dead/missing
         for _, ply in ipairs(previousSuccesses) do
             if not reachedThisRound[ply] then
                 everyoneMadeIt = false
@@ -266,7 +273,7 @@ function EVENT:Begin()
         self:SmallNotify("Freezing and teleporting everyone to the start line in 5 seconds...")
 
         timer.Create("Randomat_Speedracer_Start2", 1, 1, function()
-            -- Teleport people to the start location over sequential frames
+            -- Teleport people to the start location frame by frame
             local startPos = GetSpeedracerPosition()
             local playersToTeleport = self:GetAlivePlayers()
             local index = 1
@@ -311,6 +318,8 @@ function EVENT:End()
     timer.Remove("Randomat_Speedracer_Start1")
     timer.Remove("Randomat_Speedracer_Start2")
     SetGlobalBool("SpeedracerActive", false)
+
+    Joel4848:CleanUpRewardPunish()
 end
 
 function EVENT:GetConVars()
