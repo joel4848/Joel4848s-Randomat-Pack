@@ -269,10 +269,10 @@ function EVENT:Begin()
         timer.Create("Randomat_Speedracer_Main", time, 1, StartDelayPhase)
     end
 
-    timer.Create("Randomat_Speedracer_Start1", 1, 1, function()
+    timer.Create("Randomat_Speedracer_Start1", 5, 1, function()
         self:SmallNotify("Freezing and teleporting everyone to the start line in 5 seconds...")
 
-        timer.Create("Randomat_Speedracer_Start2", 1, 1, function()
+        timer.Create("Randomat_Speedracer_Start2", 5, 1, function()
             -- Teleport people to the start location frame by frame
             local startPos = GetSpeedracerPosition()
             local playersToTeleport = self:GetAlivePlayers()
