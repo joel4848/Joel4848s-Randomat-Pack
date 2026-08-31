@@ -1,0 +1,62 @@
+local REWARD = {}
+
+REWARD.Name = "Health Regen"
+REWARD.Id = "hpregen"
+
+local hpregen_amount = CreateConVar("rdmt_joel4848_rewardpunish_hpregen_amount", "1", FCVAR_NONE, "How much health to give.", 1, 100)
+local hpregen_interval = CreateConVar("rdmt_joel4848_rewardpunish_hpregen_interval", "5", FCVAR_NONE, "How often to heal.", 1, 100)
+
+local timerIds = {}
+
+function REWARD:Apply(target)
+    -- Generate a unique ID for this pairing and save it to be cleaned up later
+    local timerId = "Rdmt_Joel4848_RewardPunish_HPRegen_" .. target:SteamID64()
+    table.insert(timerIds, timerId)
+
+    local amount = hpregen_amount:GetInt()
+    local interval = hpregen_interval:GetInt()
+    timer.Create(timerId, interval, 0, function()
+        -- Stop the timer if this player is gone or dead
+        if not IsPlayer(target) or not target:Alive() or target:IsSpec() then
+            timer.Remove(timerId)
+            return
+        end
+
+        local hp = target:Health()
+        local max_hp = target:GetMaxHealth()
+
+        -- If they already have more than their max, don't change anything
+        if hp > max_hp then
+            return
+        end
+
+        -- Heal the player up to their max HP
+        hp = math.min(hp + amount, max_hp)
+        target:SetHealth(hp)
+    end)
+end
+
+function REWARD:CleanUp()
+    for _, timerId in ipairs(timerIds) do
+        timer.Remove(timerId)
+    end
+    table.Empty(timerIds)
+end
+
+function REWARD:AddConVars(sliders, checks, textboxes)
+    for _, v in ipairs({"amount", "interval"}) do
+        local name = "randomat_joel4848_rewardpunish_" .. self.Id .. "_" .. v
+        if ConVarExists(name) then
+            local convar = GetConVar(name)
+            table.insert(sliders, {
+                cmd = self.Id .. "_" .. v,
+                dsc = self.Name .. " - " .. convar:GetHelpText(),
+                min = convar:GetMin(),
+                max = convar:GetMax(),
+                dcm = 0
+            })
+        end
+    end
+end
+
+Joel4848:RegisterReward(REWARD)

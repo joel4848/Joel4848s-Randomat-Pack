@@ -1,0 +1,65 @@
+local PUNISHMENT = {}
+
+PUNISHMENT.Name = "Poison"
+PUNISHMENT.Id = "poison"
+
+local poison_amount = CreateConVar("rdmt_joel4848_rewardpunish_poison_amount", "1", FCVAR_NONE, "How much damage to do.", 1, 100)
+local poison_interval = CreateConVar("rdmt_joel4848_rewardpunish_poison_interval", "5", FCVAR_NONE, "How often to do damage.", 1, 100)
+local poison_max = CreateConVar("rdmt_joel4848_rewardpunish_poison_max", "0", FCVAR_NONE, "The maximum total damage to do (0 to disable).", 0, 100)
+
+local timerIds = {}
+
+function PUNISHMENT:Apply(target)
+    -- Generate a unique ID for this pairing and save it to be cleaned up later
+    local timerId = "Rdmt_Joel4848_RewardPunish_Poison_" .. target:SteamID64()
+    table.insert(timerIds, timerId)
+
+    local amount = poison_amount:GetInt()
+    local interval = poison_interval:GetInt()
+    local max = poison_max:GetInt()
+    local damage_done = 0
+    timer.Create(timerId, interval, 0, function()
+        -- Stop the timer if this player is gone or dead
+        if not IsPlayer(target) or not target:Alive() or target:IsSpec() then
+            timer.Remove(timerId)
+            return
+        end
+
+        -- Damage the player
+        target:TakeDamage(amount, target, nil)
+
+        -- Only bother tracking damage if we have a maximum
+        if max > 0 then
+            damage_done = damage_done + amount
+            -- Stop the timer if we've done enough damage
+            if damage_done >= max then
+                timer.Remove(timerId)
+            end
+        end
+    end)
+end
+
+function PUNISHMENT:CleanUp()
+    for _, timerId in ipairs(timerIds) do
+        timer.Remove(timerId)
+    end
+    table.Empty(timerIds)
+end
+
+function PUNISHMENT:AddConVars(sliders, checks, textboxes)
+    for _, v in ipairs({"amount", "interval", "max"}) do
+        local name = "randomat_joel4848_rewardpunish_" .. self.Id .. "_" .. v
+        if ConVarExists(name) then
+            local convar = GetConVar(name)
+            table.insert(sliders, {
+                cmd = self.Id .. "_" .. v,
+                dsc = self.Name .. " - " .. convar:GetHelpText(),
+                min = convar:GetMin(),
+                max = convar:GetMax(),
+                dcm = 0
+            })
+        end
+    end
+end
+
+Joel4848:RegisterPunishment(PUNISHMENT)
