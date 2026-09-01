@@ -27,7 +27,7 @@ end
 
 function PunishFailure(failingPlayers)
     for _, ply in ipairs(failingPlayers) do
-        local punishment = Joel4848:ApplyPunishment(ply)
+        local punishment = Joel4848:ApplyPunishment(ply, {"blindish"})
 
         Randomat:SmallNotify("Too slow! Your punishment is: " .. punishment.Name)
     end
