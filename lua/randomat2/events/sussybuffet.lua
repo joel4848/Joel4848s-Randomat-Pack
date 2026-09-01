@@ -419,7 +419,7 @@ function EVENT:Begin()
         if rolePackOnly then
             includeRole = DEFAULT_ROLES[role] or (ROLE_PACK_ROLES and ROLE_PACK_ROLES[role])
         else
-            if not (roleBanned or ROLE_BLOCK_SPAWN_CONVARS[role]) then
+            if not (roleBanned or ROLE_BLOCK_SPAWN_CONVARS[role]) or not string.StartsWith(ROLE_STRINGS_RAW[role], "whale") then
                 includeRole = true
             end
         end
