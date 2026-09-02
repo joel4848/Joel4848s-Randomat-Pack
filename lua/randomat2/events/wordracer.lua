@@ -28,7 +28,7 @@ local function RewardSuccess(successfulPlayers)
     for _, ply in ipairs(successfulPlayers) do
         local reward = Joel4848:ApplyReward(ply)
 
-        Randomat:SmallNotify("Success! Your reward is: " .. reward.Name)
+        Randomat:SmallNotify("Success! Your reward is: " .. reward.Name, 5, ply)
     end
 end
 
@@ -36,7 +36,7 @@ local function PunishFailure(failingPlayers)
     for _, ply in ipairs(failingPlayers) do
         local punishment = Joel4848:ApplyPunishment(ply)
 
-        Randomat:SmallNotify("Failure! Your punishment is: " .. punishment.Name)
+        Randomat:SmallNotify("Failure! Your punishment is: " .. punishment.Name, 5, ply)
     end
 end
 
