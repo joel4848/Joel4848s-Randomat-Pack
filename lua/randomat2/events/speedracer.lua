@@ -12,7 +12,7 @@ local PlayerIterator = player.Iterator
 local EVENT = {}
 
 EVENT.Title       = "Speedracer"
-EVENT.Description = "Make it to each location in time... or else!"
+EVENT.Description = "Reach each location in time and stay there... or else!"
 EVENT.id          = "speedracer"
 EVENT.Categories  = {"gamemode", "largeimpact"}
 
@@ -269,43 +269,85 @@ function EVENT:Begin()
         timer.Create("Randomat_Speedracer_Main", time, 1, StartDelayPhase)
     end
 
+    ------------------------------------------------------
+    -- ACTUAL EVENT START
+    ------------------------------------------------------
+
+    local killFailures = GetConVar("randomat_speedracer_kill_failures"):GetBool()
+    local rewardAll    = GetConVar("randomat_speedracer_reward_success"):GetBool()
+    local rewardFirst  = GetConVar("randomat_speedracer_reward_first_success"):GetBool()
+    local punishAll    = GetConVar("randomat_speedracer_punish_failures"):GetBool()
+
+    local successInfo, failureInfo
+
+    if rewardAll then
+        successInfo = "Successful players will receive a reward!"
+    elseif rewardFirst then
+        successInfo = "The first successful player will receive a reward!"
+    end
+
+    if killFailures then
+        failureInfo = "Unsuccessful players will be killed..."
+    elseif punishAll then
+        failureInfo = "Unsuccessful players will receive a punishment..."
+    end
+
     timer.Create("Randomat_Speedracer_Start1", 5, 1, function()
-        self:SmallNotify("Freezing and teleporting everyone to the start line in 5 seconds...")
+        if successInfo then
+            Randomat:SmallNotify(successInfo)
+        end
+
+        if failureInfo then
+            Randomat:SmallNotify(failureInfo)
+        end
 
         timer.Create("Randomat_Speedracer_Start2", 5, 1, function()
-            -- Teleport people to the start location frame by frame
-            local startPos = GetSpeedracerPosition()
-            local playersToTeleport = self:GetAlivePlayers()
-            local index = 1
+            self:SmallNotify("Teleporting everyone to the start line...")
 
-            timer.Create("Speedracer_StartlineTeleport", 0, #playersToTeleport, function()
-                local ply = playersToTeleport[index]
+            timer.Create("Randomat_Speedracer_Start3", 2, 1, function()
+                -- Teleport people to the start location frame by frame
+                local startPos = GetSpeedracerPosition()
+                local playersToTeleport = self:GetAlivePlayers()
+                local index = 1
 
-                if IsValid(ply) and ply:Alive() then
-                    local newPos
-                    if index == 1 then
-                        newPos = FindStartLocation(startPos)
-                    else
-                        newPos = FindStartLocation(playersToTeleport[index-1]:GetPos())
+                timer.Create("Speedracer_StartlineTeleport", 0, #playersToTeleport, function()
+                    local ply = playersToTeleport[index]
+
+                    if IsValid(ply) and ply:Alive() then
+                        local newPos
+                        if index == 1 then
+                            newPos = FindStartLocation(startPos)
+                        else
+                            newPos = FindStartLocation(playersToTeleport[index-1]:GetPos())
+                        end
+
+                        if not newPos then
+                            newPos = startPos
+                        end
+
+                        ply:SetPos(newPos)
+
+                        index = index + 1
                     end
+                end)
 
-                    if not newPos then
-                        newPos = startPos
-                    end
+                local readyTime  = 2
+                local steadyTime = (5 / 2) + 2
 
-                    ply:Freeze(true)
-                    ply:SetPos(newPos)
+                if 5 > 2 then
+                    timer.Create("Randomat_Speedracer_Start4", readyTime, 1, function()
+                        Randomat:SmallNotify("Ready...")
+                    end)
 
-                    index = index + 1
+                    timer.Create("Randomat_Speedracer_Start5", steadyTime, 1, function()
+                        Randomat:SmallNotify("Steady...")
+                    end)
                 end
-            end)
 
-            -- Start the actual event
-            timer.Create("Randomat_Speedracer_Main", delayCvar:GetInt(), 1, function()
-                for _, ply in ipairs(playersToTeleport) do
-                    ply:Freeze(false)
-                end
-                StartHuntPhase()
+                -- Start the actual event
+                timer.Create("Randomat_Speedracer_Main", 5 + 2, 1, function()
+                    StartHuntPhase()
+                end)
             end)
         end)
     end)
@@ -317,6 +359,10 @@ function EVENT:End()
     timer.Remove("Speedracer_StartlineTeleport")
     timer.Remove("Randomat_Speedracer_Start1")
     timer.Remove("Randomat_Speedracer_Start2")
+    timer.Remove("Randomat_Speedracer_Start3")
+    timer.Remove("Randomat_Speedracer_Start4")
+    timer.Remove("Randomat_Speedracer_Start5")
+
     SetGlobalBool("SpeedracerActive", false)
 
     Joel4848:CleanUpRewardPunish()
