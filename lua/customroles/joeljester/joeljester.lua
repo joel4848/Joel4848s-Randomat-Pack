@@ -147,7 +147,7 @@ local function JoelJester_WinCheck_PlayerDeath(victim, infl, attacker)
 
         if jester_swaps_with_killer:GetBool() then
             local killerRole = attacker:GetRole()
-            attacker:SetRole(ROLE_JOELJESTER)
+            -- attacker:SetRole(ROLE_JOELJESTER)
             victim:SetRole(killerRole)
             SendFullStateUpdate()
         end
