@@ -45,6 +45,8 @@ local function UpdateMouseHook()
     end
 
     hook.Add("InputMouseApply", "RdmtOppositenessMouseHook", function(cmd, x, y, ang)
+        if not LocalPlayer():Alive() or LocalPlayer():IsSpec() then return end
+
         -- X Axis
         if mouseXInverted then
             local yawSensitivity = GetConVar("m_yaw"):GetFloat()
@@ -93,10 +95,14 @@ local function SwitchMove()
         moveInverted = false
     else
         hook.Add("StartCommand", "RdmtOppositenessMoveHook", function(ply, cmd)
+            if not LocalPlayer():Alive() or LocalPlayer():IsSpec() then return end
+
             cmd:SetForwardMove(-cmd:GetForwardMove())
         end)
 
         hook.Add("TTTSprintKey", "RdmtOppositenessSprintKeyHook", function(ply)
+            if not LocalPlayer():Alive() or LocalPlayer():IsSpec() then return end
+
             return IN_BACK
         end)
         moveInverted = true
@@ -109,6 +115,8 @@ local function SwitchStrafe()
         strafeInverted = false
     else
         hook.Add("StartCommand", "RdmtOppositeStrafeHook", function(ply, cmd)
+            if not LocalPlayer():Alive() or LocalPlayer():IsSpec() then return end
+
             cmd:SetSideMove(-cmd:GetSideMove())
         end)
         strafeInverted = true
@@ -121,6 +129,8 @@ local function SwitchJump()
         jumpInverted = false
     else
         hook.Add("StartCommand", "RdmtOppositeJumpHook", function(ply, cmd)
+            if not LocalPlayer():Alive() or LocalPlayer():IsSpec() then return end
+
             if cmd:KeyDown(IN_JUMP) then
                 cmd:RemoveKey(IN_JUMP)
                 cmd:SetButtons(cmd:GetButtons() + IN_DUCK)
@@ -139,6 +149,8 @@ local function SwitchShoot()
         shootInverted = false
     else
         hook.Add("StartCommand", "RdmtOppositenessShootHook", function(ply, cmd)
+            if not LocalPlayer():Alive() or LocalPlayer():IsSpec() then return end
+
             if cmd:KeyDown(IN_ATTACK) then
                 cmd:RemoveKey(IN_ATTACK)
                 cmd:SetButtons(cmd:GetButtons() + IN_RELOAD)
@@ -170,6 +182,8 @@ local function SwitchSprint()
         end
 
         hook.Add("StartCommand", "RdmtOppositenessSprintHook", function(ply, cmd)
+            if not LocalPlayer():Alive() or LocalPlayer():IsSpec() then return end
+
             if ply ~= LocalPlayer() then return end
             if not IsValid(ply) then return end
 
@@ -191,6 +205,8 @@ local function SwitchSprint()
         end)
 
         hook.Add("PlayerButtonDown", "RdmtOppositenessMenuHook", function(ply, button)
+            if not LocalPlayer():Alive() or LocalPlayer():IsSpec() then return end
+
             if ply ~= LocalPlayer() then return end
 
             local menuButtonName = input.LookupBinding("+menu")
@@ -205,6 +221,8 @@ local function SwitchSprint()
         end)
 
         hook.Add("PlayerButtonUp", "RdmtOppositenessMenuHook", function(ply, button)
+            if not LocalPlayer():Alive() or LocalPlayer():IsSpec() then return end
+
             if ply ~= LocalPlayer() then return end
 
             local menuButtonName = input.LookupBinding("+menu")
@@ -224,12 +242,12 @@ end
 -------- Net stuff --------
 net.Receive("OppositenessMouseX", SwitchMouseX)
 net.Receive("OppositenessMouseY", SwitchMouseY)
-net.Receive("OppositenessMove", SwitchMove)
+net.Receive("OppositenessMove",   SwitchMove)
 net.Receive("OppositenessStrafe", SwitchStrafe)
-net.Receive("OppositenessJump", SwitchJump)
-net.Receive("OppositenessShoot", SwitchShoot)
+net.Receive("OppositenessJump",   SwitchJump)
+net.Receive("OppositenessShoot",  SwitchShoot)
 net.Receive("OppositenessSprint", SwitchSprint)
-net.Receive("OppositenessEnd", RemoveHooks)
+net.Receive("OppositenessEnd",    RemoveHooks)
 
 EVENT.End = RemoveHooks
 
