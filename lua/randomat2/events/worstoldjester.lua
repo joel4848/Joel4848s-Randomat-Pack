@@ -53,6 +53,7 @@ function EVENT:Begin()
     local target = GetJoelJesterTarget()
     if target then
         target:SetRole(ROLE_JOELJESTER)
+        self:StripRoleWeapons(target)
         SendFullStateUpdate()
     end
 end
