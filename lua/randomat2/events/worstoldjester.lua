@@ -62,7 +62,7 @@ function EVENT:End()
 end
 
 function EVENT:Condition()
-    return CR_Version
+    return CR_VERSION
 end
 
 Randomat:register(EVENT)
