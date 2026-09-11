@@ -9,11 +9,6 @@ if SERVER then
     function Joel4848:RegisterReward(reward)
         reward.Id = reward.Id or reward.id or reward.ID
 
-        -- if self.REWARDPUNISH.Rewards[reward.Id] then
-        --     ErrorNoHalt("[RANDOMAT] Reward already exists with ID '" .. reward.Id .. "'\n")
-        --     return
-        -- end
-
         local enabled = CreateConVar("randomat_joel4848_rewardpunish_" .. reward.Id .. "_enabled", "1", FCVAR_NONE, "Whether this reward is enabled.", 0, 1)
         reward.Enabled = function()
             return enabled:GetBool()
@@ -25,11 +20,6 @@ if SERVER then
     function Joel4848:RegisterPunishment(punishment)
         punishment.Id = punishment.Id or punishment.id or punishment.ID
 
-        -- if self.REWARDPUNISH.Punishments[punishment.Id] then
-        --     ErrorNoHalt("[RANDOMAT] Punishment already exists with ID '" .. punishment.Id .. "'\n")
-        --     return
-        -- end
-
         local enabled = CreateConVar("randomat_joel4848_rewardpunish_" .. punishment.Id .. "_enabled", "1", FCVAR_NONE, "Whether this punishment is enabled.", 0, 1)
         punishment.Enabled = function()
             return enabled:GetBool()
@@ -38,7 +28,7 @@ if SERVER then
         self.REWARDPUNISH.Punishments[punishment.Id] = punishment
     end
 
-    local function GetRandomOutcome(outcomeTable, banned)
+    local function GetRandomOutcome(outcomeTable, banned, activeOutcomes)
         if type(banned) == "string" then
             banned = {banned}
         end
@@ -46,10 +36,17 @@ if SERVER then
         local validOutcomes = {}
 
         for id, outcome in pairs(outcomeTable) do
+            -- Skip if banned
             if banned and table.HasValue(banned, id) then
                 continue
             end
 
+            -- Skip if player already has this
+            if activeOutcomes and activeOutcomes[id] then
+                continue
+            end
+
+            -- Skip if disabled or condition not met
             if outcome:Enabled() and (not outcome.Condition or outcome:Condition()) then
                 table.insert(validOutcomes, outcome)
             end
@@ -65,6 +62,8 @@ if SERVER then
     function Joel4848:ApplyReward(ply, banned, rewardId)
         local chosenReward
 
+        ply.Joel4848_ActiveRewards = ply.Joel4848_ActiveRewards or {}
+
         if rewardId then
             chosenReward = self.REWARDPUNISH.Rewards[rewardId]
             if not chosenReward then
@@ -72,20 +71,25 @@ if SERVER then
                 return nil
             end
         else
-            chosenReward = GetRandomOutcome(self.REWARDPUNISH.Rewards, banned)
+            -- Send player's active rewards so no duplicates
+            chosenReward = GetRandomOutcome(self.REWARDPUNISH.Rewards, banned, ply.Joel4848_ActiveRewards)
             if not chosenReward then
-                ErrorNoHalt("[RANDOMAT] Could not apply reward: No enabled/unbanned rewards found!\n")
+                ErrorNoHalt("[RANDOMAT] Could not apply reward: No enabled/unbanned rewards found for " .. ply:Nick() .. "!\n")
                 return nil
             end
         end
 
         chosenReward:Apply(ply)
 
+        ply.Joel4848_ActiveRewards[chosenReward.Id] = true
+
         return chosenReward
     end
 
     function Joel4848:ApplyPunishment(ply, banned, punishmentId)
         local chosenPunishment
+
+        ply.Joel4848_ActivePunishments = ply.Joel4848_ActivePunishments or {}
 
         if punishmentId then
             chosenPunishment = self.REWARDPUNISH.Punishments[punishmentId]
@@ -94,16 +98,45 @@ if SERVER then
                 return nil
             end
         else
-            chosenPunishment = GetRandomOutcome(self.REWARDPUNISH.Punishments, banned)
+            -- Send player's active punishments so no duplicates
+            chosenPunishment = GetRandomOutcome(self.REWARDPUNISH.Punishments, banned, ply.Joel4848_ActivePunishments)
             if not chosenPunishment then
-                ErrorNoHalt("[RANDOMAT] Could not apply punishment: No enabled/unbanned punishments found!\n")
+                ErrorNoHalt("[RANDOMAT] Could not apply punishment: No enabled/unbanned punishments found for " .. ply:Nick() .. "!\n")
                 return nil
             end
         end
 
         chosenPunishment:Apply(ply)
 
+        ply.Joel4848_ActivePunishments[chosenPunishment.Id] = true
+
         return chosenPunishment
+    end
+
+    function Joel4848:ClearPlayerRewards(ply)
+        if not IsValid(ply) or not ply.Joel4848_ActiveRewards then return end
+
+        for id, _ in pairs(ply.Joel4848_ActiveRewards) do
+            local reward = self.REWARDPUNISH.Rewards[id]
+            if reward and reward.CleanUp then
+                reward:CleanUp(ply)
+            end
+        end
+
+        ply.Joel4848_ActiveRewards = {}
+    end
+
+    function Joel4848:ClearPlayerPunishments(ply)
+        if not IsValid(ply) or not ply.Joel4848_ActivePunishments then return end
+
+        for id, _ in pairs(ply.Joel4848_ActivePunishments) do
+            local punishment = self.REWARDPUNISH.Punishments[id]
+            if punishment and punishment.CleanUp then
+                punishment:CleanUp(ply)
+            end
+        end
+
+        ply.Joel4848_ActivePunishments = {}
     end
 
     function Joel4848:CleanUpRewardPunish()
@@ -117,7 +150,16 @@ if SERVER then
                 punishment:CleanUp()
             end
         end
+
+        for _, ply in player.Iterator() do
+            ply.Joel4848_ActiveRewards = {}
+            ply.Joel4848_ActivePunishments = {}
+        end
     end
+
+    hook.Add("TTTPrepareRound", "Joel4848_RewardPunish_Reset", function()
+        Joel4848:CleanUpRewardPunish()
+    end)
 end
 
 local function AddServer(fil)
