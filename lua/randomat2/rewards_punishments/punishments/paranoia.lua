@@ -16,9 +16,13 @@ function PUNISHMENT:Apply(target)
     net.Send(target)
 end
 
-function PUNISHMENT:CleanUp()
+function PUNISHMENT:CleanUp(ply)
     net.Start("Rdmt_Joel4848_RewardPunish_ParanoiaEnd")
-    net.Broadcast()
+    if ply then
+        net.Send(ply)
+    else
+        net.Broadcast()
+    end
 end
 
 function PUNISHMENT:AddConVars(sliders, checks, textboxes)

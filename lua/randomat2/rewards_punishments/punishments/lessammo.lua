@@ -23,11 +23,17 @@ function PUNISHMENT:Apply(target)
     end)
 end
 
-function PUNISHMENT:CleanUp()
-    for _, hookId in ipairs(hookIds) do
+function PUNISHMENT:CleanUp(ply)
+    if ply then
+        local hookId = "Rdmt_Joel4848_RewardPunish_LessAmmo_" .. ply:SteamID64()
         hook.Remove("EntityFireBullets", hookId)
+        table.RemoveByValue(hookIds, hookId)
+    else
+        for _, hookId in ipairs(hookIds) do
+            hook.Remove("EntityFireBullets", hookId)
+        end
+        table.Empty(hookIds)
     end
-    table.Empty(hookIds)
 end
 
 Joel4848:RegisterPunishment(PUNISHMENT)

@@ -13,13 +13,21 @@ function PUNISHMENT:Apply(target)
     net.Send(target)
 end
 
-function PUNISHMENT:CleanUp()
-    for _, p in player.Iterator() do
-        p:ScreenFade(SCREENFADE.PURGE, Color(0, 0, 0, 255), 0, 0)
+function PUNISHMENT:CleanUp(ply)
+    if ply then
+        ply:ScreenFade(SCREENFADE.PURGE, Color(0, 0, 0, 255), 0, 0)
+    else
+        for _, p in player.Iterator() do
+            p:ScreenFade(SCREENFADE.PURGE, Color(0, 0, 0, 255), 0, 0)
+        end
     end
 
     net.Start("Rdmt_Joel4848_RewardPunish_BlindishEnd")
-    net.Broadcast()
+    if ply then
+        net.Send(ply)
+    else
+        net.Broadcast()
+    end
 end
 
 Joel4848:RegisterPunishment(PUNISHMENT)

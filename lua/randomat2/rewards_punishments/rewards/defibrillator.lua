@@ -7,6 +7,10 @@ function REWARD:Apply(target)
     target:Give("weapon_vadim_defib")
 end
 
+function REWARD:CleanUp(ply)
+    ply:StripWeapon("weapon_vadim_defib")
+end
+
 function REWARD:Condition()
     return weapons.Get("weapon_vadim_defib") ~= nil
 end

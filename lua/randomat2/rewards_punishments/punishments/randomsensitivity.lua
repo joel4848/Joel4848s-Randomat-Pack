@@ -50,15 +50,24 @@ function PUNISHMENT:Apply(target)
     end)
 end
 
-function PUNISHMENT:CleanUp()
-    for _, timerAndHookId in ipairs(timerAndHookIds) do
+function PUNISHMENT:CleanUp(ply)
+    if ply then
+        local timerAndHookId = "Rdmt_Joel4848_RewardPunish_RandomSensitivity_" .. ply:SteamID64()
         timer.Remove(timerAndHookId)
         hook.Remove("PlayerDeath", timerAndHookId)
-    end
-    table.Empty(timerAndHookIds)
+        table.RemoveByValue(timerAndHookIds, timerAndHookId)
 
-    for _, v in player.Iterator() do
-        SetSensitivity(v, 0)
+        SetSensitivity(ply, 0)
+    else
+        for _, timerAndHookId in ipairs(timerAndHookIds) do
+            timer.Remove(timerAndHookId)
+            hook.Remove("PlayerDeath", timerAndHookId)
+        end
+        table.Empty(timerAndHookIds)
+
+        for _, v in player.Iterator() do
+            SetSensitivity(v, 0)
+        end
     end
 end
 

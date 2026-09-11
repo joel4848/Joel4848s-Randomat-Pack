@@ -50,21 +50,37 @@ function REWARD:Apply(target)
     net.Broadcast()
 end
 
-function REWARD:CleanUp()
-    for _, hookId in ipairs(hookIds) do
+function REWARD:CleanUp(ply)
+    if ply then
+        local hookId = "Rdmt_Joel4848_RewardPunish_CrouchInvis_" .. ply:SteamID64()
         hook.Remove("FinishMove", hookId .. "_FinishMove")
         hook.Remove("PlayerDeath", hookId .. "_PlayerDeath")
         hook.Remove("EntityFireBullets", hookId .. "_EntityFireBullets")
-    end
-    table.Empty(hookIds)
 
-    for _, p in player.Iterator() do
-        SetPlayerVisibility(p, true)
-        timer.Remove("Rdmt_Joel4848_RewardPunish_CrouchInvisRevealTimer_" .. p:SteamID64())
+        table.RemoveByValue(hookIds, hookId)
+
+        SetPlayerVisibility(ply, true)
+        timer.Remove("Rdmt_Joel4848_RewardPunish_CrouchInvisRevealTimer_" .. ply:SteamID64())
+    else
+        for _, hookId in ipairs(hookIds) do
+            hook.Remove("FinishMove", hookId .. "_FinishMove")
+            hook.Remove("PlayerDeath", hookId .. "_PlayerDeath")
+            hook.Remove("EntityFireBullets", hookId .. "_EntityFireBullets")
+        end
+        table.Empty(hookIds)
+
+        for _, p in player.Iterator() do
+            SetPlayerVisibility(p, true)
+            timer.Remove("Rdmt_Joel4848_RewardPunish_CrouchInvisRevealTimer_" .. p:SteamID64())
+        end
     end
 
     net.Start("Rdmt_Joel4848_RewardPunish_CrouchInvisEnd")
-    net.Broadcast()
+    if ply then
+        net.Send(ply)
+    else
+        net.Broadcast()
+    end
 end
 
 function REWARD:AddConVars(sliders, checks, textboxes)

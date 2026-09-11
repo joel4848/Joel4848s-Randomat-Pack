@@ -38,20 +38,34 @@ function REWARD:Apply(target)
     end)
 end
 
-function REWARD:CleanUp()
-    for _, hookId in ipairs(hookIds) do
+function REWARD:CleanUp(ply)
+    if ply then
+        local hookId = "Rdmt_Joel4848_RewardPunish_ExtraLife_" .. ply:SteamID64()
+
         hook.Remove("PlayerDeath", hookId .. "_PlayerDeath")
         hook.Remove("TTTDeathNotifyOverride", hookId .. "_TTTDeathNotifyOverride")
-    end
-    table.Empty(hookIds)
+        table.RemoveByValue(hookIds, hookId)
 
-    for _, timerId in ipairs(timerIds) do
+        local timerId = "Rdmt_Joel4848_RewardPunish_ExtraLifeTimer_" .. ply:SteamID64()
         timer.Remove(timerId)
-    end
-    table.Empty(timerIds)
+        table.RemoveByValue(timerIds, timerId)
 
-    for _, p in player.Iterator() do
-        p:SetNWBool("Rdmt_Joel4848_RewardPunish_ExtraLife", false)
+        ply:SetNWBool("Rdmt_Joel4848_RewardPunish_ExtraLife", false)
+    else
+        for _, hookId in ipairs(hookIds) do
+            hook.Remove("PlayerDeath", hookId .. "_PlayerDeath")
+            hook.Remove("TTTDeathNotifyOverride", hookId .. "_TTTDeathNotifyOverride")
+        end
+        table.Empty(hookIds)
+
+        for _, timerId in ipairs(timerIds) do
+            timer.Remove(timerId)
+        end
+        table.Empty(timerIds)
+
+        for _, p in player.Iterator() do
+            p:SetNWBool("Rdmt_Joel4848_RewardPunish_ExtraLife", false)
+        end
     end
 end
 

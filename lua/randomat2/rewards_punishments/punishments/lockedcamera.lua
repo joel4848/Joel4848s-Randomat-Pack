@@ -43,15 +43,26 @@ function PUNISHMENT:Apply(target)
     end)
 end
 
-function PUNISHMENT:CleanUp()
-    for _, timerAndHookId in ipairs(timerAndHookIds) do
+function PUNISHMENT:CleanUp(ply)
+    if ply then
+        local timerAndHookId = "Rdmt_Joel4848_RewardPunish_LockedCamera_" .. ply:SteamID64()
         timer.Remove(timerAndHookId)
         hook.Remove("PlayerSpawn", timerAndHookId)
+        table.RemoveByValue(timerAndHookIds, timerAndHookId)
+    else
+        for _, timerAndHookId in ipairs(timerAndHookIds) do
+            timer.Remove(timerAndHookId)
+            hook.Remove("PlayerSpawn", timerAndHookId)
+        end
+        table.Empty(timerAndHookIds)
     end
-    table.Empty(timerAndHookIds)
 
     net.Start("Rdmt_Joel4848_RewardPunish_LockedCameraEnd")
-    net.Broadcast()
+    if ply then
+        net.Send(ply)
+    else
+        net.Broadcast()
+    end
 end
 
 function PUNISHMENT:Condition()

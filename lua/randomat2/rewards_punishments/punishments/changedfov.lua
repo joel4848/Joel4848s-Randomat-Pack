@@ -61,16 +61,25 @@ function PUNISHMENT:Apply(target)
     end)
 end
 
-function PUNISHMENT:CleanUp()
-    for _, timerId in ipairs(timerIds) do
+function PUNISHMENT:CleanUp(ply)
+    if ply then
+        local timerId = "Rdmt_Joel4848_RewardPunish_ChangedFOV_" .. ply:SteamID64()
         timer.Remove(timerId)
-    end
-    table.Empty(timerIds)
+        table.RemoveByValue(timerIds, timerId)
 
-    for _, v in player.Iterator() do
-        v:SetFOV(0, 0)
+        ply:SetFOV(0, 0)
+        originalFOV[ply:SteamID64()] = nil
+    else
+        for _, timerId in ipairs(timerIds) do
+            timer.Remove(timerId)
+        end
+        table.Empty(timerIds)
+
+        for _, v in player.Iterator() do
+            v:SetFOV(0, 0)
+        end
+        table.Empty(originalFOV)
     end
-    table.Empty(originalFOV)
 end
 
 function PUNISHMENT:AddConVars(sliders, checks, textboxes)

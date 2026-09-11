@@ -7,4 +7,8 @@ function REWARD:Apply(target)
     target:Give("weapon_ttt_health_station")
 end
 
+function REWARD:CleanUp(ply)
+    ply:StripWeapon("weapon_ttt_health_station")
+end
+
 Joel4848:RegisterReward(REWARD)

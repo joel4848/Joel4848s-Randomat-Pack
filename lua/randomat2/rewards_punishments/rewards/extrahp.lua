@@ -11,6 +11,12 @@ function REWARD:Apply(target)
     target:SetMaxHealth(target:GetMaxHealth() + hp)
 end
 
+function REWARD:CleanUp(ply)
+    local hp = extrahp_amount:GetInt()
+    target:SetHealth(math.max(target:Health() - hp, 1))
+    target:SetMaxHealth(math.max(target:GetMaxHealth() - hp, 1))
+end
+
 function REWARD:AddConVars(sliders, checks, textboxes)
     for _, v in ipairs({"amount"}) do
         local name = "randomat_joel4848_rewardpunish_" .. self.Id .. "_" .. v

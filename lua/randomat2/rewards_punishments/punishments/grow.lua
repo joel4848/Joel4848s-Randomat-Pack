@@ -10,9 +10,13 @@ function PUNISHMENT:Apply(target)
     Randomat:SetPlayerScale(target, scale, "Joel4848_RewardPunish_Grow")
 end
 
-function PUNISHMENT:CleanUp()
-    for _, p in player.Iterator() do
-        Randomat:ResetPlayerScale(p, "Joel4848_RewardPunish_Grow")
+function PUNISHMENT:CleanUp(ply)
+    if ply then
+        Randomat:ResetPlayerScale(ply, "Joel4848_RewardPunish_Grow")
+    else
+        for _, p in player.Iterator() do
+            Randomat:ResetPlayerScale(p, "Joel4848_RewardPunish_Grow")
+        end
     end
 end
 

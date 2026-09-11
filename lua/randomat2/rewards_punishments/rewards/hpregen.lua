@@ -36,11 +36,17 @@ function REWARD:Apply(target)
     end)
 end
 
-function REWARD:CleanUp()
-    for _, timerId in ipairs(timerIds) do
+function REWARD:CleanUp(ply)
+    if ply then
+        local timerId = "Rdmt_Joel4848_RewardPunish_HPRegen_" .. ply:SteamID64()
         timer.Remove(timerId)
+        table.RemoveByValue(timerIds, timerId)
+    else
+        for _, timerId in ipairs(timerIds) do
+            timer.Remove(timerId)
+        end
+        table.Empty(timerIds)
     end
-    table.Empty(timerIds)
 end
 
 function REWARD:AddConVars(sliders, checks, textboxes)

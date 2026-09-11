@@ -25,13 +25,22 @@ function PUNISHMENT:Apply(target)
     end)
 end
 
-function PUNISHMENT:CleanUp()
+function PUNISHMENT:CleanUp(ply)
     net.Start("RdmtRemoveSpeedMultipliers")
     net.WriteString(multIdPrefix)
-    net.Broadcast()
+    if ply then
+        net.Send(ply)
+    else
+        net.Broadcast()
+    end
 
-    for _, multId in pairs(multIds) do
+    if ply then
+        local multId = multIdPrefix .. ply:SteamID64()
         hook.Remove("TTTSpeedMultiplier", multId)
+    else
+        for _, multId in pairs(multIds) do
+            hook.Remove("TTTSpeedMultiplier", multId)
+        end
     end
 end
 

@@ -22,11 +22,17 @@ function REWARD:Apply(target)
     end)
 end
 
-function REWARD:CleanUp()
-    for _, hookId in ipairs(hookIds) do
+function REWARD:CleanUp(ply)
+    if ply then
+        local hookId = "Rdmt_Joel4848_RewardPunish_ExplosionImmunity_" .. ply:SteamID64()
         hook.Remove("EntityTakeDamage", hookId)
+        table.RemoveByValue(hookIds, hookId)
+    else
+        for _, hookId in ipairs(hookIds) do
+            hook.Remove("EntityTakeDamage", hookId)
+        end
+        table.Empty(hookIds)
     end
-    table.Empty(hookIds)
 end
 
 Joel4848:RegisterReward(REWARD)

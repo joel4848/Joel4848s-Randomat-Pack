@@ -39,11 +39,17 @@ function PUNISHMENT:Apply(target)
     end)
 end
 
-function PUNISHMENT:CleanUp()
-    for _, timerId in ipairs(timerIds) do
+function PUNISHMENT:CleanUp(ply)
+    if ply then
+        local timerId = "Rdmt_Joel4848_RewardPunish_Poison_" .. ply:SteamID64()
         timer.Remove(timerId)
+        table.RemoveByValue(timerIds, timerId)
+    else
+        for _, timerId in ipairs(timerIds) do
+            timer.Remove(timerId)
+        end
+        table.Empty(timerIds)
     end
-    table.Empty(timerIds)
 end
 
 function PUNISHMENT:AddConVars(sliders, checks, textboxes)

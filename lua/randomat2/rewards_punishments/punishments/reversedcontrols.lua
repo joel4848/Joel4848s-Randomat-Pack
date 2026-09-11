@@ -50,20 +50,34 @@ function PUNISHMENT:Apply(target)
     end)
 end
 
-function PUNISHMENT:CleanUp()
-    for _, hookId in ipairs(hookIds) do
+function PUNISHMENT:CleanUp(ply)
+    if ply then
+        local hookId = "Rdmt_Joel4848_RewardPunish_ReversedControls_" .. ply:SteamID64()
         hook.Remove("PlayerSpawn", hookId .. "_PlayerSpawn")
         hook.Remove("PlayerDeath", hookId .. "_PlayerDeath")
         hook.Remove("TTTSprintKey", hookId .. "_TTTSprintKey")
-    end
-    table.Empty(hookIds)
+        table.RemoveByValue(hookIds, hookId)
 
-    for _, p in player.Iterator() do
-        p:SetLadderClimbSpeed(200)
+        ply:SetLadderClimbSpeed(200)
+    else
+        for _, hookId in ipairs(hookIds) do
+            hook.Remove("PlayerSpawn", hookId .. "_PlayerSpawn")
+            hook.Remove("PlayerDeath", hookId .. "_PlayerDeath")
+            hook.Remove("TTTSprintKey", hookId .. "_TTTSprintKey")
+        end
+        table.Empty(hookIds)
+
+        for _, p in player.Iterator() do
+            p:SetLadderClimbSpeed(200)
+        end
     end
 
     net.Start("Rdmt_Joel4848_RewardPunish_ReversedControlsEnd")
-    net.Broadcast()
+    if ply then
+        net.Sent(ply)
+    else
+        net.Broadcast()
+    end
 end
 
 function PUNISHMENT:Condition()

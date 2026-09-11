@@ -23,11 +23,17 @@ function REWARD:Apply(target)
     end)
 end
 
-function REWARD:CleanUp()
-    for _, hookId in ipairs(hookIds) do
+function REWARD:CleanUp(ply)
+    if ply then
+        local hookId = "Rdmt_Joel4848_RewardPunish_DamageResistance_" .. ply:SteamID64()
         hook.Remove("ScalePlayerDamage", hookId)
+        table.RemoveByValue(hookIds, hookId)
+    else
+        for _, hookId in ipairs(hookIds) do
+            hook.Remove("ScalePlayerDamage", hookId)
+        end
+        table.Empty(hookIds)
     end
-    table.Empty(hookIds)
 end
 
 function REWARD:AddConVars(sliders, checks, textboxes)
