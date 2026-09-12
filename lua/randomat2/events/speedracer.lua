@@ -4,6 +4,8 @@ local table = table
 local timer = timer
 local player = player
 
+local clearPunishments
+
 local MathRandom = math.random
 local TableInsert = table.insert
 local TableRemoveByValue = table.RemoveByValue
@@ -281,7 +283,7 @@ function EVENT:Begin()
     local rewardAll        = GetConVar("randomat_speedracer_reward_success"):GetBool()
     local rewardFirst      = GetConVar("randomat_speedracer_reward_first_success"):GetBool()
     local punishAll        = GetConVar("randomat_speedracer_punish_failures"):GetBool()
-    local clearPunishments = GetConVar("randomat_speedracer_clear_punishments"):GetBool()
+    clearPunishments = GetConVar("randomat_speedracer_clear_punishments"):GetBool()
 
     local successInfo, failureInfo
 
