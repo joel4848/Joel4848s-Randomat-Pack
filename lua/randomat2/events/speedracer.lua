@@ -110,7 +110,7 @@ end
 
 function EVENT:Begin()
     local delayCvar        = GetConVar("randomat_speedracer_delay")
-    local timerInitialCvar = GetConVar("randomat_speedracer_timer_initial")
+    local timerInitialCvar = GetConVar("randomat_speedracer_timer")
     local timerCvar        = GetConVar("randomat_speedracer_timer")
     local autoadvanceCvar  = GetConVar("randomat_speedracer_autoadvance")
 
@@ -182,12 +182,16 @@ function EVENT:Begin()
             end
         end
 
-        if GetConVar("randomat_speedracer_reward_first_success"):GetBool() and firstSuccess then
+        if GetConVar("randomat_speedracer_reward_success"):GetBool() and #successes > 0 then
+            RewardSuccess(successes)
+        elseif GetConVar("randomat_speedracer_reward_first_success"):GetBool() and firstSuccess then
             RewardSuccess({firstSuccess})
         end
 
-        if GetConVar("randomat_speedracer_reward_success"):GetBool() and #successes > 0 then
-            RewardSuccess(successes)
+        if clearPunishments then
+            for _, p in ipairs(successes) do
+                Joel4848:ClearPlayerPunishments(p)
+            end
         end
 
         if GetConVar("randomat_speedracer_punish_failures"):GetBool() and #failures > 0 then
@@ -273,10 +277,11 @@ function EVENT:Begin()
     -- ACTUAL EVENT START
     ------------------------------------------------------
 
-    local killFailures = GetConVar("randomat_speedracer_kill_failures"):GetBool()
-    local rewardAll    = GetConVar("randomat_speedracer_reward_success"):GetBool()
-    local rewardFirst  = GetConVar("randomat_speedracer_reward_first_success"):GetBool()
-    local punishAll    = GetConVar("randomat_speedracer_punish_failures"):GetBool()
+    local killFailures     = GetConVar("randomat_speedracer_kill_failures"):GetBool()
+    local rewardAll        = GetConVar("randomat_speedracer_reward_success"):GetBool()
+    local rewardFirst      = GetConVar("randomat_speedracer_reward_first_success"):GetBool()
+    local punishAll        = GetConVar("randomat_speedracer_punish_failures"):GetBool()
+    local clearPunishments = GetConVar("randomat_speedracer_clear_punishments"):GetBool()
 
     local successInfo, failureInfo
 
@@ -299,6 +304,10 @@ function EVENT:Begin()
 
         if failureInfo then
             Randomat:SmallNotify(failureInfo)
+        end
+
+        if punishAll and clearPunishments then
+            Randomat:SmallNotify("Punishments will be cleared on success")
         end
 
         timer.Create("Randomat_Speedracer_Start2", 5, 1, function()
@@ -371,7 +380,7 @@ end
 function EVENT:GetConVars()
     local sliders = {}
 
-    for _, v in ipairs({"delay", "timer", "timer_initial"}) do
+    for _, v in ipairs({"delay", "timer"}) do
         local name = "randomat_" .. self.id .. "_" .. v
         if ConVarExists(name) then
             local convar = GetConVar(name)
@@ -400,7 +409,7 @@ function EVENT:GetConVars()
     end
 
     local checks = {}
-    for _, v in ipairs({"autoadvance", "kill_failures", "reward_first_success", "reward_success", "punish_failures"}) do
+    for _, v in ipairs({"autoadvance", "kill_failures", "reward_first_success", "reward_success", "punish_failures", "clear_punishments"}) do
         local name = "randomat_" .. self.id .. "_" .. v
         if ConVarExists(name) then
             local convar = GetConVar(name)
@@ -414,14 +423,14 @@ function EVENT:GetConVars()
     local textboxes = {}
 
     local layout = {
-        ["timer_initial"]        = 1,
-        ["timer"]                = 2,
-        ["delay"]                = 3,
-        ["autoadvance"]          = 4,
-        ["kill_failures"]        = 5,
-        ["reward_first_success"] = 6,
-        ["reward_success"]       = 7,
-        ["punish_failures"]      = 8,
+        ["timer"]                = 1,
+        ["delay"]                = 2,
+        ["autoadvance"]          = 3,
+        ["kill_failures"]        = 4,
+        ["reward_first_success"] = 5,
+        ["reward_success"]       = 6,
+        ["punish_failures"]      = 7,
+        ["clear_punishments"]    = 8,
         ["distance"]             = 9,
     }
 

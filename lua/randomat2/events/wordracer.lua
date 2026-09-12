@@ -1,13 +1,14 @@
 local EVENT = {}
 
 CreateConVar("randomat_wordracer_only_once",                 0,  FCVAR_NONE, "Whether to only have one puzzle rather than multiple",                      0, 1)
-CreateConVar("randomat_wordracer_kill_failures",             1,  FCVAR_NONE, "Whether players who don't succeed within the time limit are killed",        0, 1)
+CreateConVar("randomat_wordracer_kill_failures",             0,  FCVAR_NONE, "Whether players who don't succeed within the time limit are killed",        0, 1)
 CreateConVar("randomat_wordracer_time_limit",                60, FCVAR_NONE, "How long in seconds players have to succeed (0 to disable)",                0, 300)
 CreateConVar("randomat_wordracer_time_between_puzzles",      5,  FCVAR_NONE, "How long in seconds before a new puzzle starts",                            0, 60)
 CreateConVar("randomat_wordracer_reward_success",            0,  FCVAR_NONE, "Whether all successful players get a reward",                               0, 1)
-CreateConVar("randomat_wordracer_reward_first_success_only", 0,  FCVAR_NONE, "Whether only the first successful player gets a reward",                    0, 1)
-CreateConVar("randomat_wordracer_punish_failure",            0,  FCVAR_NONE, "Whether all unsuccessful players get a punishment",                         0, 1)
+CreateConVar("randomat_wordracer_reward_first_success_only", 1,  FCVAR_NONE, "Whether only the first successful player gets a reward",                    0, 1)
+CreateConVar("randomat_wordracer_punish_failure",            1,  FCVAR_NONE, "Whether all unsuccessful players get a punishment",                         0, 1)
 CreateConVar("randomat_wordracer_punish_first_failure_only", 0,  FCVAR_NONE, "Whether the first unsuccessful player gets a punishment",                   0, 1)
+CreateConVar("randomat_wordracer_clear_punishments",         1,  FCVAR_NONE, "Whether to clear punishments on success",                                   0, 1)
 CreateConVar("randomat_wordracer_show_everyone_progress",    0,  FCVAR_NONE, "Whether everyone (not just spectators) should see other players' progress", 0, 1)
 
 local descriptionTime = GetConVar("randomat_wordracer_time_limit"):GetInt() or 0
@@ -39,6 +40,8 @@ local function PunishFailure(failingPlayers)
         Randomat:SmallNotify("Failure! Your punishment is: " .. punishment.Name, 5, ply)
     end
 end
+
+local clearPunishments
 
 local usedWords         = {}
 local successfulPlayers = {}
@@ -175,6 +178,12 @@ ProcessRoundEnd = function(timedOut)
         end
     end
 
+    if clearPunishments then
+        for _, p in ipairs(successfulPlayers) do
+            Joel4848:ClearPlayerPunishments(p)
+        end
+    end
+
     -- Repeat round if enabled
     if not GetConVar("randomat_wordracer_only_once"):GetBool() then
         local roundIntervalConVar = GetConVar("randomat_wordracer_time_between_puzzles"):GetInt()
@@ -220,11 +229,13 @@ function EVENT:Begin()
     eventActive = true
     usedWords = {}
 
-    local killFailures = GetConVar("randomat_wordracer_kill_failures"):GetBool()
-    local rewardAll    = GetConVar("randomat_wordracer_reward_success"):GetBool()
-    local rewardFirst  = GetConVar("randomat_wordracer_reward_first_success_only"):GetBool()
-    local punishAll    = GetConVar("randomat_wordracer_punish_failure"):GetBool()
-    local punishFirst  = GetConVar("randomat_wordracer_punish_first_failure_only"):GetBool()
+    local killFailures     = GetConVar("randomat_wordracer_kill_failures"):GetBool()
+    local rewardAll        = GetConVar("randomat_wordracer_reward_success"):GetBool()
+    local rewardFirst      = GetConVar("randomat_wordracer_reward_first_success_only"):GetBool()
+    local punishAll        = GetConVar("randomat_wordracer_punish_failure"):GetBool()
+    local punishFirst      = GetConVar("randomat_wordracer_punish_first_failure_only"):GetBool()
+
+    clearPunishments = GetConVar("randomat_wordracer_clear_punishments"):GetBool()
 
     local successInfo, failureInfo
 
@@ -249,6 +260,10 @@ function EVENT:Begin()
 
         if failureInfo then
             Randomat:SmallNotify(failureInfo)
+        end
+
+        if (punishAll or punishFirst) and clearPunishments then
+            Randomat:SmallNotify("Punishments will be cleared on success")
         end
 
         timer.Create("RdmtWordRacer_RoundStartTimer2", 7, 1, function()
@@ -302,7 +317,7 @@ function EVENT:GetConVars()
     end
 
     local checks = {}
-    for _, v in ipairs({"only_once", "kill_failures", "reward_success", "reward_first_success_only", "punish_failure", "punish_first_failure_only", "show_everyone_progress"}) do
+    for _, v in ipairs({"only_once", "kill_failures", "reward_success", "reward_first_success_only", "punish_failure", "punish_first_failure_only", "clear_punishments", "show_everyone_progress"}) do
         local name = "randomat_" .. self.id .. "_" .. v
         if ConVarExists(name) then
             local convar = GetConVar(name)
