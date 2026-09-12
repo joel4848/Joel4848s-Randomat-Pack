@@ -35,10 +35,12 @@ function PUNISHMENT:CleanUp(ply)
         for _, p in player.Iterator() do
             local newMax = originalMax[p:SteamID64()] or p:GetMaxHealth()
             p:SetMaxHealth(newMax)
+            originalMax[p:SteamID64()] = nil
 
             local plyRemovedHealth = removedHealth[p:SteamID64()] or 0
             local newHealth = p:Health() + plyRemovedHealth
             p:SetHealth(newHealth)
+            removedHealth[p:SteamID64()] = nil
         end
     end
 end
