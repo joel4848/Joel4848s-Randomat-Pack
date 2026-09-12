@@ -12,9 +12,11 @@ function REWARD:Apply(target)
 end
 
 function REWARD:CleanUp(ply)
-    local hp = extrahp_amount:GetInt()
-    target:SetHealth(math.max(target:Health() - hp, 1))
-    target:SetMaxHealth(math.max(target:GetMaxHealth() - hp, 1))
+    if ply then
+        local hp = extrahp_amount:GetInt()
+        ply:SetHealth(math.max(ply:Health() - hp, 1))
+        ply:SetMaxHealth(math.max(ply:GetMaxHealth() - hp, 1))
+    end
 end
 
 function REWARD:AddConVars(sliders, checks, textboxes)
