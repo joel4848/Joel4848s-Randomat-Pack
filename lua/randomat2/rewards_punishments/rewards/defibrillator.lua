@@ -8,7 +8,9 @@ function REWARD:Apply(target)
 end
 
 function REWARD:CleanUp(ply)
-    ply:StripWeapon("weapon_vadim_defib")
+    if ply then
+        ply:StripWeapon("weapon_vadim_defib")
+    end
 end
 
 function REWARD:Condition()

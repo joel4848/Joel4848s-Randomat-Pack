@@ -8,7 +8,9 @@ function REWARD:Apply(target)
 end
 
 function REWARD:CleanUp(ply)
-    ply:StripWeapon("weapon_ttt_rewardpunishknife")
+    if ply then
+        ply:StripWeapon("weapon_ttt_rewardpunishknife")
+    end
 end
 
 Joel4848:RegisterReward(REWARD)
