@@ -38,7 +38,7 @@ function PUNISHMENT:CleanUp(ply)
 
     net.Start("Rdmt_Joel4848_RewardPunish_FlipScreenEnd")
     if ply then
-        net.Sent(ply)
+        net.Send(ply)
     else
         net.Broadcast()
     end
