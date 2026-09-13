@@ -45,8 +45,6 @@ function EVENT:Begin()
                     wep:SetNextPrimaryFire(CurTime() + (delay / fireRateMultiplier))
                 end
             end
-
-            PrintMessage(HUD_PRINTTALK, "fireRateMultiplier = " .. fireRateMultiplier)
         end)
     end)
 end
