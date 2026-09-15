@@ -7,11 +7,12 @@ EVENT.Categories = {"moderateimpact"}
 
 -- Fallbacks for guns without defined `wep.Primary.ClipMax` (e.g. the Sahmin Gun)
 local defaultClipMaxes = {
-    ["357"] = 20,
-    ["Pistol"] = 60,
-    ["AlyxGun"] = 36,
-    ["SMG1"] = 60,
-    ["Buckshot"] = 24
+    ["357"]        = 20,
+    ["Pistol"]     = 60,
+    ["AlyxGun"]    = 36,
+    ["SMG1"]       = 60,
+    ["Buckshot"]   = 24,
+    ["AirboatGun"] = 200
 }
 
 local function RestoreWeapon(wep, ply)
