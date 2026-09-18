@@ -105,8 +105,6 @@ function EVENT:Begin()
         if target:IsPlayer() then
             local multiplier = GetMultiplier(velocity)
             dmg:ScaleDamage(multiplier)
-            PrintMessage(HUD_PRINTTALK, "velocity = " .. tostring(velocity))
-            PrintMessage(HUD_PRINTTALK, "multiplier = " .. tostring(multiplier))
         else
             target.MFMBVelocity = velocity
         end
