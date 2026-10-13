@@ -5,8 +5,8 @@ EVENT.Description = "Punch the ground with your f*cking hands to reload weapons"
 EVENT.id          = "scoopitup"
 EVENT.Categories  = {"largeimpact"}
 
-CreateConVar("randomat_scoopitup_punch_delay", 1, FCVAR_NONE, "How quickly (s) you can punch to reload", 0.1, 30)
-CreateConVar("randomat_scoopitup_refill_percentage", 20, FCVAR_NONE, "The clip percentage reloaded per punch", 1, 100)
+CreateConVar("randomat_scoopitup_punch_delay", 1, FCVAR_REPLICATED, "How quickly (s) you can punch to reload", 0.1, 30)
+CreateConVar("randomat_scoopitup_refill_percentage", 20, FCVAR_REPLICATED, "The clip percentage reloaded per punch", 1, 100)
 
 local STANDARD_AMMO_TYPES = {
     "357",
