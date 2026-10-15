@@ -9,15 +9,15 @@ CreateConVar("randomat_wordracer_reward_first_success_only", 1,  FCVAR_NONE, "Wh
 CreateConVar("randomat_wordracer_punish_failure",            1,  FCVAR_NONE, "Whether all unsuccessful players get a punishment",                         0, 1)
 CreateConVar("randomat_wordracer_punish_first_failure_only", 0,  FCVAR_NONE, "Whether the first unsuccessful player gets a punishment",                   0, 1)
 CreateConVar("randomat_wordracer_clear_punishments",         1,  FCVAR_NONE, "Whether to clear punishments on success",                                   0, 1)
-CreateConVar("randomat_wordracer_show_everyone_progress",    0,  FCVAR_NONE, "Whether everyone (not just spectators) should see other players' progress", 0, 1)
+CreateConVar("randomat_wordracer_show_everyone_progress",    1,  FCVAR_NONE, "Whether everyone (not just spectators) should see other players' progress", 0, 1)
 
 local descriptionTime = GetConVar("randomat_wordracer_time_limit"):GetInt() or 0
-local descriptionTimeText = " - and " .. descriptionTime .. " seconds - "
+local descriptionTimeText = "- and " .. descriptionTime .. " seconds - "
 if descriptionTime == 0 then descriptionTimeText = "" end
 
 EVENT.Title = "Legally-distinct word-guessing-game racer"
 EVENT.AltTitle = "Wordracer"
-EVENT.Description = "Get 6 chances" .. descriptionTimeText .. "to guess a 5-letter word!"
+EVENT.Description = "Get 6 chances " .. descriptionTimeText .. "to guess a 5-letter word!"
 EVENT.id = "wordracer"
 EVENT.Categories = {"gamemode", "largeimpact"}
 
@@ -53,7 +53,39 @@ local playerGuesses     = {}
 
 local function UpdateGuesses(ply, guess, clear)
     if ply and guess then
-        playerGuesses[ply] = guess
+        if playerGuesses[ply] then
+            local guessOld = playerGuesses[ply]
+            local guessNew = guess
+
+            local greensOld = 0
+            local greensNew = 0
+            local yellowsOld = 0
+            local yellowsNew = 0
+
+            for _, result in ipairs(guessOld) do
+                if result == "correct" then
+                    greensOld = greensOld + 1
+                elseif result == "present" then
+                    yellowsOld = yellowsOld +1
+                end
+            end
+
+            for _, result in ipairs(guessNew) do
+                if result == "correct" then
+                    greensNew = greensNew + 1
+                elseif result == "present" then
+                    yellowsNew = yellowsNew +1
+                end
+            end
+
+            if greensNew > greensOld then
+                playerGuesses[ply] = guessNew
+            elseif greensNew == greensOld and yellowsNew > yellowsOld then
+                playerGuesses[ply] = guessNew
+            end
+        else
+            playerGuesses[ply] = guess
+        end
     end
 
     if clear then playerGuesses = {} end
@@ -129,6 +161,10 @@ local function CheckRoundCompletion()
 end
 
 ProcessRoundEnd = function(timedOut)
+    -- Make client lefthand timer idle
+    net.Start("rdmtWordRacer_Success")
+    net.Broadcast()
+
     if not eventActive then return end
 
     local alivePlayers = Randomat:GetPlayers(nil, true)
@@ -179,8 +215,12 @@ ProcessRoundEnd = function(timedOut)
     end
 
     if clearPunishments then
-        for _, p in ipairs(successfulPlayers) do
-            Joel4848:ClearPlayerPunishments(p)
+        for _, ply in ipairs(successfulPlayers) do
+            if ply.Joel4848_ActivePunishments then
+                Randomat:SmallNotify("Your punishments have been cleared!", 5, ply)
+            end
+
+            Joel4848:ClearPlayerPunishments(ply)
         end
     end
 
@@ -224,6 +264,14 @@ net.Receive("rdmtWordRacer_Success", function(len, ply)
 
     CheckRoundCompletion()
 end)
+
+function EVENT:BeforeEventTrigger(ply, options, ...)
+    descriptionTime = GetConVar("randomat_wordracer_time_limit"):GetInt() or 0
+    descriptionTimeText = "- and " .. descriptionTime .. " seconds - "
+    if descriptionTime == 0 then descriptionTimeText = "" end
+
+    self.Description = "Get 6 chances " .. descriptionTimeText .. "to guess a 5-letter word!"
+end
 
 function EVENT:Begin()
     eventActive = true
@@ -288,6 +336,7 @@ end
 function EVENT:End()
     eventActive = false
     timer.Remove("RdmtWordRacer_BackupTimer")
+    timer.Remove("RdmtWordRacer_RoundStartTimer")
     timer.Remove("RdmtWordRacer_RoundStartTimer1")
     timer.Remove("RdmtWordRacer_RoundStartTimer2")
 
