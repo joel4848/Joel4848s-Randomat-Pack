@@ -1,15 +1,26 @@
 local EVENT = {}
+
 EVENT.id = "oppositeness"
 
 local OriginalOnSpawnMenuOpen = nil
 
+local moveInverted   = false
+local strafeInverted = false
+local jumpInverted   = false
+local shootInverted  = false
+local sprintInverted = false
 local mouseXInverted = false
 local mouseYInverted = false
-local moveInverted = false
-local strafeInverted = false
-local jumpInverted = false
-local shootInverted = false
-local sprintInverted = false
+
+local inversions = {
+    {active = false, text = "Forwards ↔ Backwards"},
+    {active = false, text = "Left ↔ Right"},
+    {active = false, text = "Jump ↔ Crouch"},
+    {active = false, text = "Shoot ↔ Reload"},
+    {active = false, text = "Sprint ↔ Drop Weapon"},
+    {active = false, text = "Mouse X Axis"},
+    {active = false, text = "Mouse Y Axis"},
+}
 
 local function RemoveHooks()
     hook.Remove("InputMouseApply", "RdmtOppositenessXMouseHook")
@@ -80,15 +91,21 @@ end
 
 local function SwitchMouseX()
     mouseXInverted = not mouseXInverted
+    inversions[6].active = not inversions[6].active
+
     UpdateMouseHook()
 end
 
 local function SwitchMouseY()
     mouseYInverted = not mouseYInverted
+    inversions[7].active = not inversions[7].active
+
     UpdateMouseHook()
 end
 
 local function SwitchMove()
+    inversions[1].active = not inversions[1].active
+
     if moveInverted then
         hook.Remove("StartCommand", "RdmtOppositenessMoveHook")
         hook.Remove("TTTSprintKey", "RdmtOppositenessSprintKeyHook")
@@ -110,6 +127,8 @@ local function SwitchMove()
 end
 
 local function SwitchStrafe()
+    inversions[2].active = not inversions[2].active
+
     if strafeInverted then
         hook.Remove("StartCommand", "RdmtOppositeStrafeHook")
         strafeInverted = false
@@ -124,6 +143,8 @@ local function SwitchStrafe()
 end
 
 local function SwitchJump()
+    inversions[3].active = not inversions[3].active
+
     if jumpInverted then
         hook.Remove("StartCommand", "RdmtOppositeJumpHook")
         jumpInverted = false
@@ -144,6 +165,8 @@ local function SwitchJump()
 end
 
 local function SwitchShoot()
+    inversions[4].active = not inversions[4].active
+
     if shootInverted then
         hook.Remove("StartCommand", "RdmtOppositenessShootHook")
         shootInverted = false
@@ -164,6 +187,8 @@ local function SwitchShoot()
 end
 
 local function SwitchSprint()
+    inversions[5].active = not inversions[5].active
+
     if sprintInverted then
         hook.Remove("StartCommand", "RdmtOppositenessSprintHook")
         hook.Remove("PlayerButtonDown", "RdmtOppositenessMenuHook")
@@ -239,6 +264,74 @@ local function SwitchSprint()
     end
 end
 
+function EVENT:Begin()
+	local showSwappedConVar = GetConVar("randomat_oppositeness_display_current_swaps")
+
+	surface.CreateFont("Swapped_Large", {
+		font = "Verdana",
+		size = 30,
+		weight = 900,
+		antialias = true,
+		shadow = true
+	})
+
+	surface.CreateFont("Swapped_Medium", {
+		font = "Verdana",
+		size = 25,
+		weight = 900,
+		antialias = true,
+		shadow = true
+	})
+
+    surface.SetFont("Swapped_Large")
+    local titleW, titleH = surface.GetTextSize("Currently Swapped:")
+
+    surface.SetFont("Swapped_Medium")
+    local maxLineW = titleW
+    local lineH    = 0
+
+    for _, entry in ipairs(inversions) do
+        local w, h = surface.GetTextSize(entry.text)
+        if w > maxLineW then maxLineW = w end
+        lineH = h
+    end
+
+    self:AddHook("HUDPaint", function()
+		if showSwappedConVar:GetBool() then
+			local padding = 10
+			local boxX = padding
+			local boxY = padding
+			local boxW = maxLineW + padding * 2
+			local boxH = titleH + padding * 3
+
+			for _, entry in ipairs(inversions) do
+				if entry.active then
+					boxH = boxH + lineH + padding
+				end
+			end
+
+			draw.RoundedBox(4, boxX, boxY, boxW, boxH, Color(0, 0, 0, 240))
+
+			local textX = boxX + boxW / 2
+			local titleY = boxY + padding
+
+			draw.SimpleText("Currently Swapped:", "Swapped_Large", textX, titleY, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+
+			draw.RoundedBox(0, boxX + padding * 2, titleY + titleH + padding - 2, boxW - padding * 4, 4, Color(255, 255, 255, 255))
+
+			local textY = titleY + titleH + padding * 2
+
+			for _, entry in ipairs(inversions) do
+				LocalPlayer():PrintMessage(HUD_PRINTTALK, entry.text .. " = " .. tostring(entry.active))
+				if entry.active then
+					draw.SimpleText(entry.text, "Swapped_Medium", textX, textY, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+					textY = textY + lineH + padding - 2
+				end
+			end
+		end
+    end)
+end
+
 -------- Net stuff --------
 net.Receive("OppositenessMouseX", SwitchMouseX)
 net.Receive("OppositenessMouseY", SwitchMouseY)
@@ -249,6 +342,8 @@ net.Receive("OppositenessShoot",  SwitchShoot)
 net.Receive("OppositenessSprint", SwitchSprint)
 net.Receive("OppositenessEnd",    RemoveHooks)
 
-EVENT.End = RemoveHooks
+function EVENT:End()
+    RemoveHooks()
+end
 
 Randomat:register(EVENT)

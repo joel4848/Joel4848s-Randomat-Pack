@@ -18,20 +18,6 @@ EVENT.Description = "Controls periodically switch"
 EVENT.id = "oppositeness"
 EVENT.Categories = {"largeimpact"}
 
-CreateConVar("randomat_oppositeness_interval", 30, FCVAR_NONE, "Interval (s) between switches", 1, 120)
-CreateConVar("randomat_oppositeness_accelerates", 1, FCVAR_NONE, "Whether interval reduces each switch", 0, 1)
-CreateConVar("randomat_oppositeness_accelerates_rate", 2, FCVAR_NONE, "How much (s) the interval reduces each switch", 1, 60)
-CreateConVar("randomat_oppositeness_accelerates_minimum_time", 10, FCVAR_NONE, "The shortest interval between switches", 1, 120)
-CreateConVar("randomat_oppositeness_allow_mouse_inversion", 1, FCVAR_NONE, "Whether the mouse axes can be inverted", 0, 1)
-
-CreateConVar("randomat_oppositeness_mouseX_weight", 1, FCVAR_NONE, "How likely the mouse X axis is to be inverted", 0, 50)
-CreateConVar("randomat_oppositeness_mouseY_weight", 1, FCVAR_NONE, "How likely the mouse Y axis is to be inverted", 0, 50)
-CreateConVar("randomat_oppositeness_forwards_backwards_weight", 1, FCVAR_NONE, "How likely forwads/backwards are to be switched", 0, 50)
-CreateConVar("randomat_oppositeness_left_right_weight", 1, FCVAR_NONE, "How likely left/right are to be switched", 0, 50)
-CreateConVar("randomat_oppositeness_jump_crouch_weight", 1, FCVAR_NONE, "How likely jump/crouch are to be switched", 0, 50)
-CreateConVar("randomat_oppositeness_shoot_reload_weight", 1, FCVAR_NONE, "How likely shoot/reload are to be switched", 0, 50)
-CreateConVar("randomat_oppositeness_sprint_drop_weight", 1, FCVAR_NONE, "How likely sprint/drop weapon are to be switched", 0, 50)
-
 local baseInterval
 local accelerates
 local accelRate
@@ -322,7 +308,7 @@ function EVENT:GetConVars()
     end
 
     local checks = {}
-    for _, v in ipairs({"accelerates", "allow_mouse_inversion"}) do
+    for _, v in ipairs({"accelerates", "allow_mouse_inversion", "mouse_invert_both", "display_current_swaps"}) do
         local name = "randomat_" .. self.id .. "_" .. v
         if ConVarExists(name) then
             local convar = GetConVar(name)
@@ -333,7 +319,38 @@ function EVENT:GetConVars()
         end
     end
 
-    return sliders, checks
+    local textboxes = {}
+
+    local layout = {
+        ["accelerates"]              = 1,
+        ["display_current_swaps"]    = 2,
+        ["interval"]                 = 3,
+        ["accelerates_rate"]         = 4,
+        ["accelerates_minimum_time"] = 5,
+
+        ["Mouse Axis Swapping"] = {
+            pos = 6,
+            items = {
+                "allow_mouse_inversion",
+                "mouse_invert_both",
+            }
+        },
+
+        ["Swap Weighting"] = {
+            pos = 7,
+            items = {
+                "mouseX_weight",
+                "mouseY_weight",
+                "forwards_backwards_weight",
+                "left_right_weight",
+                "jump_crouch_weight",
+                "shoot_reload_weight",
+                "sprint_drop_weight",
+            }
+        },
+    }
+
+    return sliders, checks, textboxes, layout
 end
 
 Randomat:register(EVENT)
