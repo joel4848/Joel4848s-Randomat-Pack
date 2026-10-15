@@ -191,8 +191,12 @@ function EVENT:Begin()
         end
 
         if clearPunishments then
-            for _, p in ipairs(successes) do
-                Joel4848:ClearPlayerPunishments(p)
+            for _, ply in ipairs(successfulPlayers) do
+                if ply.Joel4848_ActivePunishments then
+                    Randomat:SmallNotify("Your punishments have been cleared!", 5, ply)
+                end
+
+                Joel4848:ClearPlayerPunishments(ply)
             end
         end
 
