@@ -21,14 +21,28 @@ local COLOUR_TIMER_RED          = Color(230, 50, 50)
 local COLOUR_ERROR_MESSAGE_BG   = Color(255, 255, 255)
 local COLOUR_ERROR_MESSAGE_TEXT = Color(0, 0, 0)
 
+-- Fonts
+surface.CreateFont("WordRacer_ProgressNickname", {
+    font = "Tahoma",
+    size = 24,
+    weight = 600
+})
+
+surface.CreateFont("WordRacer_ProgressTitle", {
+    font = "Tahoma",
+    size = 32,
+    weight = 800
+})
+
 WordRacerFrame = WordRacerFrame or nil
 if IsValid(WordRacerFrame) then WordRacerFrame:Remove() end
 local currentAnswer = ""
-local timeLimit = 60
-local startTime = 0
-local isFinished = false
-local finalResult = false
-local frozenTime = 0
+local timeLimit     = 60
+local startTime     = 0
+local isFinished    = false
+local finalResult   = false
+local frozenTime    = 0
+local roundIdle     = false
 
 -- Evaluate guesses
 local function EvaluateGuess(guess, target)
@@ -75,45 +89,52 @@ local function CreateWordRacerUI()
 
     local scale = math.Clamp(SCALE_FACTOR, 0.5, 1.5)
 
-    local tileSize = math.Round(ScrH() * 0.052 * scale)
+    local tileSize   = math.Round(ScrH() * 0.052 * scale)
     local tileMargin = math.Round(tileSize * 0.1)
-    local gridWidth = (tileSize * 5) + (tileMargin * 4)
+    local gridWidth  = (tileSize * 5) + (tileMargin * 4)
     local gridHeight = (tileSize * 6) + (tileMargin * 5)
 
-    local keyH = math.Round(ScrH() * 0.042 * scale)
-    local baseKeyW = math.Round(keyH * 0.8)
-    local keyGap = math.Round(keyH * 0.12)
-    local row1Width = (11 * baseKeyW) + (9 * keyGap)
-    local keyboardWidth = row1Width
+    local keyH           = math.Round(ScrH() * 0.042 * scale)
+    local baseKeyW       = math.Round(keyH * 0.8)
+    local keyGap         = math.Round(keyH * 0.12)
+    local row1Width      = (11 * baseKeyW) + (9 * keyGap)
+    local keyboardWidth  = row1Width
     local keyboardHeight = (3 * keyH) + (2 * keyGap)
 
-    local hintH = math.Round(ScrH() * 0.02 * scale)
-    local timerH = math.Round(ScrH() * 0.045 * scale)
+    local hintH          = math.Round(ScrH() * 0.02 * scale)
+    local resultH        = math.Round(ScrH() * 0.0175 * scale)
+    local timerH         = math.Round(ScrH() * 0.045 * scale)
     local sectionSpacing = math.Round(ScrH() * 0.012 * scale)
-    local padding = math.Round(ScrH() * 0.015 * scale)
+    local padding        = math.Round(ScrH() * 0.015 * scale)
 
     local frameW = math.max(gridWidth, keyboardWidth) + (padding * 2)
 
-    local hintY = padding
-    local timerY = hintY + hintH + sectionSpacing
-    local gridY = timerY + timerH + sectionSpacing
-    local keyboardY = gridY + gridHeight + sectionSpacing
+    local function GetLayoutPositions(showResult)
+        local hintY     = padding
+        local resultY   = hintY + hintH + sectionSpacing
+        local timerY    = showResult and (resultY + resultH + sectionSpacing) or (hintY + hintH + sectionSpacing)
+        local gridY     = timerY + timerH + sectionSpacing
+        local keyboardY = gridY + gridHeight + sectionSpacing
+        local frameH    = keyboardY + keyboardHeight + padding
 
-    local frameH = keyboardY + keyboardHeight + padding
+        return hintY, resultY, timerY, gridY, keyboardY, frameH
+    end
 
-    local gridX = (frameW - gridWidth) / 2
+    local hintY, resultY, timerY, gridY, keyboardY, frameH = GetLayoutPositions(false)
+
+    local gridX     = (frameW - gridWidth) / 2
     local keyboardX = (frameW - keyboardWidth) / 2
 
-    local guesses = {}
+    local guesses           = {}
     local evaluationResults = {}
-    local keyStates = {}
-    local currentRow = 1
-    local currentColumn = 1
+    local keyStates         = {}
+    local currentRow        = 1
+    local currentColumn     = 1
 
-    local shakestartTime = 0
-    local shakeDuration = 0.4
-    local shakeRow = 0
-    local errorMessage = nil
+    local shakestartTime     = 0
+    local shakeDuration      = 0.4
+    local shakeRow           = 0
+    local errorMessage       = nil
     local errorMessageExpiry = 0
 
     local function TriggerError(msg)
@@ -180,6 +201,25 @@ local function CreateWordRacerUI()
         weight = 800
     })
 
+    WordRacerFrame.UpdateLayout = function(s)
+        local showResult = isFinished and finalResult
+        local hY, rY, tY, gY, kY, fH = GetLayoutPositions(showResult)
+
+        hintY     = hY
+        resultY   = rY
+        timerY    = tY
+        gridY     = gY
+        keyboardY = kY
+        frameH    = fH
+
+        s:SetSize(frameW, frameH)
+        s:SetPos(ScrW() - frameW - 20, (ScrH() - frameH) / 2)
+
+        if IsValid(s.KeyboardPanel) then
+            s.KeyboardPanel:SetPos(keyboardX, keyboardY)
+        end
+    end
+
     WordRacerFrame.Paint = function(s, w, h)
         -- Background
         draw.RoundedBox(8, 0, 0, w, h, COLOUR_BG)
@@ -188,14 +228,25 @@ local function CreateWordRacerUI()
         local keyName = string.upper(input.GetKeyName(input.GetKeyCode(input.LookupBinding("+showscores") or "KEY_TAB")) or "TAB")
         draw.SimpleText("Hold " .. keyName .. " to interact", "WordRacer_Hint", w / 2, hintY, COLOUR_TEXT, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 
-        -- Timer display
+        -- "Your time" result
+        if isFinished and finalResult then
+            local solveTimeDuration = frozenTime - startTime
+            local solveTimeMins     = math.floor(solveTimeDuration / 60)
+            local solveTimeSecs     = math.floor(solveTimeDuration % 60)
+            local solveTimeMillis   = math.floor((solveTimeDuration % 1) * 100)
+            local solveTimeText     = string.format("Your time: %02d:%02d:%02d", solveTimeMins, solveTimeSecs, solveTimeMillis)
+
+            draw.SimpleText(solveTimeText, "WordRacer_ProgressNickname", w / 2, resultY, COLOUR_CORRECT, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        end
+
+        -- Timer
         local timeRemaining = timeLimit
         if timeLimit > 0 then
-            local elapsed = isFinished and (frozenTime - startTime) or (CurTime() - startTime)
+            local elapsed = CurTime() - startTime
             timeRemaining = math.max(0, timeLimit - elapsed)
 
             if not isFinished and timeRemaining <= 0 then
-                isFinished = true
+                isFinished  = true
                 finalResult = false
                 net.Start("rdmtWordRacer_Success")
                     net.WriteBool(false)
@@ -209,17 +260,14 @@ local function CreateWordRacerUI()
         end
 
         -- Timer text & colour
-        local timerText = ""
+        local timerText   = ""
         local timerColour = COLOUR_TIMER_WHITE
 
         local mins   = math.floor(timeRemaining / 60)
         local secs   = math.floor(timeRemaining % 60)
         local millis = math.floor((timeRemaining % 1) * 100)
 
-        if isFinished then
-            timerColour = finalResult and COLOUR_CORRECT or COLOUR_TIMER_RED
-            timerText   = string.format("%02d:%02d:%02d", mins, secs, millis)
-        elseif timeLimit > 0 then
+        if timeLimit > 0 then
             if timeRemaining <= 10 then
                 timerColour = COLOUR_TIMER_RED
             elseif timeRemaining <= 30 then
@@ -240,7 +288,7 @@ local function CreateWordRacerUI()
             local rowOffsetX = 0
             if row == shakeRow and CurTime() < (shakestartTime + shakeDuration) then
                 local progress = (CurTime() - shakestartTime) / shakeDuration
-                rowOffsetX = math.sin((CurTime() - shakestartTime) * 40) * (8 * (1 - progress))
+                rowOffsetX     = math.sin((CurTime() - shakestartTime) * 40) * (8 * (1 - progress))
             end
 
             for column = 1, 5 do
@@ -277,7 +325,7 @@ local function CreateWordRacerUI()
         -- Error message
         if errorMessage and CurTime() < errorMessageExpiry then
             surface.SetFont("WordRacer_Error")
-            local textW, textH = surface.GetTextSize(errorMessage)
+            local textW, textH  = surface.GetTextSize(errorMessage)
             local errorMessageW = textW + 20
             local errorMessageH = textH + 10
             local errorMessageX = (w - errorMessageW) / 2
@@ -333,9 +381,15 @@ local function CreateWordRacerUI()
 
         if word == currentAnswer then
             TriggerError("Success!")
+
             isFinished = true
             finalResult = true
             frozenTime = CurTime()
+
+            if IsValid(WordRacerFrame) and WordRacerFrame.UpdateLayout then
+                WordRacerFrame:UpdateLayout()
+            end
+
             net.Start("rdmtWordRacer_Success")
                 net.WriteBool(true)
             net.SendToServer()
@@ -363,6 +417,7 @@ local function CreateWordRacerUI()
     keyboardPanel:SetPos(keyboardX, keyboardY)
     keyboardPanel:SetSize(keyboardWidth, keyboardHeight)
     keyboardPanel.Paint = function() end
+    WordRacerFrame.KeyboardPanel = keyboardPanel
 
     local keyRows = {
         {"q", "w", "e", "r", "t", "y", "u", "i", "o", "p"},
@@ -449,16 +504,17 @@ local function CreateWordRacerUI()
 end
 
 net.Receive("rdmtWordRacer_Answer", function()
+    roundIdle     = false
     currentAnswer = net.ReadString()
-    timeLimit = net.ReadInt(16)
-    startTime = CurTime()
-    isFinished = false
-    finalResult = false
+    timeLimit     = net.ReadInt(16)
+    startTime     = CurTime()
+    isFinished    = false
+    finalResult   = false
 
     CreateWordRacerUI()
 end)
 
-local TEST_INCLUDE_LOCAL = true
+local TEST_INCLUDE_LOCAL = false
 WordRacerProgressFrame = WordRacerProgressFrame or nil
 if IsValid(WordRacerProgressFrame) then WordRacerProgressFrame:Remove() end
 
@@ -467,15 +523,11 @@ local activePlayers = {}
 function UpdatePlayerGuesses(guesses, showAll)
     local showEveryone = showAll or false
 
-    local AVATAR_SIZE = 58
-    local BOX_SIZE    = 26
-    local BOX_GAP     = 4
-
-    surface.CreateFont("WordRacer_ProgressNickname", {
-        font = "Tahoma",
-        size = 24,
-        weight = 600
-    })
+    local AVATAR_SIZE  = 58
+    local BOX_SIZE     = 26
+    local BOX_GAP      = 4
+    local TITLE_HEIGHT = 45
+    local TIMER_HEIGHT = 37
 
     local ply = LocalPlayer()
     local isSpectator = not ply:Alive() or (ply.IsSpec and ply:IsSpec()) or (ply.Team and ply:Team() == TEAM_SPEC)
@@ -489,6 +541,7 @@ function UpdatePlayerGuesses(guesses, showAll)
     local maxWidth = 5 * BOX_SIZE + 4 * BOX_GAP
     local playerCount = 0
 
+    -- Get maximum text width
     for _, p in player.Iterator() do
         if p == LocalPlayer() and not TEST_INCLUDE_LOCAL then continue end
 
@@ -509,7 +562,7 @@ function UpdatePlayerGuesses(guesses, showAll)
     end
 
     local frameW = AVATAR_SIZE + 20 + maxWidth + 20
-    local frameH = math.min(playerCount * (AVATAR_SIZE + 10) + 10, ScrH() * 0.8)
+    local frameH = math.min(playerCount * (AVATAR_SIZE + 10) + 10 + TIMER_HEIGHT + TITLE_HEIGHT, ScrH() * 0.8)
 
     local frameY = (ScrH() - frameH) / 2
 
@@ -517,11 +570,48 @@ function UpdatePlayerGuesses(guesses, showAll)
         WordRacerProgressFrame = vgui.Create("DPanel")
         WordRacerProgressFrame.Paint = function(s, w, h)
             draw.RoundedBox(8, 0, 0, w, h, COLOUR_BG)
+
+            -- Title
+            draw.SimpleText("Best guesses:", "WordRacer_ProgressTitle", w / 2, 10, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+
+            -- Timer display
+            local timeRemaining = timeLimit
+            if timeLimit > 0 then
+                local elapsed = CurTime() - startTime
+                timeRemaining = math.max(0, timeLimit - elapsed)
+            end
+
+            local timerText = ""
+            local timerColour = COLOUR_TIMER_WHITE
+
+            local mins   = math.floor(timeRemaining / 60)
+            local secs   = math.floor(timeRemaining % 60)
+            local millis = math.floor((timeRemaining % 1) * 100)
+
+            if timeLimit > 0 then
+                if timeRemaining <= 10 then
+                    timerColour = COLOUR_TIMER_RED
+                elseif timeRemaining <= 30 then
+                    timerColour = COLOUR_TIMER_AMBER
+                end
+                timerText = string.format("%02d:%02d:%02d", mins, secs, millis)
+            elseif timeLimit == 0 then
+                timerText = "∞"
+                timerColour = COLOUR_CORRECT
+            end
+
+            local progressTimerFont = "WordRacer_ProgressNickname"
+            if roundIdle then
+                timerText         = "Waiting..."
+                timerColour       = COLOUR_TIMER_WHITE
+            end
+
+            draw.SimpleText(timerText, progressTimerFont, w / 2, 10 + TITLE_HEIGHT, timerColour, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         end
 
         WordRacerProgressFrame.Scroll = vgui.Create("DScrollPanel", WordRacerProgressFrame)
         WordRacerProgressFrame.Scroll:Dock(FILL)
-        WordRacerProgressFrame.Scroll:DockMargin(10, 10, 10, 10)
+        WordRacerProgressFrame.Scroll:DockMargin(10, 10 + TITLE_HEIGHT + TIMER_HEIGHT, 10, 10)
 
         WordRacerProgressFrame.PlayerRows = {}
     end
@@ -595,8 +685,14 @@ local receivedGuesses = {}
 
 net.Receive("rdmtWordRacer_GuessUpdate", function()
     receivedGuesses = net.ReadTable()
+    PrintTable(receivedGuesses)
     local showAll   = net.ReadBool()
+
     UpdatePlayerGuesses(receivedGuesses, showAll)
+end)
+
+net.Receive("rdmtWordRacer_Success", function()
+    roundIdle = true
 end)
 
 function EVENT:Begin()
