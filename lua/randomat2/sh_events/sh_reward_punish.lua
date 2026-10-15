@@ -1,6 +1,6 @@
-if SERVER then
-    Joel4848 = Joel4848 or {}
+Joel4848 = Joel4848 or {}
 
+if SERVER then
     Joel4848.REWARDPUNISH = Joel4848.REWARDPUNISH or {
         Rewards = {},
         Punishments = {}
