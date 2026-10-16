@@ -18,7 +18,7 @@ EVENT.Description = "Reach each location in time and stay there... or else!"
 EVENT.id          = "speedracer"
 EVENT.Categories  = {"gamemode", "largeimpact"}
 
-function RewardSuccess(successfulPlayers)
+local function RewardSuccess(successfulPlayers)
     for _, ply in ipairs(successfulPlayers) do
         local reward = Joel4848:ApplyReward(ply)
 
@@ -27,7 +27,7 @@ function RewardSuccess(successfulPlayers)
 
 end
 
-function PunishFailure(failingPlayers)
+local function PunishFailure(failingPlayers)
     for _, ply in ipairs(failingPlayers) do
         local punishment = Joel4848:ApplyPunishment(ply, {"blindish"})
 

@@ -75,7 +75,7 @@ local function CreatePattern(timeLimit)
     net.Broadcast()
 end
 
-function EjectionAnnouncement(names)
+local function EjectionAnnouncement(names)
     local count = #names
     local fullMessage = ""
 
