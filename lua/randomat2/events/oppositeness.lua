@@ -18,41 +18,52 @@ EVENT.Description = "Controls periodically switch"
 EVENT.id = "oppositeness"
 EVENT.Categories = {"largeimpact"}
 
+local baseIntervalConVar = GetConVar("randomat_oppositeness_interval")
+local acceleratesConVar  = GetConVar("randomat_oppositeness_accelerates")
+local accelRateConVar    = GetConVar("randomat_oppositeness_accelerates_rate")
+local accelMinConVar     = GetConVar("randomat_oppositeness_accelerates_minimum_time")
+local allowMouseConVar   = GetConVar("randomat_oppositeness_allow_mouse_inversion")
+local doMouseBothConVar  = GetConVar("randomat_oppositeness_mouse_invert_both")
+
+local mouseXWeightConVar    = GetConVar("randomat_oppositeness_mouseX_weight")
+local mouseYWeightConVar    = GetConVar("randomat_oppositeness_mouseY_weight")
+local mouseBothWeightConVar = GetConVar("randomat_oppositeness_mouse_both_weight")
+local moveWeightConVar      = GetConVar("randomat_oppositeness_forwards_backwards_weight")
+local strafeWeightConVar    = GetConVar("randomat_oppositeness_left_right_weight")
+local jumpWeightConVar      = GetConVar("randomat_oppositeness_jump_crouch_weight")
+local shootWeightConVar     = GetConVar("randomat_oppositeness_shoot_reload_weight")
+local sprintWeightConVar    = GetConVar("randomat_oppositeness_sprint_drop_weight")
+
 local baseInterval
 local accelerates
 local accelRate
 local accelMin
 local allowMouse
+local doMouseBoth
 
 local mouseXInverted = false
 local mouseYInverted = false
-local moveInverted = false
+local moveInverted   = false
 local strafeInverted = false
-local jumpInverted = false
-local shootInverted = false
+local jumpInverted   = false
+local shootInverted  = false
 local sprintInverted = false
 
 local mouseXWeight
 local mouseYWeight
+local mouseBothWeight
 local moveWeight
 local strafeWeight
 local jumpWeight
 local shootWeight
 local sprintWeight
 
-local weights = {
-    mouseXWeight,
-    mouseYWeight,
-    moveWeight,
-    strafeWeight,
-    jumpWeight,
-    shootWeight,
-    sprintWeight
-}
+local weights = {}
 
 local switches = {
     "mouseX",
     "mouseY",
+    "mouseBoth",
     "move",
     "strafe",
     "jump",
@@ -60,19 +71,12 @@ local switches = {
     "sprint"
 }
 
-local switchChecks = {
-    mouseXInverted,
-    mouseYInverted,
-    moveInverted,
-    strafeInverted,
-    jumpInverted,
-    shootInverted,
-    sprintInverted
-}
+local switchChecks = {}
 
 local announcements = {
     "mouse X axis",
     "mouse Y axis",
+    "mouse axes",
     "forwards/backwards",
     "left/right",
     "jump/crouch",
@@ -86,12 +90,14 @@ local count
 local function announceSwitch(choice)
     local messageStart = nil
 
-    if choice == 1 then
-        messageStart = mouseX and "Uninverting " or "Inverting "
-    elseif choice == 2 then
-        messageStart = mouseY and "Uninverting " or "Inverting "
+    if choice <= 3 then
+        -- "Uninverting"/"Inverting" for mouse axes
+        messageStart = switchChecks[choice] and "Uninverting " or "Inverting "
+        switchChecks[choice] = not switchChecks[choice]
     else
+        -- "Unswapping"/"Swapping" for everything else
         messageStart = switchChecks[choice] and "Unswapping " or "Swapping "
+        switchChecks[choice] = not switchChecks[choice]
     end
 
     Randomat:SmallNotify(messageStart .. announcements[choice] .. "!")
@@ -108,6 +114,13 @@ local function SendSwitch(switch)
         net.Start("OppositenessMouseY")
         net.Broadcast()
         mouseYInverted = not mouseYInverted
+    elseif switch == "mouseBoth" then
+        net.Start("OppositenessMouseX")
+        net.Broadcast()
+        net.Start("OppositenessMouseY")
+        net.Broadcast()
+        mouseXInverted = not mouseXInverted
+        mouseYInverted = not mouseYInverted
     elseif switch == "move" then
         net.Start("OppositenessMove")
         net.Broadcast()
@@ -119,6 +132,7 @@ local function SendSwitch(switch)
 
             hook.Remove("TTTSprintKey", "RdmtOppositenessServerMoveHook")
         else
+            -- Reverse ladder climb speed so that players can climb ladders using the back key
             for _, p in ipairs(alivePlayers) do
                 p:SetLadderClimbSpeed(-200)
             end
@@ -161,24 +175,35 @@ end
 local function GetWeightedChoice()
     local weighted_choices = {}
 
-    for i, switch in pairs(weights) do
-        if not allowMouse and (i == 1 or i == 2) then
-            continue
+    for i, weight in ipairs(weights) do
+        if not allowMouse then
+            -- If we're not allowing mouse switching, ignore all mouse switches
+            if i == 1 or i == 2 or i == 3 then continue end
+        else
+            if doMouseBoth then
+                -- If we're doing both mouse axes together, ignore individual mouse switches
+                if i == 1 or i == 2 then continue end
+            else
+                -- If we're NOT doing both mouse axes together, then ignore the combined mouse switch
+                if i == 3 then continue end
+            end
         end
 
-        local weight = switch
-
+        -- Add an entry for each weight value
         for _ = 1, weight do
-            TableInsert(weighted_choices, i)
+            table.insert(weighted_choices, i)
         end
+    end
+
+    if #weighted_choices == 0 then
+        return allowMouse and (doMouseBoth and 3 or math.random(1, 2)) or math.random(4, 8)
     end
 
     table.Shuffle(weighted_choices)
 
-    -- Then get a random index from the random list for more randomness
     local total = table.Count(weighted_choices)
     local idx = math.random(total)
-    local choice = weighted_events[idx]
+    local choice = weighted_choices[idx]
 
     return choice
 end
@@ -221,20 +246,43 @@ net.Receive("OppositenessSprint", function(ln, ply)
 end)
 
 function EVENT:Begin()
+    baseInterval = baseIntervalConVar:GetInt()
+    accelerates  = acceleratesConVar:GetBool()
+    accelRate    = accelRateConVar:GetInt()
+    accelMin     = accelMinConVar:GetInt()
+    allowMouse   = allowMouseConVar:GetBool()
+    doMouseBoth  = doMouseBothConVar:GetBool()
 
-baseInterval = GetConVar("randomat_oppositeness_interval"):GetInt()
-accelerates = GetConVar("randomat_oppositeness_accelerates"):GetBool()
-accelRate = GetConVar("randomat_oppositeness_accelerates_rate"):GetInt()
-accelMin = GetConVar("randomat_oppositeness_accelerates_minimum_time"):GetInt()
-allowMouse = GetConVar("randomat_oppositeness_allow_mouse_inversion"):GetBool()
+    mouseXWeight    = mouseXWeightConVar:GetInt()
+    mouseYWeight    = mouseYWeightConVar:GetInt()
+    mouseBothWeight = mouseBothWeightConVar:GetInt()
+    moveWeight      = moveWeightConVar:GetInt()
+    strafeWeight    = strafeWeightConVar:GetInt()
+    jumpWeight      = jumpWeightConVar:GetInt()
+    shootWeight     = shootWeightConVar:GetInt()
+    sprintWeight    = sprintWeightConVar:GetInt()
 
-mouseXWeight = GetConVar("randomat_oppositeness_mouseX_weight"):GetInt()
-mouseYWeight = GetConVar("randomat_oppositeness_mouseY_weight"):GetInt()
-moveWeight = GetConVar("randomat_oppositeness_forwards_backwards_weight"):GetInt()
-strafeWeight = GetConVar("randomat_oppositeness_left_right_weight"):GetInt()
-jumpWeight = GetConVar("randomat_oppositeness_jump_crouch_weight"):GetInt()
-shootWeight = GetConVar("randomat_oppositeness_shoot_reload_weight"):GetInt()
-sprintWeight = GetConVar("randomat_oppositeness_sprint_drop_weight"):GetInt()
+    weights = {
+        mouseXWeight,
+        mouseYWeight,
+        mouseBothWeight,
+        moveWeight,
+        strafeWeight,
+        jumpWeight,
+        shootWeight,
+        sprintWeight
+    }
+
+    switchChecks = {
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+    }
 
     -- Sanity checks
     if accelMin > baseInterval then accelMin = baseInterval end
@@ -268,18 +316,19 @@ function EVENT:End()
     net.Start("OppositenessEnd")
     net.Broadcast()
 
+    -- I think these are redundant now?
     mouseXInverted = false
     mouseYInverted = false
-    moveInverted = false
+    moveInverted   = false
     strafeInverted = false
-    jumpInverted = false
-    shootInverted = false
+    jumpInverted   = false
+    shootInverted  = false
     sprintInverted = false
 end
 
 function EVENT:GetConVars()
     local sliders = {}
-    for _, v in ipairs({"interval", "accelerates_minimum_time", "mouseX_weight", "mouseY_weight", "forwards_backwards_weight", "left_right_weight", "jump_crouch_weight", "shoot_reload_weight", "sprint_drop_weight"}) do
+    for _, v in ipairs({"interval", "accelerates_minimum_time", "mouseX_weight", "mouseY_weight", "mouse_both_weight", "forwards_backwards_weight", "left_right_weight", "jump_crouch_weight", "shoot_reload_weight", "sprint_drop_weight"}) do
         local name = "randomat_" .. self.id .. "_" .. v
         if ConVarExists(name) then
             local convar = GetConVar(name)
@@ -339,13 +388,14 @@ function EVENT:GetConVars()
         ["Swap Weighting"] = {
             pos = 7,
             items = {
-                "mouseX_weight",
-                "mouseY_weight",
                 "forwards_backwards_weight",
                 "left_right_weight",
                 "jump_crouch_weight",
                 "shoot_reload_weight",
                 "sprint_drop_weight",
+                "mouseX_weight",
+                "mouseY_weight",
+                "mouse_both_weight",
             }
         },
     }

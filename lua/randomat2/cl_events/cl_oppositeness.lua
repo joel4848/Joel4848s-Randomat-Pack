@@ -40,10 +40,10 @@ local function RemoveHooks()
 
     mouseXInverted = false
     mouseYInverted = false
-    moveInverted = false
+    moveInverted   = false
     strafeInverted = false
-    jumpInverted = false
-    shootInverted = false
+    jumpInverted   = false
+    shootInverted  = false
     sprintInverted = false
 end
 
@@ -268,19 +268,19 @@ function EVENT:Begin()
 	local showSwappedConVar = GetConVar("randomat_oppositeness_display_current_swaps")
 
 	surface.CreateFont("Swapped_Large", {
-		font = "Verdana",
-		size = 30,
-		weight = 900,
+		font      = "Verdana",
+		size      = 30,
+		weight    = 900,
 		antialias = true,
-		shadow = true
+		shadow    = true
 	})
 
 	surface.CreateFont("Swapped_Medium", {
-		font = "Verdana",
-		size = 25,
-		weight = 900,
+		font      = "Verdana",
+		size      = 25,
+		weight    = 900,
 		antialias = true,
-		shadow = true
+		shadow    = true
 	})
 
     surface.SetFont("Swapped_Large")
@@ -322,7 +322,6 @@ function EVENT:Begin()
 			local textY = titleY + titleH + padding * 2
 
 			for _, entry in ipairs(inversions) do
-				LocalPlayer():PrintMessage(HUD_PRINTTALK, entry.text .. " = " .. tostring(entry.active))
 				if entry.active then
 					draw.SimpleText(entry.text, "Swapped_Medium", textX, textY, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 					textY = textY + lineH + padding - 2
@@ -344,6 +343,10 @@ net.Receive("OppositenessEnd",    RemoveHooks)
 
 function EVENT:End()
     RemoveHooks()
+
+    for _, entry in ipairs(inversions) do
+        entry.active = false
+    end
 end
 
 Randomat:register(EVENT)
