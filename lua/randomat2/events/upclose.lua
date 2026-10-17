@@ -1,7 +1,7 @@
 local EVENT = {}
 
 EVENT.Title = "Up Close And Personal"
-EVENT.Description = "Weapon damage scales with distance"
+EVENT.Description = "Do more damage the closer you are"
 EVENT.id = "upclose"
 EVENT.Categories = {"largeimpact"}
 
@@ -19,6 +19,7 @@ function EVENT:Begin()
     end
 
     self:AddHook("EntityTakeDamage", function(target, dmg)
+        if not target:IsPlayer() then return end
         local attacker = dmg:GetAttacker()
         local distance = target:GetPos():Distance(attacker:GetPos())
         local multiplier = GetMultiplier(distance)
