@@ -14,7 +14,7 @@ function EVENT:Begin()
 
     self:AddHook("PostEntityFireBullets", function(ent, data)
         if not IsValid(ent) or not ent:IsPlayer() then return end
-        if lastBeams[ent] and CurTime() < lastBeams[ent] + 0.1 then return end
+        if lastBeams[ent] and (CurTime() < lastBeams[ent] + 0.1 and CurTime() > lastBeams[ent] + 0.01) then return end
 
         lastBeams[ent] = CurTime()
 
@@ -44,7 +44,7 @@ function EVENT:GetConVars()
     end
 
     local checks = {}
-    for _, v in ipairs({"per_player_colours"}) do
+    for _, v in ipairs({"per_player_colours", "draw_words"}) do
         local name = "randomat_" .. self.id .. "_" .. v
         if ConVarExists(name) then
             local convar = GetConVar(name)
