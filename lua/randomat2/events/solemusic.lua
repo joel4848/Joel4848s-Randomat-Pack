@@ -3,7 +3,7 @@ local EVENT = {}
 EVENT.Title = "Sole Music"
 EVENT.Description = "Make music while you walk!"
 EVENT.id = "solemusic"
-EVENT.Categories = {"lowimpact"}
+EVENT.Categories = {"smallimpact"}
 
 function EVENT:Begin()
     for _, ply in player.Iterator() do

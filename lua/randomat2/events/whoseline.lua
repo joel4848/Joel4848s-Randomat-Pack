@@ -3,7 +3,7 @@ local EVENT = {}
 EVENT.Title       = "Whose line is it anyway?"
 EVENT.Description = "Shows where other players are looking, and warns you if it's at you!"
 EVENT.id          = "whoseline"
-EVENT.Categories  = {"biased_innocent", "biased", "lowimpact"}
+EVENT.Categories  = {"biased_innocent", "biased", "smallimpact"}
 
 function EVENT:Begin()
 

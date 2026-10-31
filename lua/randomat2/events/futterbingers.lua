@@ -3,7 +3,7 @@ local EVENT = {}
 EVENT.Title = "Futterbingers"
 EVENT.Description = "Pick up every weapon you touch!"
 EVENT.id = "futterbingers"
-EVENT.Categories = {"lowimpact"}
+EVENT.Categories = {"smallimpact"}
 
 function EVENT:Begin()
     self:AddHook("PlayerCanPickupWeapon", function(ply, wep)
