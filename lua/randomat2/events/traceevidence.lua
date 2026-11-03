@@ -7,6 +7,15 @@ EVENT.Categories  = {"biased_innocent", "biased", "smallimpact"}
 
 util.AddNetworkString("RandomatTraceEvidence")
 
+local gunWords = {
+    "Bam!", "Bang!", "Blam!", "Blammo!", "Boink!", "Bonk!", "Clack!", "Clang!", "Click!",
+    "Crack!", "Dakka!", "Fwip!", "Fwop!", "Fwup!", "Kablam!", "Kablammo!", "Kablooey!", "Kapow!",
+    "Kerplunk!", "Kerpow!", "Paff!", "Pap!", "Pew!", "Piff!", "Pink!", "Plink!", "Ploink!", "Poff!",
+    "Poink!", "Poomf!", "Pop!", "Pow!", "Rat-a-tat!", "Schwack!", "Schwick!", "Smack!", "Snap!",
+    "Snip!", "Splat!", "Splot!", "Spoink!", "Thonk!", "Thud!", "Thwack!", "Thwick!", "Thwock!",
+    "Thwump!", "Tink!", "Toink!", "Tonk!", "Wham!", "Whump!", "Zap!", "Zing!", "Zowie!"
+}
+
 local lastBeams = {}
 
 function EVENT:Begin()
@@ -22,6 +31,7 @@ function EVENT:Begin()
             net.WriteEntity(ent)
             net.WriteVector(data.Trace.StartPos)
             net.WriteVector(data.Trace.HitPos)
+            net.WriteString(gunWords[math.random(#gunWords)])
         net.Broadcast()
     end)
 end

@@ -4,6 +4,7 @@ local CamStart3D2D      = cam.Start3D2D
 local DrawSimpleText    = draw.SimpleText
 local MathClamp         = math.Clamp
 local NetReadEntity     = net.ReadEntity
+local NetReadString     = net.ReadString
 local NetReadVector     = net.ReadVector
 local RenderDrawBeam    = render.DrawBeam
 local RenderSetMaterial = render.SetMaterial
@@ -12,15 +13,6 @@ local TableRemove       = table.remove
 
 local EVENT = {}
 EVENT.id = "traceevidence"
-
-local gunWords = {
-    "Bam!", "Bang!", "Blam!", "Blammo!", "Boink!", "Bonk!", "Clack!", "Clang!", "Click!", "Clack!",
-    "Crack!", "Dakka!", "Fwip!", "Fwop!", "Fwup!", "Kablam!", "Kablammo!", "Kablooey!", "Kapow!",
-    "Kerplunk!", "Kerpow!", "Paff!", "Pap!", "Pew!", "Piff!", "Pink!", "Plink!", "Ploink!", "Poff!",
-    "Poink!", "Poomf!", "Pop!", "Pow!", "Rat-a-tat!", "Schwack!", "Schwick!", "Smack!", "Snap!",
-    "Snip!", "Splat!", "Splot!", "Spoink!", "Thonk!", "Thud!", "Thwack!", "Thwick!", "Thwock!",
-    "Thwump!", "Tink!", "Toink!", "Tonk!", "Wham!", "Whump!", "Zap!", "Zing!", "Zowie!"
-}
 
 surface.CreateFont("RdmtTraceEvidenceWordFont", {
     font = "Comic Sans MS",
@@ -62,7 +54,7 @@ function EVENT:Begin()
         local ply        = NetReadEntity()
         local startPos   = NetReadVector()
         local hitPos     = NetReadVector()
-        local randomWord = gunWords[math.random(#gunWords)]
+        local randomWord = NetReadString()
 
         TableInsert(tracers, {
             startTime = CurTime(),
