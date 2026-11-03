@@ -18,22 +18,6 @@ EVENT.Description = "Controls periodically switch"
 EVENT.id = "oppositeness"
 EVENT.Categories = {"largeimpact"}
 
-local baseIntervalConVar = GetConVar("randomat_oppositeness_interval")
-local acceleratesConVar  = GetConVar("randomat_oppositeness_accelerates")
-local accelRateConVar    = GetConVar("randomat_oppositeness_accelerates_rate")
-local accelMinConVar     = GetConVar("randomat_oppositeness_accelerates_minimum_time")
-local allowMouseConVar   = GetConVar("randomat_oppositeness_allow_mouse_inversion")
-local doMouseBothConVar  = GetConVar("randomat_oppositeness_mouse_invert_both")
-
-local mouseXWeightConVar    = GetConVar("randomat_oppositeness_mouseX_weight")
-local mouseYWeightConVar    = GetConVar("randomat_oppositeness_mouseY_weight")
-local mouseBothWeightConVar = GetConVar("randomat_oppositeness_mouse_both_weight")
-local moveWeightConVar      = GetConVar("randomat_oppositeness_forwards_backwards_weight")
-local strafeWeightConVar    = GetConVar("randomat_oppositeness_left_right_weight")
-local jumpWeightConVar      = GetConVar("randomat_oppositeness_jump_crouch_weight")
-local shootWeightConVar     = GetConVar("randomat_oppositeness_shoot_reload_weight")
-local sprintWeightConVar    = GetConVar("randomat_oppositeness_sprint_drop_weight")
-
 local baseInterval
 local accelerates
 local accelRate
@@ -246,21 +230,21 @@ net.Receive("OppositenessSprint", function(ln, ply)
 end)
 
 function EVENT:Begin()
-    baseInterval = baseIntervalConVar:GetInt()
-    accelerates  = acceleratesConVar:GetBool()
-    accelRate    = accelRateConVar:GetInt()
-    accelMin     = accelMinConVar:GetInt()
-    allowMouse   = allowMouseConVar:GetBool()
-    doMouseBoth  = doMouseBothConVar:GetBool()
+    baseInterval = GetConVar("randomat_oppositeness_interval"):GetInt()
+    accelerates  = GetConVar("randomat_oppositeness_accelerates"):GetBool()
+    accelRate    = GetConVar("randomat_oppositeness_accelerates_rate"):GetInt()
+    accelMin     = GetConVar("randomat_oppositeness_accelerates_minimum_time"):GetInt()
+    allowMouse   = GetConVar("randomat_oppositeness_allow_mouse_inversion"):GetBool()
+    doMouseBoth  = GetConVar("randomat_oppositeness_mouse_invert_both"):GetBool()
 
-    mouseXWeight    = mouseXWeightConVar:GetInt()
-    mouseYWeight    = mouseYWeightConVar:GetInt()
-    mouseBothWeight = mouseBothWeightConVar:GetInt()
-    moveWeight      = moveWeightConVar:GetInt()
-    strafeWeight    = strafeWeightConVar:GetInt()
-    jumpWeight      = jumpWeightConVar:GetInt()
-    shootWeight     = shootWeightConVar:GetInt()
-    sprintWeight    = sprintWeightConVar:GetInt()
+    mouseXWeight    = GetConVar("randomat_oppositeness_mouseX_weight"):GetInt()
+    mouseYWeight    = GetConVar("randomat_oppositeness_mouseY_weight"):GetInt()
+    mouseBothWeight = GetConVar("randomat_oppositeness_mouse_both_weight"):GetInt()
+    moveWeight      = GetConVar("randomat_oppositeness_forwards_backwards_weight"):GetInt()
+    strafeWeight    = GetConVar("randomat_oppositeness_left_right_weight"):GetInt()
+    jumpWeight      = GetConVar("randomat_oppositeness_jump_crouch_weight"):GetInt()
+    shootWeight     = GetConVar("randomat_oppositeness_shoot_reload_weight"):GetInt()
+    sprintWeight    = GetConVar("randomat_oppositeness_sprint_drop_weight"):GetInt()
 
     weights = {
         mouseXWeight,
