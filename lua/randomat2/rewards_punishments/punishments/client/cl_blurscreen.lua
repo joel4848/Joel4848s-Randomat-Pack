@@ -1,5 +1,4 @@
 net.Receive("Rdmt_Joel4848_RewardPunish_BlurScreenBegin", function()
-    -- Prevents up/down movement with the mouse
     hook.Add("RenderScreenspaceEffects", "Rdmt_Joel4848_RewardPunish_BlurScreen_RenderScreenspaceEffects", function(cmd, x, y, ang)
         if  not Randomat.Client:Alive() or Randomat.Client:IsSpec() then return end
 
